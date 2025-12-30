@@ -1,0 +1,4 @@
+lcov_excl_line = ACCDATA_*
+lcov_excl_dir = *3rdparty*
+lcov_excl_dir = *tests*
+lcov_excl_dir = **install**
