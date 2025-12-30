@@ -1,0 +1,13 @@
+output
+./cmake-build*
+./.idea
+*.pyc
+build
+dist
+
+# python install
+__pycache__
+final.xml
+.coverage
+*.egg-info
+*.so

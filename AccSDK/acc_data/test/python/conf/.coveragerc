@@ -1,0 +1,7 @@
+[run]
+branch = True
+data_file = build/.coverage
+
+# relative path to pytest runner
+source = ../../src
+

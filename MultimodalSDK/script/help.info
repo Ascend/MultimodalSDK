@@ -1,0 +1,5 @@
+  --version                         Query Multimodal SDK version
+  --install                         Install Multimodal SDK package in the currenct directory
+  --install-path=<path>             Install or upgrade Multimodal SDK packages directly to a target directory (absolute or relative).
+                                    Need to specify the --install or --upgrade parameter.
+  --upgrade                         Upgrade Multimodal SDK package in the currenct directory
