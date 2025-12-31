@@ -3,6 +3,7 @@
 -   [目录结构](#目录结构)
 -   [版本说明](#版本说明)
 -   [环境部署](#环境部署)
+-   [编译流程](#编译流程)
 -   [快速入门](#快速入门)
 -   [功能介绍&特性介绍](#功能介绍&特性介绍)
 -   [API参考](#API参考)
@@ -178,6 +179,61 @@ Multimodal SDK安装包[获取链接](https://gitcode.com/Ascend/MultimodalSDK/r
 | `--install-path=<path>` | （可选）自定义软件包安装根目录。如未设置，默认为当前命令执行所在目录。<br>• 建议用户使用绝对路径安装Multimodal SDK，指定安装路径时请避免使用相对路径。<br>• 需要和 `--install` 或 `--upgrade` 参数配合使用。<br>• 与 `--upgrade` 参数配合使用时，`--install-path` 代表旧软件包的安装目录，并在该目录下执行升级。<br>• 传入的路径参数不能存在非法字符，仅支持大小写字母、数字、`-`、`_`/特殊字符。 |
 | `--upgrade` | Multimodal SDK软件包升级操作命令。升级需要确保已经安装过目录完整的Multimodal SDK。                                                                                                                                                                                             |
 | `--version` | 查询软件包Multimodal SDK版本。                                                                                                                                                                                                                              |
+
+# 编译流程
+本节以CANN 8.3.RC2相关配套为例，介绍如何通过源码编译生成 Multimodal SDK，其中NPU驱动、固件和CANN软件包可以通过昇腾社区下载。
+
+1. 编译依赖下载
+
+   ```bash
+   # makeself依赖下载在项目根目录，脚本会自动进行patch/编译
+   cd MultimodalSDK
+
+   # 项目使用定制版的makeself进行打包，需要下载makeselfv2.5和对应的patch
+   git clone -b v2.5.0.x https://gitcode.com/cann-src-third-party/makeself.git makeself_patch
+   git clone -b release-2.5.0 https://gitcode.com/gh_mirrors/ma/makeself.git
+   ```
+
+   项目需要一些开源组件，需要下载以下源码：
+   ```bash
+   # AccSDK依赖
+   cd MultimodalSDK/AccSDK
+   mkdir -p opensource
+   cd opensource
+   git clone -b 3.1.0 https://gitcode.com/gh_mirrors/li/libjpeg-turbo.git
+   git clone -b n5.1.4 https://gitee.com/mirrors/ffmpeg.git FFmpeg
+   # acc_data依赖
+   cd MultimodalSDK/AccSDK/acc_data/3rdparty/pybind
+   git clone -b v2.13.6 https://gitcode.com/GitHub_Trending/py/pybind11.git
+   cd MultimodalSDK/AccSDK/acc_data/3rdparty/gtest
+   git clone -b release-1.11.0 https://gitcode.com/GitHub_Trending/go/googletest.git
+   ```
+
+2. 执行编译
+
+   执行以下命令编译：
+    ```bash
+    source /path/to/Ascend/ascend-toolkit/set_env.sh
+    bash MultimodalSDK/build_script/build_merge.sh
+	```
+
+3. 生成的 run 包在 ```MultimodalSDK/output``` 下：```Ascend-mindxsdk-multimodal_${SDK_VERSION}_linux-aarch64.run```
+
+4. 执行测试用例
+
+   首先安装lcov2.0用于统计测试覆盖率和生成可视化报告：
+   ```bash
+   apt update
+   apt install -y libcapture-tiny-perl libdatetime-perl libtimedate-perl
+   wget https://github.com/linux-test-project/lcov/releases/download/v2.0/lcov-2.0.tar.gz
+   tar -xzf lcov-2.0.tar.gz && cd lcov-2.0
+   make install
+   ```
+
+   然后执行以下命令运行测试用例：
+   ```bash
+   bash MultimodalSDK/build_script/build_merge.sh test
+   ```
 
 # 快速入门
 
