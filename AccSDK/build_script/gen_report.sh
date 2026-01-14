@@ -26,13 +26,13 @@ OUTPUT_DIR=${WORK_DIR}/coverage-report
 PROJECT_ROOT=$(realpath "${WORK_DIR}/..")
 
 # Step 1: 收集覆盖率信息，忽略 mismatch 错误
-lcov --rc lcov_branch_coverage=1 --capture --directory "${PROJECT_ROOT}" --output-file all.info >/dev/null
+lcov --rc lcov_branch_coverage=1 --capture --directory "${PROJECT_ROOT}" --filter branch --output-file all.info --ignore-errors mismatch>/dev/null
 
 # Step 2: 只保留项目相关覆盖率信息（提取匹配路径）
-lcov --rc lcov_branch_coverage=1 -e all.info "${PROJECT_ROOT}/*" -o project.info
+lcov --rc lcov_branch_coverage=1 -e all.info "${PROJECT_ROOT}/*" --filter branch -o project.info
 
 # Step 3: 去除 test 文件夹下的信息
-lcov --rc lcov_branch_coverage=1 -r project.info "${PROJECT_ROOT}/test/*" "${PROJECT_ROOT}/build/*" -o coverage.info
+lcov --rc lcov_branch_coverage=1 -r project.info "${PROJECT_ROOT}/test/*" "${PROJECT_ROOT}/build/*" "${PROJECT_ROOT}/acc_data/*" "/usr/include/c++/*" --filter branch -o coverage.info
 
 # Step 4: 生成 HTML 报告
-genhtml --rc genhtml_branch_coverage=1 coverage.info --output-directory "$OUTPUT_DIR"
+genhtml --rc genhtml_branch_coverage=1 coverage.info --filter branch --output-directory "$OUTPUT_DIR"

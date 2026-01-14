@@ -19,6 +19,8 @@
 # Create: 2025
 # History: NA
 
+set -e
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 MERGE_BUILD_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
@@ -31,14 +33,24 @@ cd "$ACC_BUILD_DIR" || { echo "Error: Cannot enter directory $ACC_BUILD_DIR"; ex
 
 chmod +x build.sh
 if [[ "$1" == "test" ]]; then
+    cd "$MERGE_BUILD_DIR"
+    wget https://github.com/linux-test-project/lcov/releases/download/v2.0/lcov-2.0.tar.gz
+    tar -xzf lcov-2.0.tar.gz && cd lcov-2.0
+    make install
+    cd "$ACC_BUILD_DIR"
     export LD_LIBRARY_PATH="${ACC_SDK_ROOT_DIR}/opensource/FFmpeg/lib:${LD_LIBRARY_PATH}"
     export LD_LIBRARY_PATH="${ACC_SDK_ROOT_DIR}/opensource/libjpeg-turbo/lib:${LD_LIBRARY_PATH}"
     export LD_LIBRARY_PATH="${ACC_SDK_ROOT_DIR}/output/lib:${LD_LIBRARY_PATH}"
     ./build.sh test || exit 1
     export GTEST_HOME="${ACC_SDK_ROOT_DIR}/acc_data/3rdparty/gtest/googletest/build/googletest"
     export LD_LIBRARY_PATH="${ACC_SDK_ROOT_DIR}/acc_data/3rdparty/gtest/googletest/build/lib/:${LD_LIBRARY_PATH}"
-    cd ../build && make test
-    cat ./Testing/Temporary/LastTest.log && cd ../build_script && bash gen_report.sh  && python3 testcases_xml_report.py ../test coverage-report
+    cd ../build
+    make test || TEST_RC=$?
+    cat ./Testing/Temporary/LastTest.log
+    if [ -n "${TEST_RC:-}" ]; then
+        exit $TEST_RC
+    fi
+    cd ../build_script && bash gen_report.sh  && python3 testcases_xml_report.py ../test coverage-report
 else
     ./build.sh || exit 1
 fi
