@@ -186,10 +186,12 @@ Multimodal SDK安装包[获取链接](https://gitcode.com/Ascend/MultimodalSDK/r
 1. 编译依赖下载
 
    ```bash
-   # makeself依赖下载在项目根目录，脚本会自动进行patch/编译
+   # 下载源码
+   git clone https://gitcode.com/Ascend/MultimodalSDK.git
+   # 进入项目根目录
    cd MultimodalSDK
 
-   # 项目使用定制版的makeself进行打包，需要下载makeselfv2.5和对应的patch
+   # 将makeself依赖下载在项目根目录，脚本会自动进行patch/编译，项目使用定制版的makeself进行打包，需要下载makeselfv2.5和对应的patch
    git clone -b v2.5.0.x https://gitcode.com/cann-src-third-party/makeself.git makeself_patch
    git clone -b release-2.5.0 https://gitcode.com/gh_mirrors/ma/makeself.git
    ```
