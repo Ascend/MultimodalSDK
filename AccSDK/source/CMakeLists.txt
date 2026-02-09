@@ -12,6 +12,9 @@ endif()
 if(VIDEO)
     add_subdirectory(video)
 endif()
+if(AUDIO)
+    add_subdirectory(audio)
+endif()
 target_link_libraries(core
         PRIVATE
         -Wl,--no-as-needed
@@ -30,6 +33,9 @@ endif()
 
 if(VIDEO)
     target_link_libraries(core PRIVATE avformat avcodec avutil swscale)
+endif()
+if(AUDIO)
+    target_link_libraries(core PRIVATE soxr)
 endif()
 
 install(TARGETS core DESTINATION ${CMAKE_BINARY_DIR}/lib)

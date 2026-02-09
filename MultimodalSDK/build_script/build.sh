@@ -90,6 +90,7 @@ mkdir -p "${OUTPUT_DIR}/lib"
 mkdir -p "${OUTPUT_DIR}/script"
 mkdir -p "${OUTPUT_DIR}/opensource/FFmpeg"
 mkdir -p "${OUTPUT_DIR}/opensource/libjpeg-turbo"
+mkdir -p "${OUTPUT_DIR}/opensource/soxr"
 
 if compgen -G "${A_ROOT_DIR}/dist/*.whl" > /dev/null; then
   cp -v "${A_ROOT_DIR}/dist/"*.whl "${OUTPUT_DIR}/"
@@ -109,6 +110,9 @@ rm -rf "${OUTPUT_DIR}/opensource/FFmpeg/lib/pkgconfig"
 cp -rf "${B_REPO_DIR}/output/opensource/libjpeg-turbo/lib" "${OUTPUT_DIR}/opensource/libjpeg-turbo"
 rm -rf "${OUTPUT_DIR}/opensource/libjpeg-turbo/lib/cmake"
 rm -rf "${OUTPUT_DIR}/opensource/libjpeg-turbo/lib/pkgconfig"
+
+cp -rf "${B_REPO_DIR}/output/opensource/soxr/lib" "${OUTPUT_DIR}/opensource/soxr"
+rm -rf "${OUTPUT_DIR}/opensource/soxr/lib/pkgconfig"
 
 cp "${A_ROOT_DIR}/script/set_env.sh" "${OUTPUT_DIR}/script/"
 cp "${A_ROOT_DIR}/script/uninstall.sh" "${OUTPUT_DIR}/script/"
@@ -137,6 +141,7 @@ if [[ "${BUILD_ARGS[*]}" == *"test"* ]]; then
     cd "${A_ROOT_DIR}"
     export LD_LIBRARY_PATH="${A_ROOT_DIR}/output/lib:/usr1/AccSDK/output/opensource/libjpeg-turbo/lib:$LD_LIBRARY_PATH"
     export LD_LIBRARY_PATH="/usr1/AccSDK/output/opensource/FFmpeg/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="/usr1/AccSDK/output/opensource/soxr/lib:$LD_LIBRARY_PATH"
     # clean coverage first
     coverage erase
     LD_PRELOAD=/opt/buildtools/python-3.11.4/lib/python3.11/site-packages/torch.libs/libgomp-98df74fd.so.1.0.0 \

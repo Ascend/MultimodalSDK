@@ -32,6 +32,7 @@
 #include "PyLog.h"
 #include "PyPreprocess.h"
 #include "PyVideo.h"
+#include "PyAudio.h"
 #include "acc/Log.h"
 %}
 %include <std_string.i>
@@ -41,6 +42,8 @@
 %include <attribute.i>
 %include <std_shared_ptr.i>
 namespace std {
+    %template(IntVector) vector<int>;
+    %template(StringVector) std::vector<string>;
     %template(SizetVector) vector<size_t>;
     %template(FloatVector) std::vector<float>;
     %template(Tensorvector) std::vector<PyAcc::Tensor>;
@@ -105,5 +108,6 @@ throw Swig::DirectorMethodException();
 %include "PyPreprocess.h"
 %include "acc/tensor/TensorDataType.h"
 %include "PyVideo.h"
+%include "PyAudio.h"
 %include "acc/image/ImageFormat.h"
 %include "acc/Log.h"

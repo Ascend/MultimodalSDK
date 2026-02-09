@@ -40,6 +40,7 @@ if [[ "$1" == "test" ]]; then
     cd "$ACC_BUILD_DIR"
     export LD_LIBRARY_PATH="${ACC_SDK_ROOT_DIR}/opensource/FFmpeg/lib:${LD_LIBRARY_PATH}"
     export LD_LIBRARY_PATH="${ACC_SDK_ROOT_DIR}/opensource/libjpeg-turbo/lib:${LD_LIBRARY_PATH}"
+    export LD_LIBRARY_PATH="${ACC_SDK_ROOT_DIR}/opensource/soxr/lib:${LD_LIBRARY_PATH}"
     export LD_LIBRARY_PATH="${ACC_SDK_ROOT_DIR}/output/lib:${LD_LIBRARY_PATH}"
     ./build.sh test || exit 1
     export GTEST_HOME="${ACC_SDK_ROOT_DIR}/acc_data/3rdparty/gtest/googletest/build/googletest"

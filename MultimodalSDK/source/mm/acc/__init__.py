@@ -16,8 +16,8 @@
 # See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
 from .wrapper import (Tensor, TensorFormat, DataType, ImageFormat, Image, DeviceMode, Interpolation, video_decode,
-                      normalize)
+                      normalize, load_audio)
 
 
 __all__ = ['Tensor', 'DataType', 'TensorFormat', 'ImageFormat', 'Image', 'DeviceMode', 'Interpolation', 'video_decode',
-           'normalize']
+           'normalize', 'load_audio']
