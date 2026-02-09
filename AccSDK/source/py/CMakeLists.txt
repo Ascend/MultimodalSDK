@@ -16,6 +16,13 @@ if(VIDEO)
         ${PROJECT_SOURCE_DIR}/source/py/module/PyVideo.cpp
     )
 endif()
+
+if(AUDIO)
+    add_definitions(-DENABLE_AUDIO)
+    list(APPEND PYTHON_SRC_LIST
+            ${PROJECT_SOURCE_DIR}/source/py/module/PyAudio.cpp
+    )
+endif()
 add_definitions(-DPy_LIMITED_API=0x03090000)
 find_package(Python3 3.11 EXACT REQUIRED COMPONENTS Interpreter Development)
 
@@ -42,6 +49,7 @@ swig_add_library(acc
         ${PROJECT_SOURCE_DIR}/source/py/module/PyLog.cpp
         ${PROJECT_SOURCE_DIR}/source/py/module/PyPreprocess.cpp
         ${PROJECT_SOURCE_DIR}/source/py/module/PyVideo.cpp
+        ${PROJECT_SOURCE_DIR}/source/py/module/PyAudio.cpp
 )
 
 target_include_directories(acc PRIVATE

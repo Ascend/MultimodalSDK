@@ -18,6 +18,7 @@
 from .tensor_wrapper import Tensor, TensorFormat, DataType, normalize
 from .image_wrapper import Image, ImageFormat, DeviceMode, Interpolation
 from .video_wrapper import video_decode
+from .audio_wrapper import load_audio
 
 __all__ = ['Tensor', 'DataType', 'TensorFormat', 'ImageFormat', 'Image', 'DeviceMode', 'Interpolation', 'video_decode',
-           'normalize']
+           'normalize', 'load_audio']

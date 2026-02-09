@@ -95,6 +95,49 @@ compile_ffmpeg() {
 }
 
 
+# soxr
+compile_soxr() {
+    local soxr_root="${OPEN_SOURCE_ABS_ROOT}/soxr"
+    local src_tar="${soxr_root}/soxr-0.1.3-Source.tar.xz"
+    local patch_file="${soxr_root}/soxr-0.1.3-port-to-newer-cmake.patch"
+    local src_dir="${soxr_root}"
+    local build_dir="${src_dir}/build"
+    local install_dir="${soxr_root}"
+
+    echo "start compile soxr..."
+
+    if [ ! -f "${src_dir}/CMakeLists.txt" ]; then
+        echo "[INFO] Extracting soxr to ${src_dir}"
+        tar -xf "${src_tar}" --strip-components=1 -C "${src_dir}" || {
+            echo "Failed to extract ${src_tar}"
+            return 1
+        }
+    fi
+
+    # 检查是否已经打了补丁
+    if ! grep -q "include(GNUInstallDirs)" "${src_dir}/CMakeLists.txt"; then
+        echo "Patch not applied, applying now..."
+        patch -d "${src_dir}" -p1 < "${patch_file}" || { echo "Failed to apply patch"; return 1; }
+    else
+        echo "Patch already applied, skipping."
+    fi
+
+    mkdir -p "${build_dir}" || return 1
+
+    cmake -S "${src_dir}" -B "${build_dir}" \
+        -DCMAKE_INSTALL_PREFIX="${install_dir}" \
+        -DWITH_OPENMP=OFF \
+        -DBUILD_TESTS=OFF \
+        -DBUILD_EXAMPLES=OFF \
+        -DCMAKE_BUILD_TYPE=Release || return 1
+    cmake --build "${build_dir}" -j64 || return 1
+    cmake --install "${build_dir}" || return 1
+
+    echo "soxr compile success"
+    export LD_LIBRARY_PATH="${install_dir}/lib:${LD_LIBRARY_PATH}"
+    echo "soxr ld_library_path set success"
+}
+
 
 main() {
     linux_type=$(uname -m)
@@ -102,11 +145,15 @@ main() {
     pid1=$!
     compile_ffmpeg &
     pid2=$!
+    compile_soxr &
+    pid3=$!
 
     wait $pid1
     status1=$?
     wait $pid2
     status2=$?
+    wait $pid3
+    status3=$?
 
     if [ $status1 -ne 0 ]; then
         echo "libjpeg-turbo compile failed"
@@ -114,6 +161,10 @@ main() {
     fi
     if [ $status2 -ne 0 ]; then
         echo "ffmpeg compile failed"
+        exit 1
+    fi
+    if [ $status3 -ne 0 ]; then
+        echo "soxr compile failed"
         exit 1
     fi
 

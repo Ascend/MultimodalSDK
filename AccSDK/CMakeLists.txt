@@ -14,6 +14,7 @@ include_directories(
         $ENV{ASCEND_TOOLKIT_HOME}/acllib/include
         ${PROJECT_SOURCE_DIR}/opensource/libjpeg-turbo/include
         ${PROJECT_SOURCE_DIR}/opensource/FFmpeg/include
+        ${PROJECT_SOURCE_DIR}/opensource/soxr/include
         ${PROJECT_SOURCE_DIR}/acc_data/src/cpp/interface/
 )
 
@@ -22,6 +23,7 @@ link_directories(
         $ENV{ASCEND_TOOLKIT_HOME}/acllib/lib64
         ${PROJECT_SOURCE_DIR}/opensource/libjpeg-turbo/lib
         ${PROJECT_SOURCE_DIR}/opensource/FFmpeg/lib
+        ${PROJECT_SOURCE_DIR}/opensource/soxr/lib
 )
 
 set(SECUREC_PATH1 "$ENV{ASCEND_TOOLKIT_HOME}/../../driver/lib64/driver")
