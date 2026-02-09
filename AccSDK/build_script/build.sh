@@ -59,6 +59,7 @@ trap 'print_build_failure; exit 1' ERR
 # 构建变量
 BUILD_IMAGE="${IMAGE:-ON}"
 BUILD_VIDEO="${VIDEO:-ON}"
+BUILD_AUDIO="${AUDIO:-ON}"
 
 # 打印开始构建信息
 print_build_start
@@ -67,7 +68,7 @@ print_build_start
 if [[ x"$1" == x"test" ]]; then
   echo ">>> Running cmake in GTEST mode"
   cd ${ACC_SDK_ROOT_DIR}/acc_data/3rdparty/gtest/googletest
-  mkdir build
+  mkdir -p build
   cd build
   cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
   make -j
@@ -76,12 +77,14 @@ if [[ x"$1" == x"test" ]]; then
   cmake -S "${ACC_SDK_ROOT_DIR}" -B"${ACC_SDK_ROOT_DIR}/build" \
     -DIMAGE="${BUILD_IMAGE}" \
     -DVIDEO="${BUILD_VIDEO}" \
+    -DAUDIO="${BUILD_AUDIO}" \
     -DBUILD_TESTS=ON
 else
   echo ">>> Running cmake in Release mode"
   cmake -S "${ACC_SDK_ROOT_DIR}" -B"${ACC_SDK_ROOT_DIR}/build" \
     -DIMAGE="${BUILD_IMAGE}" \
-    -DVIDEO="${BUILD_VIDEO}"
+    -DVIDEO="${BUILD_VIDEO}" \
+    -DAUDIO="${BUILD_AUDIO}"
 fi
 
 # 编译并安装
@@ -106,6 +109,7 @@ mkdir -p "${OUTPUT_DIR}/include/acc_sdk"
 mkdir -p "${OUTPUT_DIR}/lib"
 mkdir -p "${OUTPUT_DIR}/opensource/libjpeg-turbo"
 mkdir -p "${OUTPUT_DIR}/opensource/FFmpeg"
+mkdir -p "${OUTPUT_DIR}/opensource/soxr"
 
 # 拷贝 AccData 头文件
 if compgen -G "${ACC_INCLUDE_SRC_DIR}/*.h" > /dev/null; then
@@ -164,6 +168,7 @@ copy_opensource_outputs() {
 
 copy_opensource_outputs libjpeg-turbo
 copy_opensource_outputs FFmpeg
+copy_opensource_outputs soxr
 
 TAR_NAME="acc_sdk_linux-aarch64.tar.gz"
 tar -czvf "${OUTPUT_DIR}/${TAR_NAME}" --exclude="${TAR_NAME}" -C "${OUTPUT_DIR}" $(ls -A "${OUTPUT_DIR}")

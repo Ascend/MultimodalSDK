@@ -71,28 +71,49 @@ bool CheckFileExtension(const char* path, const char* suffix)
     return (*a == '\0') && (*b == '\0');
 }
 
-ErrorCode ReadFile(const char* path, std::vector<uint8_t>& data, size_t maxFileSize)
+bool CheckFileOpen(const char* path, std::ifstream& file)
 {
-    // open file
     fs::path normPath = fs::absolute(path).lexically_normal();
-    std::ifstream file(normPath, std::ios::binary | std::ios::ate);
+    file.open(normPath, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
-        LogError << "Open file failed, file path is invalid" << GetErrorInfo(ERR_OPEN_FILE_FAILURE);
-        return ERR_OPEN_FILE_FAILURE;
+        LogError << "Check file open failed, file path is invalid";
+        return false;
     }
+    return true;
+}
+
+bool CheckAndGetFileSize(std::ifstream& file, size_t maxFileSize, int64_t& fileSize)
+{
     // get file size
     std::streampos pos = file.tellg();
-    int64_t fileSize = (pos < 0) ? 0 : static_cast<int64_t>(pos);
+    fileSize = (pos < 0) ? 0 : static_cast<int64_t>(pos);
     file.seekg(0, std::ios::beg);
     // check file is empty or not
     if (fileSize == 0) {
-        LogError << "File is empty or failed to get size." << GetErrorInfo(ERR_INVALID_FILE_SIZE);
-        return ERR_INVALID_FILE_SIZE;
+        LogError << "File is empty or failed to get size.";
+        return false;
     }
     // check large file
     if (fileSize > static_cast<int64_t>(maxFileSize)) {
         LogError << "File size exceeds maximum limit: " << fileSize << " bytes (max allowed: " << maxFileSize
-                 << " bytes)." << GetErrorInfo(ERR_INVALID_FILE_SIZE);
+                 << " bytes).";
+        return false;
+    }
+    return true;
+}
+
+ErrorCode ReadFile(const char* path, std::vector<uint8_t>& data, size_t maxFileSize)
+{
+    // open file
+    std::ifstream file;
+    if (!CheckFileOpen(path, file)) {
+        LogError << "The file is invalid, file open failed." << GetErrorInfo(ERR_OPEN_FILE_FAILURE);
+        return ERR_OPEN_FILE_FAILURE;
+    }
+    // get file size
+    int64_t fileSize = 0;
+    if (!CheckAndGetFileSize(file, maxFileSize, fileSize)) {
+        LogError << "The file is invalid, file size out of range." << GetErrorInfo(ERR_INVALID_FILE_SIZE);
         return ERR_INVALID_FILE_SIZE;
     }
     // read file data

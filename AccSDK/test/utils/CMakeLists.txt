@@ -3,6 +3,7 @@ set(THREAD_POOL_TEST_EXECUTABLE "ThreadPoolTest")
 set(FILE_UTILS_TEST_EXECUTABLE "FileUtilsTest")
 set(VIDEO_UTILS_TEST_EXECUTABLE "VideoUtilsTest")
 set(ERROR_UTILS_TEST_EXECUTABLE "ErrorCodeUtilsTest")
+set(AUDIO_UTILS_TEST_EXECUTABLE "AudioUtilsTest")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/output/utils)
 
@@ -40,4 +41,11 @@ add_executable(${ERROR_UTILS_TEST_EXECUTABLE} ${ErrorCodeUtilTestSRC})
 target_link_libraries(${ERROR_UTILS_TEST_EXECUTABLE} core -pthread gtest)
 add_test(NAME ${ERROR_UTILS_TEST_EXECUTABLE}
         COMMAND ${ERROR_UTILS_TEST_EXECUTABLE} --gtest_output=xml
+        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+file(GLOB_RECURSE AudioUtilTestSRC AudioUtilsTest.cpp)
+add_executable(${AUDIO_UTILS_TEST_EXECUTABLE} ${AudioUtilTestSRC})
+target_link_libraries(${AUDIO_UTILS_TEST_EXECUTABLE} core -pthread gtest)
+add_test(NAME ${AUDIO_UTILS_TEST_EXECUTABLE}
+        COMMAND ${AUDIO_UTILS_TEST_EXECUTABLE} --gtest_output=xml
         WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

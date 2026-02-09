@@ -93,6 +93,49 @@ TEST_F(FileUtilsTest, CheckFileExtension_ShouldReturnFalse_WhenPathNoSuffix)
     EXPECT_EQ(ret, false);
 }
 
+TEST_F(FileUtilsTest, CheckFileOpen_ShouldReturnTrue_WhenFileExists)
+{
+    std::ifstream file;
+    bool ret = CheckFileOpen("valid_file.bin", file);
+    EXPECT_TRUE(ret);
+    file.close();
+}
+
+TEST_F(FileUtilsTest, CheckFileOpen_ShouldReturnFalse_WhenFileDoesNotExist)
+{
+    std::ifstream file;
+    bool ret = CheckFileOpen("non_existent_file.bin", file);
+    EXPECT_EQ(ret, false);
+}
+
+TEST_F(FileUtilsTest, CheckAndGetFileSize_ShouldReturnFalse_WhenFileIsEmpty)
+{
+    std::ifstream file;
+    int64_t fileSize = -1;
+    constexpr size_t kMaxFileSize = 1024 * 1024; // 1MB
+    bool ret = CheckAndGetFileSize(file, kMaxFileSize, fileSize);
+    EXPECT_FALSE(ret);
+}
+
+TEST_F(FileUtilsTest, CheckAndGetFileSize_ShouldReturnFalse_WhenFileIsTooLarge)
+{
+    const char* testFilePath = "test_2mb_file.bin";
+    const size_t maxSize = 1 * 1024 * 1024;
+    {
+        std::ofstream ofs(testFilePath, std::ios::binary);
+        std::vector<char> buffer(1024 * 1024, 0xAA); // 1MB buffer with 0xAA
+        ofs.write(buffer.data(), buffer.size());
+        ofs.write(buffer.data(), buffer.size());
+        ofs.close();
+    }
+    std::ifstream file;
+    ASSERT_TRUE(CheckFileOpen(testFilePath, file));
+    int64_t fileSize = -1;
+    bool ret = CheckAndGetFileSize(file, maxSize, fileSize);
+    EXPECT_FALSE(ret);
+    std::remove(testFilePath);
+}
+
 TEST_F(FileUtilsTest, ReadFile_ShouldReturnSuccess_WhenFileReadSucceeds)
 {
     std::vector<uint8_t> data;

@@ -38,6 +38,23 @@ inline constexpr size_t DEFAULT_MAX_FILE_SIZE = 1024 * 1024 * 1024; // 1GB
 bool CheckFileExtension(const char* path, const char* suffix);
 
 /**
+ * @description: Check whether the file can be opened successfully.
+ * @param path: Input file path.
+ * @param file: Input file stream to be opened.
+ * @return: Bool
+ */
+bool CheckFileOpen(const char* path, std::ifstream& file);
+
+/**
+ * @description: Check file size validity and get file size.
+ * @param file: Input file stream.
+ * @param maxFileSize: Maximum allowed file size limit.
+ * @param fileSize: Output file size in bytes.
+ * @return: Bool
+ */
+bool CheckAndGetFileSize(std::ifstream& file, size_t maxFileSize, int64_t& fileSize);
+
+/**
 * @description: Read file source data.
 * @param path: Input file path.
 * @param data: Output file data.
