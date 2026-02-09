@@ -18,4 +18,10 @@ if(VIDEO)
     )
 endif()
 
+if(AUDIO)
+    list(APPEND UTILS_SRC_LIST
+            ${PROJECT_SOURCE_DIR}/source/utils/AudioUtils.cpp
+    )
+endif()
+
 target_sources(core PRIVATE ${UTILS_SRC_LIST})
