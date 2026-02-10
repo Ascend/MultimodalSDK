@@ -839,3 +839,50 @@ mean = [0.1, 0.1, 0.1]
 std = [0.1, 0.1, 0.1]
 dst_mm_tensor = normalize(mm_tensor, mean, std, DeviceMode.CPU)
 ```
+
+## mm.load_audio<a name="ZH-CN_TOPIC_0000002483785933"></a>
+
+**功能描述<a name="section957011509130"></a>**
+
+使用音频加载接口，对给定的音频实现加载。支持对单音频文件加载以及对批量音频的并行加载，支持开关重采样。
+
+**函数原型<a name="section12411139493"></a>**
+
+```
+def load_audio(audio_inputs: Union[str, List[str]], sr: Optional[int] = None)
+-> Union[Tuple[Tensor, int], List[Tuple[Tensor, int]]]
+```
+
+**输入参数说明<a name="section057715433620"></a>**
+
+|参数名|数据类型|可选/必选|说明|
+|--|--|--|--|
+|audio_inputs|Union[str, List[str]]|必选|输入单音频路径 / 多音频所在目录 / 音频列表。|
+|sr|Optional[int]|可选|若用户指定重采样率，则按该采样率进行重采样，否则不进行重采样。|
+
+
+**返回值说明<a name="section108231036193513"></a>**
+
+|数据类型|说明|
+|--|--|
+|Union[Tuple[Tensor, int], List[Tuple[Tensor, int]]]|单音频返回(音频tensor数据, 采样率)，多音频返回(音频tensor数据，采样率)列表。|
+
+
+>[!NOTE] 说明
+>-   输入音频仅支持wav文件。
+>-   可加载音频文件的范围为[1,128]。
+>-   用户输入的采样率必须为正整数。
+>-   多通道音频会自动转换为单通道音频。
+
+**示例<a name="section1587174015349"></a>**
+
+```
+from mm import load_audio
+audio_file_path = "/xxx/xxx.wav"
+audio_list = ["/xxx/xxx.wav","/yyy/yyy.wav"]
+audio_dir = "/xxx"
+
+single_audio_data, sr = load_audio(audio_file_path)
+batch_audio_data, sr = load_audio(audio_list)
+batch_audio_dataB, sr = load_audio(audio_dir)
+```
