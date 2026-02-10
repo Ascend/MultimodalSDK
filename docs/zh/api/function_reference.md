@@ -878,11 +878,11 @@ def load_audio(audio_inputs: Union[str, List[str]], sr: Optional[int] = None)
 
 ```
 from mm import load_audio
-audio_file_path = "/xxx/xxx.wav"
-audio_list = ["/xxx/xxx.wav","/yyy/yyy.wav"]
-audio_dir = "/xxx"
+single_audio_path = "/path/to/speech.wav"
+audio_file_paths = ["/path/to/audio1.wav", "/path/to/audio2.wav"]
+audio_directory = "/path/to/audio_dir"
 
-single_audio_data, sr = load_audio(audio_file_path)
-batch_audio_data, sr = load_audio(audio_list)
-batch_audio_dataB, sr = load_audio(audio_dir)
+waveform, sr = load_audio(single_audio_path)
+batch_from_filelist = load_audio(audio_file_paths)
+batch_from_directory = load_audio(audio_directory)
 ```

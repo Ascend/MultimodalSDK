@@ -19,6 +19,8 @@
     - 包括图像视频加载和解码，resize、crop等预处理常用操作。
     - 支持多种开源数据结构与加速库数据结构的相互转换，方便快速使用和移植。
 
+更多详情请查看[简介](docs/zh/introduction.md)
+
 
 # 目录结构
 
@@ -85,9 +87,11 @@ Multimodal的版本说明包含Multimodal的软件版本配套关系和软件包
 | Ascend HDK | 25.5.0 |
 | CANN | 8.5.0 |
 
+更多详情请查看[简介](docs/zh/introduction.md)
+
 # 环境部署
 
-介绍Multimodal的安装方式。
+介绍Multimodal的安装方式。更多详情请查看[安装指南](docs/zh/installation_guide.md)
 
 ## 安装依赖
 
@@ -238,44 +242,7 @@ Multimodal SDK安装包[获取链接](https://gitcode.com/Ascend/MultimodalSDK/r
    ```
 
 # 快速入门
-
-1. 使用高性能接口
-
-    Multimodal SDK提供了一系列CPU和NPU高性能接口，用户可以根据这些接口自行选用集成到自己的业务流程中，下面提供几个高性能接口的示例作为参考。 
-    高性能图像解码接口：
-    ```shell
-    from mm import Image
-    img= Image.open("/home/test.jpg", "cpu")  # 样例代码的图片需要开发者自行替换
-    ```
-    高性能图像数据处理resize接口：
-    ```shell
-    from mm import Image, DeviceMode, Interpolation
-    img = Image.open("/home/test.jpg", "cpu") # 样例代码的图片需要开发者自行替换
-    img_resize = img.resize((500,500), Interpolation.BICUBIC, DeviceMode.CPU)
-    ```
-    高性能图像数据处理crop接口：
-    ```shell
-    from mm import Image, DeviceMode
-    img = Image.open("/home/test.jpg", "cpu") # 样例代码的图片需要开发者自行替换
-    img_crop = img.crop(10, 10, 10, 10, DeviceMode.CPU)
-    ```
-2. 使用开源推理框架对接接口
-
-    基于Multimodal SDK提供的高性能接口，Multimodal SDK也提供了对接开源推理框架的vllm的适配方案，基于vllm以及vllm-ascend的patch机制
-    - 使用补丁时，目前仅支持从vllm-ascend社区获取0.8.5.rc1镜像版
-    - 镜像的安装方式请参见[vllm-ascend](https://docs.vllm.ai/projects/ascend/en/v0.8.5rc1/installation.html)，安装时请选择Using docker（从容器中安装）。
-    - 在镜像中使用Multimodal SDK能力时，请首先执行以下命令：
-    ```shell
-    export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver:$LD_LIBRARY_PATH
-    ```
-    您需要在vllm包的utils.py文件中添加如下内容，该文件路径在镜像中的位置为“/vllm-workspace/vllm/vllm/multimodal/utils.py”。
-    ```shell
-    import mm.patcher.vllm.video_patcher
-    ```
-    添加完成后，当使用vllm服务并传入视频文件数据时，若可以看到如下提示信息，则表示使用成功。
-    ```shell
-    load_file: Multimodal SDK Video Patcher Enabled!
-    ```
+Multimodal SDK提供了一系列CPU高性能和易用性的接口，更多详情请查看[快速入门](docs/zh/quick_start.md)与[样例与指导](docs/zh/user_guide.md)
 
 # 功能介绍&特性介绍
 多模态大模型推理流程中需要处理大量复杂的数据。Multimodal SDK通过提供一系列高性能的昇腾设备亲和性接口，加速大模型推理预处理流程。
@@ -284,20 +251,15 @@ Multimodal SDK安装包[获取链接](https://gitcode.com/Ascend/MultimodalSDK/r
 
 # API参考
 
-## mm.Tensor
-Tensor类将被用于承载任意模态的通用数据，实现通用数据的创建、管理以及数据复制等操作。
-## mm.Image
-Image类将被用于承载图像数据，实现通用图像的创建、管理以及数据复制等操作。
-## mm.video_decode
-将传入的视频文件解码，并返回Image对象列表。
-## mm.normalize
-使用均值和标准差对Tensor对象进行归一化。
-## mm.register_log_conf
-日志注册函数。
-## Adapter
-使用多模态内部的加速能力对Qwen2VL模型的图像/视频预处理环节进行加速，继承transformers库中的前处理函数，当前仅支持对接transformers4.51.3版本的处理能力
-## patcher
-该补丁为vllm图像、视频解码提供加速能力，也为部分模型的图像/视频预处理提供加速能力
+API参考详见
+
+[Python接口说明](docs/zh/api/README.md)
+
+[Adapter](docs/zh/api/adapter.md)
+
+[Patcher](docs/zh/api/patcher.md)
+
+[功能函数](docs/zh/api/function_reference.md)
 
 # FAQ
 
@@ -328,6 +290,8 @@ from backports.lzma import _encode_filter_properties, _decode_filter_properties
 - 使用API读取文件时，用户需要保证该文件的owner必须为自己，且权限不高于640，避免发生提权等安全问题。 外部下载的软件代码或程序可能存在风险，功能的安全性需由用户保证。
 - 通信矩阵：目前Multimodal SDK开发套件包不会主动打开或者依赖任意端口，因此不涉及通信矩阵。
 - 公网地址：Multimodal SDK的安装包中的网址安装结束后会被清除，并不会访问，不会造成风险.
+
+更多详情请查看[安全声明](docs/zh/security_hardening.md)与[附录](docs/zh/appendix.md)
 
 
 # 免责声明
