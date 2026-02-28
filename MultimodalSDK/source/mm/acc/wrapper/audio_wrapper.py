@@ -133,4 +133,10 @@ def load_audio(audio_inputs: Union[str, List[str]], sr: Optional[int] = None) \
         except Exception as e:
             raise RuntimeError(f"load_audio_batch failed: {e}") from e
 
-        return list(zip(list(dst_acc_tensors), list(srs)))
+        tensor_objs = []
+        for acc_tensor in dst_acc_tensors:
+            tensor_obj = object.__new__(Tensor)
+            tensor_obj._inner = acc_tensor
+            tensor_objs.append(tensor_obj)
+
+        return list(zip(tensor_objs, list(srs)))

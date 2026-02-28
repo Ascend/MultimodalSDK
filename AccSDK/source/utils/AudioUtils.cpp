@@ -438,8 +438,9 @@ ErrorCode MixChannelsInterleaved(float* output, const float* input, size_t numFr
         for (size_t i = vectorizedFrames; i < numFrames; i++) {
             output[i] = (input[i * stereoChannels] + input[i * stereoChannels + 1]) * factor;
         }
+        return SUCCESS;
     }
-#else
+#endif
     // Generic multi-channel mixing
     for (size_t i = 0; i < numFrames; i++) {
         float sum = 0.0f;
@@ -448,7 +449,6 @@ ErrorCode MixChannelsInterleaved(float* output, const float* input, size_t numFr
         }
         output[i] = sum * factor;
     }
-#endif
     return SUCCESS;
 }
 
@@ -485,7 +485,7 @@ ErrorCode AudioDecode(const char* filePath, AudioData& outputAudioData)
     const uint32_t numSamples = dataSize / (bytesPerSample * fmt.numChannels);
 
     std::vector<float> samples(numSamples * fmt.numChannels);
-    ret = ConvertAudioDataToFloat(rawData, fmt, numSamples, samples);
+    ret = ConvertAudioDataToFloat(rawData, fmt, numSamples * fmt.numChannels, samples);
     if (ret != SUCCESS)
         return ret;
 
