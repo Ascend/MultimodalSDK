@@ -89,6 +89,11 @@ void ConvertPcm16ToFloatNeon(const uint8_t* raw, float* samples, size_t numSampl
         floatVec = vminq_f32(vmaxq_f32(floatVec, minusOneVec), oneVec);
         vst1q_f32(samples + i, floatVec);
     }
+    // Process remaining samples
+    for (size_t j = i; j < numSamples; j++) {
+            float sample = static_cast<float>(pcmData[j]) * scale;
+            samples[j] = std::clamp(sample, -1.0f, 1.0f);
+    }
 }
 #else
 void ConvertPcm16ToFloatScalar(const uint8_t* raw, std::vector<float>& samples, size_t numSamples)
@@ -146,6 +151,11 @@ void ConvertPcm32ToFloatNeon(const uint8_t* raw, float* samples, size_t numSampl
         floatVec = vmulq_f32(floatVec, scaleVec);
         floatVec = vminq_f32(vmaxq_f32(floatVec, minusOneVec), oneVec);
         vst1q_f32(samples + i, floatVec);
+    }
+    // Process remaining samples
+    for (size_t j = i; j < numSamples; j++) {
+            float sample = static_cast<float>(pcmData[j]) * scale;
+            samples[j] = std::clamp(sample, -1.0f, 1.0f);
     }
 }
 #else
