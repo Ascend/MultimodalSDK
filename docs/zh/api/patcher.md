@@ -16,7 +16,7 @@
 
 本文档仅提供通过社区获取镜像的使用方式，对于其他使用方式，您需要自行找到以下所提到的文件并执行操作。
 
-您需要在vllm包的utils.py文件中添加如下内容，该文件路径在镜像中的位置为“/vllm-workspace/vllm/vllm/multimodal/utils.py“。
+您需要在vllm包的utils.py文件中添加如下内容，该文件路径在镜像中的位置为“/vllm-workspace/vllm/vllm/multimodal/utils.py”。
 
 ```
 import mm.patcher.vllm.video_patcher
@@ -39,7 +39,7 @@ load_file: Multimodal SDK Video Patcher Enabled!
 
 以下是一个示例请求体，无法直接复制使用，对于其他vllm的参数请参见[vllm的官方文档](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api)。
 
-请求体应发送至vllm服务化的OpenAI接口中，本文使用“/v1/chat/completion“。
+请求体应发送至vllm服务化的OpenAI接口中，本文使用“/v1/chat/completion”。
 
 ```
 {
@@ -85,7 +85,7 @@ load_file: Multimodal SDK Video Patcher Enabled!
 
 本文档仅提供通过社区获取镜像的使用方式，对于其他使用方式，您需要自行找到以下所提到的文件并执行操作。
 
-您需要在vllm包的processor.py文件中添加如下内容，该文件路径在镜像中的位置为“/vllm-workspace/vllm/vllm/transformers\_utils/processor.py“。
+您需要在vllm包的processor.py文件中添加如下内容，该文件路径在镜像中的位置为“/vllm-workspace/vllm/vllm/transformers\_utils/processor.py”。
 
 ```
 import mm.patcher.vllm.qwen2_vl_image_processor_patcher
@@ -111,7 +111,7 @@ get_image_processor_class_from_name: Multimodal SDK Qwen2 VL Image Patcher Enabl
 
 以下是一个视频示例请求体，无法直接复制使用，对于其他vllm的参数请参见[vllm的官方文档](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api)。
 
-请求体应发送至vllm服务化的OpenAI接口中，本文使用“/v1/chat/completions“。
+请求体应发送至vllm服务化的OpenAI接口中，本文使用“/v1/chat/completions”。
 
 ```
 {
@@ -186,7 +186,7 @@ get_image_processor_class_from_name: Multimodal SDK Qwen2 VL Image Patcher Enabl
 
 本文档仅提供通过社区获取镜像的使用方式，对于其他使用方式，您需要自行找到以下所提到的文件并执行操作。
 
-您需要在vllm包的utils.py文件中添加如下内容，该文件路径在镜像中的位置为“/vllm-workspace/vllm/vllm/multimodal/utils.py“。
+您需要在vllm包的utils.py文件中添加如下内容，该文件路径在镜像中的位置为“/vllm-workspace/vllm/vllm/multimodal/utils.py”。
 
 ```
 import mm.patcher.vllm.image_patcher
@@ -209,7 +209,7 @@ load_file: Multimodal SDK Image Patcher Enabled!
 
 以下是一个示例请求体，无法直接复制使用，对于其他vllm的参数请参见[vllm的官方文档](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api)。
 
-请求体应发送至vllm服务化的OpenAI接口中，本文使用“/v1/chat/completion“。
+请求体应发送至vllm服务化的OpenAI接口中，本文使用“/v1/chat/completion”。
 
 ```
 {
@@ -245,7 +245,7 @@ load_file: Multimodal SDK Image Patcher Enabled!
 
 本文档仅提供通过社区获取镜像的使用方式，对于其他使用方式，您需要自行找到以下所提到的文件并执行操作。
 
-您需要在vllm-ascend包的文件中添加如下内容，该文件路径在镜像中的位置为“/vllm-workspace/vllm-ascend/vllm\_ascend/patch/worker/patch\_common/\_\_init\_\_.py“。
+您需要在vllm-ascend包的文件中添加如下内容，该文件路径在镜像中的位置为“/vllm-workspace/vllm-ascend/vllm\_ascend/patch/worker/patch\_common/\_\_init\_\_.py”。
 
 ```
 import mm.patcher.vllm.internvl2_image_processor_patcher

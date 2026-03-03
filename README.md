@@ -1,4 +1,5 @@
 # MultimodalSDK
+-   [最新消息](#最新消息)
 -   [简介](#简介)
 -   [目录结构](#目录结构)
 -   [版本说明](#版本说明)
@@ -12,6 +13,9 @@
 -   [免责声明](#免责声明)
 -   [License](#License)
 -   [建议与交流](#建议与交流)
+
+# 最新消息
+- [2025.12.30]: 🚀 Multimodal SDK 开源发布
 
 # 简介
 
@@ -92,102 +96,11 @@ Multimodal的版本说明包含Multimodal的软件版本配套关系和软件包
 | Ascend HDK | 25.5.0 |
 | CANN | 8.5.0 |
 
-更多详情请查看[简介](docs/zh/introduction.md)
+更多详情请查看[版本说明](docs/zh/release_notes.md)。
 
 # 环境部署
 
-介绍Multimodal的安装方式。更多详情请查看[安装指南](docs/zh/installation_guide.md)
-
-## 安装依赖
-
-### 安装Ubuntu系统依赖
-| 依赖名称 | 版本建议 | 获取建议 |
-| :--- | :--- | :--- |
-| Python | 3.9及以上 | 建议通过获取源码包编译安装。 |
-| CMake | 3.14及以上 | 建议通过包管理模块安装。 |
-| Make | 4.1及以上 | 建议通过包管理模块安装。 |
-| GCC | 9.4及以上 | 建议通过包管理模块安装。 |
-
-### 安装NPU驱动固件和CANN
-
-安装前，请参考[CANN 软件安装指南](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/83RC1/softwareinst/instg/instg_0000.html?Mode=PmIns&InstallType=local&OS=Ubuntu&Software=cannToolKit)安装CANN开发套件包、昇腾NPU驱动和昇腾NPU固件。
-CANN软件提供进程级环境变量设置脚本，供用户在进程中引用，以自动完成环境变量设置。用户进程结束后自动失效。可在程序启动的Shell脚本中使用如下命令设置CANN的相关环境变量，也可通过命令行执行如下命令（以root用户默认安装路径“/usr/local/Ascend”为例）：
-
-```shell
-source /usr/local/Ascend/ascend-toolkit/set_env.sh
-```
-
-### 安装Python软件包依赖
-
-```shell
-pip install transformer==4.51.3
-pip install pillow==11.2.1
-pip install numpy==1.26.4
-pip install torch==2.5.1
-```
-
-## 安装Multimodal SDK
-
-Multimodal SDK安装包[获取链接](https://gitcode.com/Ascend/MultimodalSDK/releases/7.2.RC1)
-
-安装Multimodal SDK过程如下：
-1. 以软件包的安装用户登录安装环境。
-2. 将Multimodal SDK软件包上传到安装环境的任意路径下并进入软件包所在路径。
-3. 增加对软件包的可执行权限。
-    ```shell
-    chmod u+x Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run
-    ```
-4. 执行如下命令，校验软件包的一致性和完整性。
-    ```shell
-    ./Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run --check
-    ```
-    如果系统没有shasum或者sha256sum工具则会校验失败，此时需要自行安装shasum或者sha256sum工具。 
-    若显示如下信息，说明软件包已通过校验。
-    ```shell
-    Verifying archive integrity...  100%   SHA256 checksums are OK. All good.    
-    ```
-5. 创建Multimodal SDK软件包的安装路径。不建议在“/tmp”路径下安装。
-
-    若用户未指定安装路径，软件会默认安装到Multimodal SDK软件包所在的路径。
-    若用户想指定安装路径，需要先创建安装路径。以安装路径“/home/work/Mind_SDK”为例：
-    ```shell
-    mkdir -p /home/work/Mind_SDK
-    ```
-6. 进入Multimodal SDK软件包所在路径，参考以下命令安装Multimodal SDK。
-
-    - 若用户指定了安装路径，将安装在指定的路径下。以安装路径“/home/work/Mind_SDK”为例：
-    ```shell
-    ./Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run --install --install-path=/home/work/Mind_SDK
-    ```
-   - 若用户未指定安装路径，将安装在当前路径下。
-    ```shell
-    ./Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run --install
-    ```
-7. 安装完成后，若显示如下信息，表示软件安装成功。
-    ```shell
-    Successfully installed Multimodal SDK
-    ```
-8. 进入Multimodal SDK安装路径下的“script”目录，执行以下命令使Multimodal SDK的环境变量生效。
-    ```shell
-    source set_env.sh
-    ```
---install安装命令可选参数表
-
-| 输入参数 | 含义                                                                                                                                                                                                                                                  |
-| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `--help` \| `-h` | 查询帮助信息。                                                                                                                                                                                                                                             |
-| `--info` | 查询包构建信息。                                                                                                                                                                                                                                            |
-| `--list` | 查询文件列表。                                                                                                                                                                                                                                             |
-| `--check` | 查询包完整性。                                                                                                                                                                                                                                             |
-| `--quiet` \| `-q` | 启用静默模式。<br>需要和 `--install` 或 `--upgrade` 参数配合使用。                                                                                                                                                                |
-| `--nox11` | 不生成一个xterm终端                                                                                                                                                                                                                                        |
-| `--noexec` | 不运行嵌入的脚本                                                                                                                                                                                                                                            |
-| `--extract=<path>` | 直接提取到目标目录（绝对路径或相对路径）<br>通常与 `--noexec` 选项一起使用，仅用于提取文件而不运行它们                                                                                                                                                                                         |
-| `--tar arg1 [arg2 ...]` | 通过 tar 命令访问归档文件的内容                                                                                                                                                                                                                                  |
-| `--install` | Multimodal SDK软件包安装操作命令。<br>• 当前路径和安装路径不能存在非法字符，仅支持大小写字母、数字、`-`、`_`、`.`、`/`特殊字符。<br>• 安装路径下不能存在名为multimodal的文件或文件夹。<br>• 若存在名为multimodal的软链接，则会被覆盖。                                                                                                 |
-| `--install-path=<path>` | （可选）自定义软件包安装根目录。如未设置，默认为当前命令执行所在目录。<br>• 建议用户使用绝对路径安装Multimodal SDK，指定安装路径时请避免使用相对路径。<br>• 需要和 `--install` 或 `--upgrade` 参数配合使用。<br>• 与 `--upgrade` 参数配合使用时，`--install-path` 代表旧软件包的安装目录，并在该目录下执行升级。<br>• 传入的路径参数不能存在非法字符，仅支持大小写字母、数字、`-`、`_`/特殊字符。 |
-| `--upgrade` | Multimodal SDK软件包升级操作命令。升级需要确保已经安装过目录完整的Multimodal SDK。                                                                                                                                                                                             |
-| `--version` | 查询软件包Multimodal SDK版本。                                                                                                                                                                                                                              |
+介绍Multimodal的安装方式。更多详情请查看[安装指南](docs/zh/installation_guide.md)。
 
 # 编译流程
 本节以CANN 8.3.RC2相关配套为例，介绍如何通过源码编译生成 Multimodal SDK，其中NPU驱动、固件和CANN软件包可以通过昇腾社区下载。
@@ -247,7 +160,7 @@ Multimodal SDK安装包[获取链接](https://gitcode.com/Ascend/MultimodalSDK/r
    ```
 
 # 快速入门
-Multimodal SDK提供了一系列CPU高性能和易用性的接口，更多详情请查看[快速入门](docs/zh/quick_start.md)与[样例与指导](docs/zh/user_guide.md)
+Multimodal SDK提供了一系列CPU高性能和易用性的接口，更多详情请查看[快速入门](docs/zh/quick_start.md)与[样例与指导](docs/zh/user_guide.md)。
 
 # 功能介绍&特性介绍
 多模态大模型推理流程中需要处理大量复杂的数据。Multimodal SDK通过提供一系列高性能的昇腾设备亲和性接口，加速大模型推理预处理流程。
@@ -256,7 +169,7 @@ Multimodal SDK提供了一系列CPU高性能和易用性的接口，更多详情
 
 # API参考
 
-API参考详见
+API参考详见：
 
 [Python接口说明](docs/zh/api/README.md)
 
@@ -296,18 +209,19 @@ from backports.lzma import _encode_filter_properties, _decode_filter_properties
 - 通信矩阵：目前Multimodal SDK开发套件包不会主动打开或者依赖任意端口，因此不涉及通信矩阵。
 - 公网地址：Multimodal SDK的安装包中的网址安装结束后会被清除，并不会访问，不会造成风险.
 
-更多详情请查看[安全声明](docs/zh/security_hardening.md)与[附录](docs/zh/appendix.md)
-
+更多详情请查看[安全声明](docs/zh/security_hardening.md)与[附录](docs/zh/appendix.md)。
 
 # 免责声明
 
 - 本仓库代码中包含多个开发分支，这些分支可能包含未完成、实验性或未测试的功能。在正式发布前，这些分支不应被应用于任何生产环境或者依赖关键业务的项目中。请务必使用我们的正式发行版本，以确保代码的稳定性和安全性。
   使用开发分支所导致的任何问题、损失或数据损坏，本项目及其贡献者概不负责。
-- 正式版本请参考release版本 <https://gitcode.com/ascend/MultimodalSDK/releases>
+- 正式版本请参考release版本 <https://gitcode.com/ascend/MultimodalSDK/releases>。
 
 # License
 
 MultimodalSDK以Apache 2.0许可证许可，对应许可证文本可查阅[LICENSE](LICENSE.md)。
+
+MultimodalSDK docs目录下的文档适用CC-BY 4.0许可证，具体请参见[LICENSE](./docs/LICENSE)文件。
 
 # 贡献声明
 
@@ -316,12 +230,12 @@ MultimodalSDK以Apache 2.0许可证许可，对应许可证文本可查阅[LICEN
 3. 解决现有问题：通过查看仓库的Issues列表可以发现需要处理的问题信息, 可以尝试解决其中的某个问题。
 4. 如何提出新功能：请使用Issues的Feature标签进行标记，我们会定期处理和确认开发。
 5. 开始贡献：
-   - Fork本项目的仓库
-   - Clone到本地
-   - 创建开发分支
+   - Fork本项目的仓库。
+   - Clone到本地。
+   - 创建开发分支。
    - 本地自测，提交前请通过所有的单元测试，包括为您要解决的问题新增的单元测试。
-   - 提交代码
-   - 新建Pull Request
+   - 提交代码。
+   - 新建Pull Request。
    - 代码检视，您需要根据评审意见修改代码，并重新提交更新。此流程可能涉及多轮迭代。
    - 当您的PR获得足够数量的检视者批准后，Committer会进行最终审核。
    - 审核和测试通过后，CI会将您的PR合并入到项目的主干分支。

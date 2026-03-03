@@ -2,7 +2,7 @@
 
 ## 获取安装包<a name="ZH-CN_TOPIC_0000002456876697"></a>
 
-请参考本章获取所需软件包和对应的数字签名文件，下载本软件即表示您同意[华为企业业务最终用户许可协议（EULA）](https://e.huawei.com/cn/about/eula)的条款和条件。
+请参考本章获取所需软件包和对应的数字签名文件。
 
 **表 1**  软件包
 
@@ -63,8 +63,6 @@ Python 3.10.12
 ### 安装NPU驱动固件和CANN<a name="ZH-CN_TOPIC_0000002456910773"></a>
 
 **下载依赖软件包<a name="section119752030133014"></a>**
-
-下载本软件即表示您同意[华为企业业务最终用户许可协议（EULA）](https://e.huawei.com/cn/about/eula)的条款和条件。
 
 **表 1**  软件包清单
 
@@ -143,7 +141,7 @@ Python 3.10.12
     -   安装和运行Multimodal SDK的用户需为同一用户。
     -   安装CANN（Toolkit），NPU驱动固件和安装Multimodal SDK的用户需为同一用户，建议为普通用户。
 
--   软件包的安装、升级、卸载及版本查询相关的日志会保存至“\~/log/mindxsdk/deployment.log“文件；完整性校验、提取文件、tar命令访问相关的日志会保存至“\~/log/makeself/makeself.log“文件。用户可查看相应文件，完成后续的日志跟踪及审计。
+-   软件包的安装、升级、卸载及版本查询相关的日志会保存至“\~/log/mindxsdk/deployment.log”文件；完整性校验、提取文件、tar命令访问相关的日志会保存至“\~/log/makeself/makeself.log”文件。用户可查看相应文件，完成后续的日志跟踪及审计。
 
 **安装准备<a name="section15633111461011"></a>**
 
@@ -178,17 +176,17 @@ Python 3.10.12
     Verifying archive integrity...  100%   SHA256 checksums are OK. All good.    
     ```
 
-5.  创建Multimodal SDK软件包的安装路径。不建议在“/tmp“路径下安装。
+5.  创建Multimodal SDK软件包的安装路径。不建议在“/tmp”路径下安装。
     -   若用户未指定安装路径，软件会默认安装到Multimodal SDK软件包所在的路径。
-    -   若用户想指定安装路径，需要先创建安装路径。以安装路径“/home/work/Mind\_SDK“为例：
+    -   若用户想指定安装路径，需要先创建安装路径。以安装路径“/home/work/Mind\_SDK”为例：
 
         ```
         mkdir -p /home/work/Mind_SDK
         ```
 
-6.  进入Multimodal SDK软件包所在路径，参考以下命令安装Multimodal SDK（安装路径的相关约束请参见[表1](#table1361972315353)）。安装Multimodal SDK时会弹出确认是否接受EULA协议的提示，若需要在安装时直接跳过该步骤，可在安装命令前增加**echo y |**，表示同意[华为企业业务最终用户许可协议（EULA）](https://e.huawei.com/cn/about/eula)**。**
+6.  进入Multimodal SDK软件包所在路径，参考以下命令安装Multimodal SDK（安装路径的相关约束请参见[表1](#table1361972315353)）。
 
-    -   若用户指定了安装路径，将安装在指定的路径下。以安装路径“/home/work/Mind\_SDK“为例：
+    -   若用户指定了安装路径，将安装在指定的路径下。以安装路径“/home/work/Mind\_SDK”为例：
 
         ```
         ./Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run --install --install-path=/home/work/Mind_SDK
@@ -215,15 +213,7 @@ Python 3.10.12
     >[!NOTE] 说明 
     >--install安装命令同时支持输入可选参数，如[表1](#table1361972315353)所示。
 
-7.  安装过程中提示“Do you accept the EULA to install Multimodal SDK?”时，输入Y或y，表示同意EULA协议，继续进行安装；输入其他字符时停止安装，退出程序。
-
-    安装完成后，若显示如下信息，表示软件安装成功。
-
-    ```
-    Successfully installed Multimodal SDK
-    ```
-
-8.  进入Multimodal SDK安装路径下的“script“目录，执行以下命令使Multimodal SDK的环境变量生效。
+7.  进入Multimodal SDK安装路径下的“script”目录，执行以下命令使Multimodal SDK的环境变量生效。
 
     ```
     source set_env.sh
@@ -262,7 +252,7 @@ Python 3.10.12
 </tr>
 <tr id="zh-cn_topic_0000001506619361_row13711316142116"><td class="cellrowborder" valign="top" width="26.06%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001506619361_p971181614210"><a name="zh-cn_topic_0000001506619361_p971181614210"></a><a name="zh-cn_topic_0000001506619361_p971181614210"></a>--quiet | -q</p>
 </td>
-<td class="cellrowborder" valign="top" width="73.94%" headers="mcps1.2.3.1.2 "><p id="p9289230777"><a name="p9289230777"></a><a name="p9289230777"></a>启用静默模式，并默认同意<a href="https://e.huawei.com/cn/about/eula" target="_blank" rel="noopener noreferrer">华为企业业务最终用户许可协议（EULA）</a>。</p>
+<td class="cellrowborder" valign="top" width="73.94%" headers="mcps1.2.3.1.2 "><p id="p9289230777"><a name="p9289230777"></a><a name="p9289230777"></a>启用静默模式。</p>
 <p id="zh-cn_topic_0000001506619361_p271101632111"><a name="zh-cn_topic_0000001506619361_p271101632111"></a><a name="zh-cn_topic_0000001506619361_p271101632111"></a>需要和<span class="parmname" id="parmname7774144681516"><a name="parmname7774144681516"></a><a name="parmname7774144681516"></a>“--install”</span>或<span class="parmname" id="parmname16806125014150"><a name="parmname16806125014150"></a><a name="parmname16806125014150"></a>“--upgrade”</span>参数配合使用。</p>
 </td>
 </tr>

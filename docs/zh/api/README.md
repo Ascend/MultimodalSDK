@@ -2,7 +2,7 @@
 
 >[!NOTE] 说明 
 >-   对于资料中注明的类、接口为公开的，可供用户调用。对于其他类，接口均为内部使用，不建议直接调用。如有特殊需要可以通过源码查看。
->-   引入多模态SDK时会显式设置环境变量“HF\_DATASETS\_OFFLINE“和“HF\_HUB\_OFFLINE“为1，即显式启用huggingface的离线模式，不会联网获取数据。
+>-   引入多模态SDK时会显式设置环境变量“HF\_DATASETS\_OFFLINE”和“HF\_HUB\_OFFLINE”为1，即显式启用huggingface的离线模式，不会联网获取数据。
 
 **源码查看方式<a name="section12411139493"></a>**
 
@@ -14,6 +14,31 @@ print(mm.__file__)
 ```
 
 打印的内容即为源码文件所在的地址。
+
+### 目录
+
+-   [数据类型](#数据类型)
+    -   [DataType](#datatype)
+    -   [TensorFormat](#tensorformat)
+    -   [ImageFormat](#imageformat)
+    -   [LogLevel](#loglevel)
+    -   [DeviceMode](#devicemode)
+    -   [Interpolation](#interpolation)
+-   [功能函数参考](./function_reference.md)
+    -   [mm.Tensor](./function_reference.md#mmtensor)
+    -   [mm.Image](./function_reference.md#mmimage)
+    -   [日志注册](./function_reference.md#日志注册)
+    -   [mm.video_decode](./function_reference.md#mmvideo_decode)
+    -   [mm.normalize](./function_reference.md#mmnormalize)
+-   [Adapter](./adapter.md)
+    -   [MultimodalQwen2VLImageProcessor](./adapter.md#multimodalqwen2vlimageprocessor)
+    -   [InternVL2PreProcessor](./adapter.md#internvl2preprocessor)
+-   [patcher](./patcher.md)
+    -   [video_patcher](./patcher.md#video_patcher)
+    -   [qwen2_vl_image_processor_patcher](./patcher.md#qwen2_vl_image_processor_patcher)
+    -   [image_patcher](./patcher.md#image_patcher)
+    -   [internvl2_image_processor_patcher](./patcher.md#internvl2_image_processor_patcher)
+
 
 ## 数据类型<a name="ZH-CN_TOPIC_0000002423192124"></a>
 
