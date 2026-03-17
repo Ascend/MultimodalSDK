@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -e
 
 echo "======================================"
 echo "[INFO] Pre-smoke test start"
@@ -14,40 +14,53 @@ if [ ! -d "$PRESMOKE_DIR" ]; then
 fi
 
 # ------------------------------------------------------------------------------
-# collecting cases
+# Execute install.sh
 # ------------------------------------------------------------------------------
-mapfile -t CASES < <(
-    find "$PRESMOKE_DIR" -maxdepth 1 -type f -name "*.sh" | sort
-)
+INSTALL_SCRIPT="$PRESMOKE_DIR/install.sh"
 
-if [ "${#CASES[@]}" -eq 0 ]; then
-    echo "[ERROR] No presmoke cases found in $PRESMOKE_DIR"
+if [ ! -f "$INSTALL_SCRIPT" ]; then
+    echo "[ERROR] Install script not found: $INSTALL_SCRIPT"
     exit 1
 fi
 
-echo "[INFO] Found ${#CASES[@]} presmoke case(s):"
-for c in "${CASES[@]}"; do
-    echo "  - $(basename "$c")"
-done
+echo "[INFO] Running install script: $(basename "$INSTALL_SCRIPT")"
+echo "--------------------------------------"
+
+chmod u+x "$INSTALL_SCRIPT"
+bash "$INSTALL_SCRIPT"
+
+echo "[INFO] Install script completed successfully"
 
 # ------------------------------------------------------------------------------
 # performing tests
 # ------------------------------------------------------------------------------
-for case in "${CASES[@]}"; do
-    case_name="$(basename "$case")"
+echo "--------------------------------------"
+echo "[INFO] Running mm_acc test cases with pytest"
+echo "--------------------------------------"
 
-    echo
-    echo "--------------------------------------"
-    echo "[INFO] Running presmoke case: $case_name"
-    echo "--------------------------------------"
+INSTALL_PATH="${SCRIPT_DIR}/presmoke_install"
 
-    chmod u+x "$case"
-    bash "$case"
+source /usr/local/Ascend/ascend-toolkit/set_env.sh
+export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver:$LD_LIBRARY_PATH
+source "${INSTALL_PATH}/multimodal-26.0.0/script/set_env.sh"
+export PYTHONPATH="${PYTHONPATH}:$PRESMOKE_DIR"
 
-    echo "[INFO] Case passed: $case_name"
-done
+pip3 install pillow==12.0.0
+pip3 install torchvision==0.24.1
+pip3 install librosa
+
+# Run pytest on all test cases in mm_acc directory
+python3 -m pytest "$PRESMOKE_DIR/mm_acc/" -v
+
+if [ $? -eq 0 ]; then
+    echo "[INFO] All mm_acc test cases passed"
+else
+    echo "[ERROR] Some mm_acc test cases failed"
+    exit 1
+fi
 
 echo
+
 echo "======================================"
 echo "[SUCCESS] All presmoke cases PASSED"
 echo "======================================"
