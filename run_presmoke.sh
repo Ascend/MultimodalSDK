@@ -42,7 +42,7 @@ INSTALL_PATH="${SCRIPT_DIR}/presmoke_install"
 
 source /usr/local/Ascend/ascend-toolkit/set_env.sh
 export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver:$LD_LIBRARY_PATH
-source "${INSTALL_PATH}/multimodal-26.0.0/script/set_env.sh"
+source "${INSTALL_PATH}/multimodal/script/set_env.sh"
 export PYTHONPATH="${PYTHONPATH}:$PRESMOKE_DIR"
 
 pip3 install pillow==12.0.0
