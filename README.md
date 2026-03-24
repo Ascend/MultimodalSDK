@@ -103,7 +103,7 @@ Multimodal的版本说明包含Multimodal的软件版本配套关系和软件包
 介绍Multimodal的安装方式。更多详情请查看[安装指南](docs/zh/installation_guide.md)。
 
 # 编译流程
-本节以CANN 8.3.RC2相关配套为例，介绍如何通过源码编译生成 Multimodal SDK，其中NPU驱动、固件和CANN软件包可以通过昇腾社区下载。
+本节以CANN 8.5.0相关配套为例，介绍如何通过源码编译生成 Multimodal SDK，其中NPU驱动、固件和CANN软件包可以通过昇腾社区下载。
 
 1. 编译依赖下载
 
@@ -122,7 +122,7 @@ Multimodal的版本说明包含Multimodal的软件版本配套关系和软件包
    ```bash
    # AccSDK依赖
    cd MultimodalSDK/AccSDK
-   weget https://mindcluster.obs.cn-north-4.myhuaweicloud.com/opensource.tar.gz
+   wget https://mindcluster.obs.cn-north-4.myhuaweicloud.com/opensource.tar.gz
    # acc_data依赖
    cd MultimodalSDK/AccSDK/acc_data/3rdparty/pybind
    git clone -b v2.13.6 https://gitcode.com/GitHub_Trending/py/pybind11.git
