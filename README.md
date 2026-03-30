@@ -1,20 +1,22 @@
 # MultimodalSDK
--   [最新消息](#最新消息)
--   [简介](#简介)
--   [目录结构](#目录结构)
--   [版本说明](#版本说明)
--   [环境部署](#环境部署)
--   [编译流程](#编译流程)
--   [快速入门](#快速入门)
--   [功能介绍&特性介绍](#功能介绍&特性介绍)
--   [API参考](#API参考)
--   [FAQ](#FAQ)
--   [安全声明](#安全声明)
--   [免责声明](#免责声明)
--   [License](#License)
--   [建议与交流](#建议与交流)
+
+- [最新消息](#最新消息)
+- [简介](#简介)
+- [目录结构](#目录结构)
+- [版本说明](#版本说明)
+- [环境部署](#环境部署)
+- [编译流程](#编译流程)
+- [快速入门](#快速入门)
+- [功能介绍&特性介绍](#功能介绍特性介绍)
+- [API参考](#api参考)
+- [FAQ](#faq)
+- [安全声明](#安全声明)
+- [免责声明](#免责声明)
+- [License](#license)
+- [建议与交流](#建议与交流)
 
 # 最新消息
+
 - [2025.12.30]: 🚀 Multimodal SDK 开源发布
 
 # 简介
@@ -89,6 +91,7 @@
 ```
 
 # 版本说明
+
 Multimodal的版本说明包含Multimodal的软件版本配套关系和软件包下载以及每个版本的特性变更说明，参考下表：
 
 | 产品名称 | 版本 |
@@ -103,6 +106,7 @@ Multimodal的版本说明包含Multimodal的软件版本配套关系和软件包
 介绍Multimodal的安装方式。更多详情请查看[安装指南](docs/zh/installation_guide.md)。
 
 # 编译流程
+
 本节以CANN 8.5.0相关配套为例，介绍如何通过源码编译生成 Multimodal SDK，其中NPU驱动、固件和CANN软件包可以通过昇腾社区下载。
 
 1. 编译依赖下载
@@ -119,6 +123,7 @@ Multimodal的版本说明包含Multimodal的软件版本配套关系和软件包
    ```
 
    项目需要一些开源组件，需要下载以下源码：
+
    ```bash
    # AccSDK依赖
    cd MultimodalSDK/AccSDK
@@ -133,16 +138,18 @@ Multimodal的版本说明包含Multimodal的软件版本配套关系和软件包
 2. 执行编译
 
    执行以下命令编译：
+
     ```bash
     source /path/to/Ascend/ascend-toolkit/set_env.sh
     bash MultimodalSDK/build_script/build_merge.sh
-	```
+    ```
 
 3. 生成的 run 包在 ```MultimodalSDK/output``` 下：```Ascend-mindxsdk-multimodal_${SDK_VERSION}_linux-aarch64.run```
 
 4. 执行测试用例
 
    首先安装lcov2.0用于统计测试覆盖率和生成可视化报告：
+
    ```bash
    apt update
    apt install -y libcapture-tiny-perl libdatetime-perl libtimedate-perl
@@ -152,14 +159,17 @@ Multimodal的版本说明包含Multimodal的软件版本配套关系和软件包
    ```
 
    然后执行以下命令运行测试用例：
+
    ```bash
    bash MultimodalSDK/build_script/build_merge.sh test
    ```
 
 # 快速入门
+
 Multimodal SDK提供了一系列CPU高性能和易用性的接口，更多详情请查看[快速入门](docs/zh/quick_start.md)与[样例与指导](docs/zh/user_guide.md)。
 
 # 功能介绍&特性介绍
+
 多模态大模型推理流程中需要处理大量复杂的数据。Multimodal SDK通过提供一系列高性能的昇腾设备亲和性接口，加速大模型推理预处理流程。
 包括图像视频加载和解码，resize、crop等预处理常用操作。
 支持多种开源数据结构与加速库数据结构的相互转换，方便快速使用和移植。
@@ -178,23 +188,33 @@ API参考详见：
 
 # FAQ
 
-### 问题现象
+## 问题现象
+
 即使已安装lzma模块，调用torchvision时，依然提示缺少lzma模块
-### 解决方案
+
+## 解决方案
+
 安装lzma模块
+
 ```shell
 pip install backports.lzma
 ```
+
 进入python的库目录，以使用的python3.11.4为例
+
 ```shell
 cd /xx/xx/python-3.11.4/lib/python3.11
 ```
+
 修改lzma.py，将下面的内容
+
 ```shell
 from _lzma import *
 from _lzma import _encode_filter_properties, _decode_filter_properties
 ```
+
 修改为
+
 ```shell
 from backports.lzma import *
 from backports.lzma import _encode_filter_properties, _decode_filter_properties
@@ -202,7 +222,7 @@ from backports.lzma import _encode_filter_properties, _decode_filter_properties
 
 # 安全声明
 
-- 使用API读取文件时，用户需要保证该文件的owner必须为自己，且权限不高于640，避免发生提权等安全问题。 外部下载的软件代码或程序可能存在风险，功能的安全性需由用户保证。
+- 使用API读取文件时，用户需要保证该文件的owner必须为自己，且权限不高于640，避免发生提权等安全问题。外部下载的软件代码或程序可能存在风险，功能的安全性需由用户保证。
 - 通信矩阵：目前Multimodal SDK开发套件包不会主动打开或者依赖任意端口，因此不涉及通信矩阵。
 - 公网地址：Multimodal SDK的安装包中的网址安装结束后会被清除，并不会访问，不会造成风险.
 

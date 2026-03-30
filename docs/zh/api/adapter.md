@@ -16,7 +16,7 @@
 
 **函数原型<a name="section189169235416"></a>**
 
-```
+```python
 def __init__(
         self,
         do_resize: bool = True,
@@ -57,24 +57,24 @@ def __init__(
 |merge_size|int|patch合并时的大小，默认为2。|可选|√|
 |kwargs|dict|其他扩展参数。|可选|×|
 
-
 >[!CAUTION] 注意 
 >初始化本预处理模块时，以下参数均可以传入值，但在此版本中具有以下限制：
->-  **固定启用参数**（不可配置）：
->    -   do\_resize：该参数始终启用，不支持关闭。
->    -   do\_rescale：该参数始终启用，不支持关闭。
->    -   do\_normalize：该参数始终启用，不支持关闭。
->-  **不支持的参数**：
->    -   do\_convert\_rgb：不支持该参数，仅允许输入RGB图像。
->    -   data\_format：不支持该参数，输出数据格式固定为通道优先\(C,H,W\)。
->    -   resample：不支持该参数，插值方式固定为双三次插值\(BICUBIC\)。
->    -   rescale\_factor：不支持该参数，缩放因子固定为1/255。
->    -   input\_data\_format：不支持该参数，仅支持RGB格式，通道顺序为HWC。
->    -   kwargs: 其他扩展参数。
+>
+>- **固定启用参数**（不可配置）：
+>    - do\_resize：该参数始终启用，不支持关闭。
+>    - do\_rescale：该参数始终启用，不支持关闭。
+>    - do\_normalize：该参数始终启用，不支持关闭。
+>- **不支持的参数**：
+>    - do\_convert\_rgb：不支持该参数，仅允许输入RGB图像。
+>    - data\_format：不支持该参数，输出数据格式固定为通道优先\(C,H,W\)。
+>    - resample：不支持该参数，插值方式固定为双三次插值\(BICUBIC\)。
+>    - rescale\_factor：不支持该参数，缩放因子固定为1/255。
+>    - input\_data\_format：不支持该参数，仅支持RGB格式，通道顺序为HWC。
+>    - kwargs: 其他扩展参数。
 
 **示例<a name="section1587174015349"></a>**
 
-```
+```python
 from mm import MultimodalQwen2VLImageProcessor
 processor = MultimodalQwen2VLImageProcessor(
 min_pixels=3136,
@@ -87,7 +87,6 @@ image_std=[0.26862954, 0.26130258, 0.27577711]
 )
 ```
 
-
 ### preprocess<a name="ZH-CN_TOPIC_0000002466501301"></a>
 
 **功能描述<a name="section184861730122811"></a>**
@@ -96,7 +95,7 @@ image_std=[0.26862954, 0.26130258, 0.27577711]
 
 **函数原型<a name="section719310341377"></a>**
 
-```
+```python
 def preprocess(self,
                images: ImageInput,
                videos: VideoInput = None,
@@ -143,30 +142,30 @@ def preprocess(self,
 |data_format|Optional[str]|输出数据格式固定为通道优先 (C,H,W)。|可选|×|
 |input_data_format|Optional[str]|输入数据格式固定为RGB且为HWC排布。|可选|×|
 
-
 >[!CAUTION] 注意 
 >使用本函数时，无论是否在初始化中初始化过以下参数，其均具有以下约束：
->-  **固定启用参数**（不可配置）：
->    -   do\_resize：该参数始终启用，不支持关闭。
->    -   do\_rescale：该参数始终启用，不支持关闭。
->    -   do\_normalize：该参数始终启用，不支持关闭。
->-  **不支持的参数**：
->    -   do\_convert\_rgb：不支持该参数，仅允许输入RGB图像。
->    -   data\_format：不支持该参数，输出数据格式固定为通道优先 \(C,H,W\)。
->    -   resample：不支持该参数，插值方式固定为双三次插值 \(BICUBIC\)。
->    -   rescale\_factor：不支持该参数，缩放因子固定为1/255。
->    -   input\_data\_format：不支持该参数，仅支持RGB格式，通道顺序为HWC。
->-  **使用时还需满足的额外约束如下**：
->    -   输入图像或视频帧为U8类型RGB图像，数据排布限制为HWC，大小限制为10\*10-4096\*4096。
->    -   输入min\_pixels范围为\[10\*10, max\_pixels\)。
->    -   输入max\_pixels范围为\(min\_pixels, 4096\*4096\]。
->    -   输入Image的宽和高均大于patch\_size \* merge\_size。
->    -   对于传入的每一张图像，或者每一个视频帧，若其宽高分别为w, h，则需满足min\_pixels < max\_pixels, max\_pixels \>= w/h\*\(patch\_size \* merge\_size\)^2，patch\_size \* merge\_size <= h，w。
->    -   对于传入的视频，每一个视频帧的宽、高及数据排布格式需一致。
+>
+>- **固定启用参数**（不可配置）：
+>    - do\_resize：该参数始终启用，不支持关闭。
+>    - do\_rescale：该参数始终启用，不支持关闭。
+>    - do\_normalize：该参数始终启用，不支持关闭。
+>- **不支持的参数**：
+>    - do\_convert\_rgb：不支持该参数，仅允许输入RGB图像。
+>    - data\_format：不支持该参数，输出数据格式固定为通道优先 \(C,H,W\)。
+>    - resample：不支持该参数，插值方式固定为双三次插值 \(BICUBIC\)。
+>    - rescale\_factor：不支持该参数，缩放因子固定为1/255。
+>    - input\_data\_format：不支持该参数，仅支持RGB格式，通道顺序为HWC。
+>- **使用时还需满足的额外约束如下**：
+>    - 输入图像或视频帧为U8类型RGB图像，数据排布限制为HWC，大小限制为10\*10-4096\*4096。
+>    - 输入min\_pixels范围为\[10\*10, max\_pixels\)。
+>    - 输入max\_pixels范围为\(min\_pixels, 4096\*4096\]。
+>    - 输入Image的宽和高均大于patch\_size \* merge\_size。
+>    - 对于传入的每一张图像，或者每一个视频帧，若其宽高分别为w, h，则需满足min\_pixels < max\_pixels, max\_pixels \>= w/h\*\(patch\_size \* merge\_size\)^2，patch\_size \* merge\_size <= h，w。
+>    - 对于传入的视频，每一个视频帧的宽、高及数据排布格式需一致。
 
 **示例<a name="section14194123415712"></a>**
 
-```
+```python
 from mm import MultimodalQwen2VLImageProcessor
 import numpy as np
 processor = MultimodalQwen2VLImageProcessor(min
@@ -192,8 +191,6 @@ video = [random_video_list()]
 result = processor.preprocess(images=[], videos=video)
 ```
 
-
-
 ## InternVL2PreProcessor<a name="ZH-CN_TOPIC_0000002435238562"></a>
 
 ### preprocess\_image<a name="ZH-CN_TOPIC_0000002436004904"></a>
@@ -204,7 +201,7 @@ result = processor.preprocess(images=[], videos=video)
 
 **函数原型<a name="section719310341377"></a>**
 
-```
+```python
 def preprocess_image(
             image: Union[PIL.Image.Image, Image],
             input_size: int,
@@ -224,13 +221,12 @@ def preprocess_image(
 |max_num|int|必选|用于计算目标缩放比例的最大数量。限制取值范围为(min_num,32]。|
 |use_thumbnail|bool|必选|是否加入原图的缩略图。|
 
-
 >[!CAUTION] 注意 
 >使用本函数时请注意对于input\_size缩放比的限制为8192，但由于缩放比例计算的问题，最终计算出需要将原图缩放的大小可能会超过8192，此时会被底层接口拦截报错。
 
 **示例<a name="section14194123415712"></a>**
 
-```
+```python
 from mm import Image, InternVL2PreProcessor
 
 image = Image.open("/home/test.jpeg", "cpu")
@@ -238,4 +234,3 @@ image = Image.open("/home/test.jpeg", "cpu")
 internVL2PreProcessor = InternVL2PreProcessor()
 result = internVL2PreProcessor.preprocess_image(image, 448, 1, 12, True)
 ```
-
