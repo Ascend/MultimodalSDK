@@ -8,11 +8,9 @@ Multimodal SDK本手册中存在的公开网址和邮箱地址，SDK本身不会
 
 更多公网地址请参见[Multimodal SDK 7.3.0 公网地址.xlsx](./resource/Multimodal%20SDK%207.3.0%20公网地址.xlsx)。
 
-
 ## 软件通信矩阵<a name="ZH-CN_TOPIC_0000002434737330"></a>
 
 目前Multimodal SDK开发套件包不会主动打开或者依赖任意端口，因此不涉及通信矩阵。
-
 
 ## 错误码<a name="ZH-CN_TOPIC_0000002469692481"></a>
 
@@ -39,8 +37,6 @@ Multimodal SDK本手册中存在的公开网址和邮箱地址，SDK本身不会
 |0x10500FA1|等待超时|
 |0x10500FA2|线程池状态无效|
 
-
-
 ## 环境变量说明<a name="ZH-CN_TOPIC_0000002470101636"></a>
 
 以下环境变量会在程序安装或运行时使用，请确保有效。
@@ -63,8 +59,5 @@ Multimodal SDK本手册中存在的公开网址和邮箱地址，SDK本身不会
 |HF_DATASETS_OFFLINE|离线加载Hugging Face数据集。|
 |HF_HUB_OFFLINE|在离线模式下运行Hugging Face库。|
 
-
 >[!CAUTION] 注意 
 >使用本软件提供的patcher运行vllm推理或其他开源库时，还会使用到其他开源库相关环境变量，本文不做声明，请用户自行确保环境变量真实有效。
-
-

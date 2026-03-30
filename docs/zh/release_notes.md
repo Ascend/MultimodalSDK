@@ -1,8 +1,5 @@
 # 版本配套说明<a name="ZH-CN_TOPIC_0000002545286481"></a>
 
-
-
-
 ## 产品版本信息<a name="ZH-CN_TOPIC_0000002513686524"></a>
 
 <a name="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108__Ref249955742"></a>
@@ -36,7 +33,6 @@
 |Ascend HDK|25.5.0|
 |CANN|8.5.0|
 
-
 ## 病毒扫描结果<a name="ZH-CN_TOPIC_0000002545206501"></a>
 
 病毒扫描通过，详细请参见[MindSDK 7.3.0 virus scan report.docx](./resource/MindSDK%207.3.0%20virus%20scan%20report.docx)。
@@ -51,7 +47,6 @@ Multimodal SDK：本版本无兼容性问题。
 |--|--|--|--|
 |MindSDK 7.3.0|不涉及|<ul><li>CANN 8.1.RC1及8.1.RC1.x</li><li>CANN 8.2.RC1及8.2.RC1.x</li><li>CANN 8.3.RC1及8.3.RC1.x</li><li>CANN 8.5.0及8.5.0.x</li></ul>|<ul><li>Ascend HDK 25.0.RC1及Ascend HDK 25.0.RC1.x</li><li>Ascend HDK 25.2.0及Ascend HDK 25.2.0.x</li><li>Ascend HDK 25.3.RC1及Ascend HDK 25.3.RC1.x</li><li>Ascend HDK 25.5.0及Ascend HDK 25.5.0.x</li></ul>|
 
-
 >[!NOTE] 说明 
 >软件版本兼容性是指网元软件版本升级时，关联设备、网管和上层OSS不需要联动升级或打补丁，仍然可以支持已有功能。
 
@@ -61,17 +56,11 @@ Multimodal SDK：本版本无兼容性问题。
 
 # 更新说明<a name="ZH-CN_TOPIC_0000002545286485"></a>
 
-
-
-
-
-
 ## 新增特性<a name="ZH-CN_TOPIC_0000002513526604"></a>
 
 |特性名称|特性描述|配套产品型号|
 |--|--|--|
 |Multimodal SDK|<ul><li>新增自定义Tensor类，支持与numpy、torch.Tensor互相转换。</li><li>新增自定义Image类，支持与numpy、torch.Tensor、PIL图像互相转换，支持图像缩放、裁剪。</li><li>支持日志注册。</li><li>支持视频解码。</li><li>支持Tensor对象归一化。</li></ul>|Atlas 800I A2 推理服务器|
-
 
 ## 业务接口变更<a name="ZH-CN_TOPIC_0000002513686520"></a>
 
@@ -95,8 +84,6 @@ Multimodal SDK：本版本无兼容性问题。
 
 # 升级影响<a name="ZH-CN_TOPIC_0000002545286483"></a>
 
-
-
 ## 升级过程对现行系统的影响<a name="ZH-CN_TOPIC_0000002545286479"></a>
 
 无
@@ -111,8 +98,6 @@ Multimodal SDK：本版本无兼容性问题。
 |--|--|--|
 |<a href="./installation_guide.md">《Multimodal SDK 7.3.0 用户指南》</a>|主要包括Multimodal SDK的安装部署、应用开发流程及其Python接口说明。|变更详见<a href="./installation_guide.md">《Multimodal SDK 7.3.0 用户指南》</a>。|
 
-
 # 漏洞修补列表<a name="ZH-CN_TOPIC_0000002513526608"></a>
 
 请参见[MindSDK 7.3.0 漏洞修补列表.xlsx](./resource/MindSDK%207.3.0%20漏洞修补列表.xlsx)。
-
