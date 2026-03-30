@@ -46,10 +46,21 @@ else ()
 endif (${CMAKE_BUILD_TYPE} MATCHES "Release")
 string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
+file(GLOB_RECURSE SECUREC_HEADERS
+        ${PROJECT_SECUREC_DIR}/securec.h
+)
+
+if(NOT SECUREC_HEADERS)
+    message(FATAL_ERROR "securec.h not found!")
+endif()
+
+list(GET SECUREC_HEADERS 0 SECUREC_HEADER)
+get_filename_component(SECUREC_INCLUDE_DIR ${SECUREC_HEADER} DIRECTORY)
+
 add_subdirectory(3rdparty)
 include_directories(
     ${PROJECT_3RDPARTY_BIN_DIR}/pybind11/include/
-    ${PROJECT_SECUREC_DIR}/include/dvpp/
+    ${SECUREC_INCLUDE_DIR}
 )
 
 add_subdirectory(src)

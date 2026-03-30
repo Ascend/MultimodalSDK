@@ -111,6 +111,8 @@ Multimodal的版本说明包含Multimodal的软件版本配套关系和软件包
 
 1. 编译依赖下载
 
+   **注意**：编译需要Python 3.11版本，请确保环境中已安装该版本。
+
    ```bash
    # 下载源码
    git clone https://gitcode.com/Ascend/MultimodalSDK.git

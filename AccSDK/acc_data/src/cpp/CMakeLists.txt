@@ -28,18 +28,20 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/interface)
 
 add_library(_accdata SHARED)
 
-set(SECUREC_PATH1 "${PROJECT_SECUREC_DIR}/lib64/driver")
-set(SECUREC_PATH2 "${PROJECT_SECUREC_DIR}/lib64/common")
+set(SECUREC_PATH /usr/local/Ascend/driver)
+file(GLOB_RECURSE SECUREC_LIB_FILES
+        ${SECUREC_PATH}/libsecurec.so
+)
 
-if(EXISTS "${SECUREC_PATH1}/libsecurec.so")
-    link_directories("${SECUREC_PATH1}")
-    set(SECUREC_LIB securec)
-elseif(EXISTS "${SECUREC_PATH2}/libsecurec.so")
-    link_directories("${SECUREC_PATH2}")
-    set(SECUREC_LIB securec)
-else()
-    message(FATAL_ERROR "libsecurec.so not found in expected paths.")
+if(NOT SECUREC_LIB_FILES)
+    message(FATAL_ERROR "libsecurec.so not found under ${SECUREC_PATH}")
 endif()
+
+list(GET SECUREC_LIB_FILES 0 SECUREC_LIB_PATH)
+get_filename_component(SECUREC_LIB_DIR ${SECUREC_LIB_PATH} DIRECTORY)
+
+link_directories(${SECUREC_LIB_DIR})
+set(SECUREC_LIB securec)
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 # All source files in these subdirectories will be add to accdata
