@@ -10,7 +10,7 @@
 </tr>
 <tr id="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_row255mcpsimp"><th class="firstcol" valign="top" width="25%" id="mcps1.1.3.2.1"><p id="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_p257mcpsimp"><a name="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_p257mcpsimp"></a><a name="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_p257mcpsimp"></a>产品版本</p>
 </th>
-<td class="cellrowborder" valign="top" width="75%" headers="mcps1.1.3.2.1 "><p id="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_p233mcpsimp"><a name="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_p233mcpsimp"></a><a name="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_p233mcpsimp"></a>7.3.0</p>
+<td class="cellrowborder" valign="top" width="75%" headers="mcps1.1.3.2.1 "><p id="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_p233mcpsimp"><a name="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_p233mcpsimp"></a><a name="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_p233mcpsimp"></a>26.0.0</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_row7259721105019"><th class="firstcol" valign="top" width="25%" id="mcps1.1.3.3.1"><p id="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_p7260182135013"><a name="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_p7260182135013"></a><a name="zh-cn_topic_0000001938532254_zh-cn_topic_0000001935094108_p7260182135013"></a>版本类型</p>
@@ -30,12 +30,12 @@
 
 |产品名称|版本|
 |--|--|
-|Ascend HDK|25.5.0|
-|CANN|8.5.0|
+|Ascend HDK|26.0.0|
+|CANN|9.0.0|
 
 ## 病毒扫描结果<a name="ZH-CN_TOPIC_0000002545206501"></a>
 
-病毒扫描通过，详细请参见[MindSDK 7.3.0 virus scan report.docx](./resource/MindSDK%207.3.0%20virus%20scan%20report.docx)。
+病毒扫描通过。
 
 # 版本兼容性说明<a name="ZH-CN_TOPIC_0000002545206499"></a>
 
@@ -45,7 +45,7 @@ Multimodal SDK：本版本无兼容性问题。
 
 |MindSDK软件版本|MindSDK待升级版本|CANN版本兼容性|Ascend HDK版本兼容性|
 |--|--|--|--|
-|MindSDK 7.3.0|不涉及|<ul><li>CANN 8.1.RC1及8.1.RC1.x</li><li>CANN 8.2.RC1及8.2.RC1.x</li><li>CANN 8.3.RC1及8.3.RC1.x</li><li>CANN 8.5.0及8.5.0.x</li></ul>|<ul><li>Ascend HDK 25.0.RC1及Ascend HDK 25.0.RC1.x</li><li>Ascend HDK 25.2.0及Ascend HDK 25.2.0.x</li><li>Ascend HDK 25.3.RC1及Ascend HDK 25.3.RC1.x</li><li>Ascend HDK 25.5.0及Ascend HDK 25.5.0.x</li></ul>|
+|MindSDK 26.0.0|<li>MindSDK 6.0.RC3及6.0.RC3.x</li><li>MindSDK 6.0.0及6.0.0.x</li><li>MindSDK 7.0.RC1及7.0.RC1.x</li><li>MindSDK 7.1.RC1及7.1.RC1.x</li><li>MindSDK 7.2.RC1及7.2.RC1.x</li><li>MindSDK 7.3.0及7.3.0.x</li>|<li>CANN 8.1.RC1及8.1.RC1.x</li><li>CANN 8.2.RC1及8.2.RC1.x</li><li>CANN 8.3.RC1及8.3.RC1.x</li><li>CANN 8.5.0及8.5.0.x</li><li>CANN 9.0.0及9.0.0.x</li>|<li>Ascend HDK 25.0.RC1及Ascend HDK 25.0.RC1.x</li><li>Ascend HDK 25.2.0及Ascend HDK 25.2.0.x</li><li>Ascend HDK 25.3.RC1及Ascend HDK 25.3.RC1.x</li><li>Ascend HDK 25.5.0及Ascend HDK 25.5.0.x</li><li>Ascend HDK 26.0.0及Ascend HDK 26.0.0.x</li>|
 
 >[!NOTE] 说明 
 >软件版本兼容性是指网元软件版本升级时，关联设备、网管和上层OSS不需要联动升级或打补丁，仍然可以支持已有功能。
@@ -60,19 +60,19 @@ Multimodal SDK：本版本无兼容性问题。
 
 |特性名称|特性描述|配套产品型号|
 |--|--|--|
-|Multimodal SDK|<ul><li>新增自定义Tensor类，支持与numpy、torch.Tensor互相转换。</li><li>新增自定义Image类，支持与numpy、torch.Tensor、PIL图像互相转换，支持图像缩放、裁剪。</li><li>支持日志注册。</li><li>支持视频解码。</li><li>支持Tensor对象归一化。</li></ul>|Atlas 800I A2 推理服务器|
+|Multimodal SDK|<ul><li>支持音频解码。</li></ul>|Atlas 800I A2 推理服务器|
 
 ## 业务接口变更<a name="ZH-CN_TOPIC_0000002513686520"></a>
 
 **Multimodal SDK<a name="section841683618505"></a>**
 
-初次发布，不涉及接口变更。
+无
 
 ## 关键特性变更<a name="ZH-CN_TOPIC_0000002513686526"></a>
 
 **Multimodal SDK<a name="section1082362810515"></a>**
 
-初次发布，不涉及关键特性变更。
+无
 
 ## 已解决的问题<a name="ZH-CN_TOPIC_0000002545206497"></a>
 
@@ -92,12 +92,12 @@ Multimodal SDK：本版本无兼容性问题。
 
 无
 
-# 7.3.0版本配套文档<a name="ZH-CN_TOPIC_0000002513526606"></a>
+# 26.0.0版本配套文档<a name="ZH-CN_TOPIC_0000002513526606"></a>
 
 |文档名称|内容简介|更新说明|
 |--|--|--|
-|<a href="./installation_guide.md">《Multimodal SDK 7.3.0 用户指南》</a>|主要包括Multimodal SDK的安装部署、应用开发流程及其Python接口说明。|变更详见<a href="./installation_guide.md">《Multimodal SDK 7.3.0 用户指南》</a>。|
+|<a href="./installation_guide.md">《Multimodal SDK 26.0.0 用户指南》</a>|主要包括Multimodal SDK的安装部署、应用开发流程及其Python接口说明。|变更详见<a href="./installation_guide.md">《Multimodal SDK 26.0.0 用户指南》</a>。|
 
 # 漏洞修补列表<a name="ZH-CN_TOPIC_0000002513526608"></a>
 
-请参见[MindSDK 7.3.0 漏洞修补列表.xlsx](./resource/MindSDK%207.3.0%20漏洞修补列表.xlsx)。
+无
