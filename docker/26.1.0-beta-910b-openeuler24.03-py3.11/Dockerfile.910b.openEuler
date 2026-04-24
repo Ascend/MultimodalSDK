@@ -1,0 +1,73 @@
+FROM quay.io/ascend/vllm-ascend:v0.8.5rc1-openeuler
+WORKDIR /tmp
+
+
+RUN cp -a /etc/yum.repos.d/openEuler.repo /etc/yum.repos.d/openEuler.repo.bak && \
+    echo "[openEuler-everything]" > /etc/yum.repos.d/openEuler.repo && \
+    echo "name=openEuler-everything" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "baseurl=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/everything/aarch64/" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "enabled=1" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "gpgcheck=0" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "gpgkey=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/everything/aarch64/RPM-GPG-KEY-openEuler" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "[openEuler-EPOL]" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "name=openEuler-epol" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "baseurl=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/EPOL/main/aarch64/" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "enabled=1" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "gpgcheck=0" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "[openEuler-update]" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "name=openEuler-update" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "baseurl=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/update/aarch64/" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "enabled=1" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "gpgcheck=0" >> /etc/yum.repos.d/openEuler.repo
+
+RUN export TZ=Asia/Shanghai && \
+    yum clean all && \
+    yum makecache && \
+    yum install ca-certificates -y && \
+    yum install wget dos2unix net-tools openssh openssh-server openssh-clients lsof sshpass -y && \
+    yum install curl gcc g++ make pkgconfig unzip autoconf git patch -y && \
+    yum install zlib-devel xz-devel bzip2-libs -y && \
+    yum install python3-pip -y && \
+    yum clean all
+
+RUN mkdir ~/.pip && touch ~/.pip/pip.conf && \
+    echo "[global]" > ~/.pip/pip.conf && \
+    echo "trusted-host=mirrors.aliyun.com" >> ~/.pip/pip.conf && \
+    echo "index-url=https://mirrors.aliyun.com/pypi/simple" >> ~/.pip/pip.conf && \
+    echo "timeout=200" >> ~/.pip/pip.conf
+
+RUN pip3 install -U pip && \
+    pip3 install transformers==4.51.3 && \
+    pip3 install pillow==11.2.1 && \
+    pip3 install numpy==1.26.4 && \
+    pip3 install torch==2.5.1 && \
+    rm -rf /root/.cache/pip
+
+WORKDIR /tmp
+ARG ASCEND_BASE=/usr/local/Ascend
+
+ARG TOOLKIT_PATH=$ASCEND_BASE/ascend-toolkit/latest
+
+USER root
+
+ENV LD_LIBRARY_PATH=$TOOLKIT_PATH/runtime/lib64:$LD_LIBRARY_PATH
+ENV TBE_IMPL_PATH=$TOOLKIT_PATH/opp/op_impl/built-in/ai_core/tbe
+ENV PATH=$TOOLKIT_PATH/atc/ccec_compiler/bin:$TOOLKIT_PATH/atc/bin:$PATH
+ENV ASCEND_OPP_PATH=$TOOLKIT_PATH/opp
+ENV ASCEND_AICPU_PATH=$TOOLKIT_PATH
+ENV PYTHONPATH=$TBE_IMPL_PATH:$PYTHONPATH
+ENV ASCEND_HOME=${ASCEND_BASE}
+
+RUN wget https://mindcluster.obs.cn-north-4.myhuaweicloud.com/MultimodalSDK/daily/version/26.0.0/20260412.1/Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run && \
+    chmod +x Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run && \
+    bash Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run --install --install-path=/usr/local && \
+    ln -s /usr/lib64/libbz2.so.1.0.8 /usr/local/multimodal/opensource/FFmpeg/lib/libbz2.so.1.0
+
+RUN sed -i '$a\source /usr/local/Ascend/ascend-toolkit/set_env.sh' ~/.bashrc && \
+    sed -i '$a\source /usr/local/multimodal/script/set_env.sh' ~/.bashrc && \
+    sed -i '$a\export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64/driver:$LD_LIBRARY_PATH' ~/.bashrc
+
+RUN rm -rf ./*
+WORKDIR /root
