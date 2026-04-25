@@ -91,7 +91,7 @@ Multimodal SDK：本版本无兼容性问题。
 
 |文档名称|内容简介|更新说明|
 |--|--|--|
-|《Multimodal SDK 26.0.0 用户指南》|主要包括Multimodal SDK的安装部署、应用开发流程及其Python接口说明。|变更详见<a href="./installation_guide.md">《Multimodal SDK 26.0.0 用户指南》</a>。|
+|《[Multimodal SDK 26.0.0 用户指南](../../README.md)》|主要包括Multimodal SDK的安装部署、应用开发流程及其Python接口说明。|-|
 
 # 漏洞修补列表<a name="ZH-CN_TOPIC_0000002513526608"></a>
 
