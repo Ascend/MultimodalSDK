@@ -93,8 +93,8 @@ Multimodal的版本说明包含Multimodal的软件版本配套关系和软件包
 
 | 产品名称 | 版本 |
 | :--- | :--- |
-| Ascend HDK | 25.5.0 |
-| CANN | 8.5.0 |
+| Ascend HDK | 26.0.RC1 |
+| CANN | 9.0.0 |
 
 更多详情请查看[版本说明](docs/zh/release_notes.md)。
 
