@@ -42,7 +42,7 @@ ENV ASCEND_AICPU_PATH=$TOOLKIT_PATH
 ENV PYTHONPATH=$TBE_IMPL_PATH:$PYTHONPATH
 ENV ASCEND_HOME=${ASCEND_BASE}
 
-RUN wget https://mindcluster.obs.cn-north-4.myhuaweicloud.com/MultimodalSDK/daily/version/26.0.0/20260412.1/Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run && \
+RUN wget https://gitcode.com/Ascend/MultimodalSDK/releases/download/v26.0.0/Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run && \
     chmod +x Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run && \
     bash Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run --install --install-path=/usr/local
 

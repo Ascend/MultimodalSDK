@@ -1,24 +1,24 @@
 FROM quay.io/ascend/vllm-ascend:v0.8.5rc1-openeuler
 WORKDIR /tmp
 
-
 RUN cp -a /etc/yum.repos.d/openEuler.repo /etc/yum.repos.d/openEuler.repo.bak && \
+    ARCH=$(uname -m | sed 's/x86_64/x86_64/; s/aarch64/aarch64/') && \
     echo "[openEuler-everything]" > /etc/yum.repos.d/openEuler.repo && \
     echo "name=openEuler-everything" >> /etc/yum.repos.d/openEuler.repo && \
-    echo "baseurl=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/everything/aarch64/" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "baseurl=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/everything/${ARCH}/" >> /etc/yum.repos.d/openEuler.repo && \
     echo "enabled=1" >> /etc/yum.repos.d/openEuler.repo && \
     echo "gpgcheck=0" >> /etc/yum.repos.d/openEuler.repo && \
-    echo "gpgkey=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/everything/aarch64/RPM-GPG-KEY-openEuler" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "gpgkey=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/everything/${ARCH}/RPM-GPG-KEY-openEuler" >> /etc/yum.repos.d/openEuler.repo && \
     echo "" >> /etc/yum.repos.d/openEuler.repo && \
     echo "[openEuler-EPOL]" >> /etc/yum.repos.d/openEuler.repo && \
     echo "name=openEuler-epol" >> /etc/yum.repos.d/openEuler.repo && \
-    echo "baseurl=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/EPOL/main/aarch64/" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "baseurl=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/EPOL/main/${ARCH}/" >> /etc/yum.repos.d/openEuler.repo && \
     echo "enabled=1" >> /etc/yum.repos.d/openEuler.repo && \
     echo "gpgcheck=0" >> /etc/yum.repos.d/openEuler.repo && \
     echo "" >> /etc/yum.repos.d/openEuler.repo && \
     echo "[openEuler-update]" >> /etc/yum.repos.d/openEuler.repo && \
     echo "name=openEuler-update" >> /etc/yum.repos.d/openEuler.repo && \
-    echo "baseurl=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/update/aarch64/" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "baseurl=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/update/${ARCH}/" >> /etc/yum.repos.d/openEuler.repo && \
     echo "enabled=1" >> /etc/yum.repos.d/openEuler.repo && \
     echo "gpgcheck=0" >> /etc/yum.repos.d/openEuler.repo
 
@@ -43,7 +43,7 @@ RUN pip3 install -U pip && \
     pip3 install pillow==11.2.1 && \
     pip3 install numpy==1.26.4 && \
     pip3 install torch==2.5.1 && \
-    rm -rf /root/.cache/pip
+    rm -rf /root/.cache/pip 
 
 WORKDIR /tmp
 ARG ASCEND_BASE=/usr/local/Ascend
@@ -60,7 +60,7 @@ ENV ASCEND_AICPU_PATH=$TOOLKIT_PATH
 ENV PYTHONPATH=$TBE_IMPL_PATH:$PYTHONPATH
 ENV ASCEND_HOME=${ASCEND_BASE}
 
-RUN wget https://mindcluster.obs.cn-north-4.myhuaweicloud.com/MultimodalSDK/daily/version/26.0.0/20260412.1/Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run && \
+RUN wget https://gitcode.com/Ascend/MultimodalSDK/releases/download/v26.0.0/Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run && \
     chmod +x Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run && \
     bash Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run --install --install-path=/usr/local && \
     ln -s /usr/lib64/libbz2.so.1.0.8 /usr/local/multimodal/opensource/FFmpeg/lib/libbz2.so.1.0
