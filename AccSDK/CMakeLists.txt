@@ -4,7 +4,7 @@ project(ACCSDK)
 # disable RPATH
 set(CMAKE_SKIP_BUILD_RPATH TRUE)
 set(CMAKE_SKIP_INSTALL_RPATH TRUE)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # self include
 include_directories(include)
 include_directories(source/inc)
