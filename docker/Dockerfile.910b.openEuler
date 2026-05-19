@@ -43,7 +43,7 @@ RUN pip3 install -U pip && \
     pip3 install pillow==11.2.1 && \
     pip3 install numpy==1.26.4 && \
     pip3 install torch==2.5.1 && \
-    rm -rf /root/.cache/pip 
+    rm -rf /root/.cache/pip
 
 WORKDIR /tmp
 ARG ASCEND_BASE=/usr/local/Ascend
