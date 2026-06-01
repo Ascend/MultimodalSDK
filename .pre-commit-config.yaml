@@ -73,6 +73,16 @@ repos:
       - id: typos
         args: ["--force-exclude", "--config", "pre-commit/typos.toml"]
 
+  # Markdown：指定 pre-commit/.markdownlint-cli2.yaml
+  - repo: https://gitcode.com/gh_mirrors/ma/markdownlint-cli2
+    rev: v0.22.1
+    hooks:
+      - id: markdownlint-cli2
+        name: markdownlint (Markdown quality check)
+        language_version: "22.20.0"
+        types: [markdown]
+        args: ["--config", "pre-commit/.markdownlint-cli2.yaml", "--fix"]
+
   #--------------- C++ 核心检查 ---------------------------------------------
   - repo: https://gitcode.com/pre-commit-clang/mirrors-clang-format
     rev: v18.1.8
