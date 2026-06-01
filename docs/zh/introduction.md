@@ -7,19 +7,17 @@
 
 **使用导引**
 
-如果您是第一次使用本软件，可以从[快速入门](./quick_start.md)中的样例开始上手，并请确认按照[安装部署](./installation_guide.md)中的步骤准备好相关环境和软件包。
-
-如果您对于相关流程已经比较熟悉，可以直接跳转到 [API 接口](./api/README.md)章节获取需要的函数功能和接口，加速您的数据处理流程。
+| 场景 | 文档 |
+| -- | -- |
+| Docker 快速体验（约 5 分钟） | [快速入门](./quick_start.md) |
+| 宿主机原生安装部署 | [安装部署](./installation_guide.md) |
+| 已安装，查阅 API | [Python 接口说明](./api/README.md) |
 
 # 软件架构
 
-Multimodal SDK 软件架构如下图所示。
+![](./figures/mmsdk_arch.svg)
 
-**图 1** Multimodal SDK 软件架构
-
-![](figures/Multimodal-SDK软件架构.png "Multimodal-SDK软件架构")
-
-**表 1** 架构图模块介绍
+**架构图模块介绍**
 
 | 模块 | 说明 |
 | -- | -- |

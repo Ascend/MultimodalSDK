@@ -78,7 +78,7 @@ Multimodal SDK：本版本无兼容性问题。
 
 | 文档名称 | 内容简介 | 更新说明 |
 | -- | -- | -- |
-| [《Multimodal SDK 26.0.0 安装部署指南》](./installation_guide.md) | 主要包括 Multimodal SDK 的安装部署、应用开发流程及其 Python 接口说明。 | 变更详见[《Multimodal SDK 26.0.0 安装部署指南》](./installation_guide.md)。 |
+| [《Multimodal SDK 26.0.0 安装部署指南》](./installation_guide.md) | 主要包括 Multimodal SDK 的安装部署、环境配置及验证流程。 | 变更详见[《Multimodal SDK 26.0.0 安装部署指南》](./installation_guide.md)。 |
 
 # 漏洞修补列表
 

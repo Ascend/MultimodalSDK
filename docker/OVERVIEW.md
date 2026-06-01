@@ -12,7 +12,7 @@
 
 ## MultimodalSDK Overview
 
-In the inference pipeline of multimodal large models, massive and complex data needs to be processed. The MultimodalSDK accelerates the preprocessing workflow of large model inference by providing a set of high-performance NPU-affinity interfaces.
+In the inference pipeline of multimodal large models, massive and complex data needs to be processed. The MultimodalSDK accelerates the preprocessing workflow of large model inference by providing a set of high-performance Ascend-affinity interfaces. Preprocessing APIs currently run on CPU (`DeviceMode.CPU`) and are typically deployed alongside CANN/NPU inference frameworks.
 
 - It covers common preprocessing operations such as image and video loading and decoding, as well as resize, crop, and other typical processing steps.
 - It supports mutual conversion between various open-source data structures and acceleration library data structures, enabling rapid application and easy migration.
@@ -29,7 +29,7 @@ Tags follow this pattern:
 
 | Field            | Example Values                  | Description               |
 | ---------------- | ------------------------------- | ------------------------- |
-| `multimodalsdk_version` | `26.1.0`   | MultimodalSDK version              |
+| `multimodalsdk_version` | `26.0.0`   | MultimodalSDK version              |
 | `chip_series`    | `910`         | Target Atlas chip family |
 | `os`             | `ubuntu22.04`, `openeuler24.03` | Base operating system     |
 | `python_version` | `py3.11`    | Python version            |
@@ -38,8 +38,8 @@ Tags follow this pattern:
 
 | Tag                                | Dockerfile                                                   |
 | ---------------------------------- | ------------------------------------------------------------ |
-| `26.1.0-910b-openeuler24.03-py3.11`   | [Dockerfile](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/26.1.0-910b-openeuler24.03-py3.11/Dockerfile.910b.openEuler) |
-| `26.1.0-910b-ubuntu22.04-py3.11`    | [Dockerfile](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/26.1.0-910b-ubuntu22.04-py3.11/Dockerfile.910b.ubuntu)      |
+| `26.0.0-910b-openeuler24.03-py3.11`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
+| `26.0.0-910b-ubuntu22.04-py3.11`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
 
 ---
 

@@ -12,7 +12,7 @@
 
 ## MultimodalSDK简介
 
-多模态大模型推理流程中需要处理大量复杂的数据。MultimodalSDK通过提供一系列高性能的NPU设备亲和性接口，加速大模型推理预处理流程。
+多模态大模型推理流程中需要处理大量复杂的数据。MultimodalSDK 通过提供一系列高性能的昇腾设备亲和性接口，加速大模型推理预处理流程。预处理接口当前在 CPU 上执行（`DeviceMode.CPU`），通常与 CANN/NPU 推理框架配合部署。
 
 - 包括图像视频加载和解码，resize、crop等预处理常用操作。
 - 支持多种开源数据结构与加速库数据结构的相互转换，方便快速使用和移植。
@@ -29,7 +29,7 @@ Tag 遵循以下格式：
 
 | 字段         | 示例值                          | 说明             |
 | ------------ | ------------------------------- | ---------------- |
-| `MultimodalSDK版本`   | `26.1.0`              | MultimodalSDK 版本号      |
+| `MultimodalSDK版本`   | `26.0.0`              | MultimodalSDK 版本号      |
 | `芯片系列`   | `910`          | 目标芯片系列 |
 | `操作系统`   | `ubuntu22.04`、`openeuler24.03` | 基础操作系统     |
 | `python版本` | `py3.11`    | Python 版本      |
@@ -38,8 +38,8 @@ Tag 遵循以下格式：
 
 | Tag                                | Dockerfile                                                   |
 | ---------------------------------- | ------------------------------------------------------------ |
-| `26.1.0-910b-openeuler24.03-py3.11`   | [Dockerfile](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/26.1.0-910b-openeuler24.03-py3.11/Dockerfile.910b.openEuler) |
-| `26.1.0-910b-ubuntu22.04-py3.11`    | [Dockerfile](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/26.1.0-910b-ubuntu22.04-py3.11/Dockerfile.910b.ubuntu)      |
+| `26.0.0-910b-openeuler24.03-py3.11`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
+| `26.0.0-910b-ubuntu22.04-py3.11`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
 
 ---
 
