@@ -38,8 +38,8 @@ Tags follow this pattern:
 
 | Tag                                | Dockerfile                                                   |
 | ---------------------------------- | ------------------------------------------------------------ |
-| `26.0.0-910b-openeuler24.03-py3.11`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
-| `26.0.0-910b-ubuntu22.04-py3.11`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
+| `26.0.0-910b-openeuler24.03-py3.11`   | [Dockerfile.910b.openEuler](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/Dockerfile.910b.openEuler) |
+| `26.0.0-910b-ubuntu22.04-py3.11`    | [Dockerfile.910b.ubuntu](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/Dockerfile.910b.ubuntu)      |
 
 ---
 

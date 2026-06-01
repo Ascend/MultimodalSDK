@@ -236,9 +236,9 @@ VRS -->> U: VideoRagInferenceResult
 
 #### 3.5.2.1.1 vrag serve
 
-* *接口描述：服务启动命令*
-* *接口原型：vrag serve [service] [--port/-p PORT] [--host/-h HOST] [--config-file/-c CONFIG_FILE]*
-* *输入/输出参数：*
+- *接口描述：服务启动命令*
+- *接口原型：vrag serve [service] [--port/-p PORT] [--host/-h HOST] [--config-file/-c CONFIG_FILE]*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
@@ -268,9 +268,9 @@ VRS -->> U: VideoRagInferenceResult
 
 #### 3.5.2.1.2 export
 
-* *接口描述：配置导出命令*
-* *接口原型：vrag export config_file_path [--service/-s SERVICE]*
-* *输入/输出参数：*
+- *接口描述：配置导出命令*
+- *接口原型：vrag export config_file_path [--service/-s SERVICE]*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
@@ -281,9 +281,9 @@ VRS -->> U: VideoRagInferenceResult
 
 #### 3.5.2.2 VideoRagSevice
 
-* *接口描述：端到端视频问答*
-* *接口原型：VideoRagService.ask*
-* *输入/输出参数：*
+- *接口描述：端到端视频问答*
+- *接口原型：VideoRagService.ask*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
@@ -291,7 +291,7 @@ VRS -->> U: VideoRagInferenceResult
 | question | 输入 | str | 问题 | - |
 | config | 输入 | VideoRagConfig | 配置 | - |
 
-* *返回参数：VideoRagInferenceResult*
+- *返回参数：VideoRagInferenceResult*
 
 | 参数名称| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- |
@@ -302,9 +302,9 @@ VRS -->> U: VideoRagInferenceResult
 
 #### 3.5.2.3 VideoRetrievalService
 
-* *接口描述：视频检索*
-* *接口原型：VideoRetrievalService.retrieval_with_related_frames*
-* *输入/输出参数：*
+- *接口描述：视频检索*
+- *接口原型：VideoRetrievalService.retrieval_with_related_frames*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
@@ -313,7 +313,7 @@ VRS -->> U: VideoRagInferenceResult
 | question | 输入 | str | 问题 | - |
 | config | 输入 | VideoRetrievalConfig | 视频文档检索配置 | - |
 
-* *返回参数：VideoRetrialResult*
+- *返回参数：VideoRetrialResult*
 
 | 参数名称| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- |
@@ -324,16 +324,16 @@ VRS -->> U: VideoRagInferenceResult
 
 #### 3.5.2.4 VideoTranscribeService
 
-* *接口描述：视频提取*
-* *接口原型：VideoTranscribeService.extract_all*
-* *输入/输出参数：*
+- *接口描述：视频提取*
+- *接口原型：VideoTranscribeService.extract_all*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
 | video_data | 输入 | Path | 视频路径 | - |
 | config | 输入 | VideoTransfribeConfig | 视频提取配置 | - |
 
-* *返回参数：ExtractionResult*
+- *返回参数：ExtractionResult*
 
 | 参数名称| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- |
@@ -344,16 +344,16 @@ VRS -->> U: VideoRagInferenceResult
 
 #### 3.5.2.5 VideoProcessService
 
-* *接口描述：视频处理，提取帧、音频*
-* *接口原型：VideoProcessService.extract*
-* *输入/输出参数：*
+- *接口描述：视频处理，提取帧、音频*
+- *接口原型：VideoProcessService.extract*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
 | video_data | 输入 | Path | 视频地址 | - |
 | config | 输入 | VideoProcessConfig | 处理配置 | - |
 
-* *返回参数：VideoExctractionResult*
+- *返回参数：VideoExctractionResult*
 
 | 参数名称| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- |
@@ -362,9 +362,9 @@ VRS -->> U: VideoRagInferenceResult
 
 #### 3.5.2.6 DetectionService
 
-* *接口描述：目标检测*
-* *接口原型：DetectionService.detect*
-* *输入/输出参数：*
+- *接口描述：目标检测*
+- *接口原型：DetectionService.detect*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
@@ -372,7 +372,7 @@ VRS -->> U: VideoRagInferenceResult
 | frame_extraction | 输入 | FrameExtraction | 视频帧信息 | - |
 | config | 输入 | DetectionServiceConfig | 检测服务配置 | - |
 
-* *返回参数：DetectionResult*
+- *返回参数：DetectionResult*
 
 | 参数名称| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- |
@@ -381,9 +381,9 @@ VRS -->> U: VideoRagInferenceResult
 
 #### 3.5.2.7 FaissService
 
-* *接口描述：向量检索服务*
-* *接口原型：FaissService.search_embeddings*
-* *输入/输出参数：*
+- *接口描述：向量检索服务*
+- *接口原型：FaissService.search_embeddings*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
@@ -393,22 +393,22 @@ VRS -->> U: VideoRagInferenceResult
 
 #### 3.5.2.8 QwenEmbeddingService
 
-* *接口描述：Qwen文本嵌入服务*
-* *接口原型：QwenEmbeddingService.embed*
-* *输入/输出参数：*
+- *接口描述：Qwen文本嵌入服务*
+- *接口原型：QwenEmbeddingService.embed*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
 | embed | 输入 | list(str) | 文本 | - |
 | normalize | 输入 | bool | 是否标准化 | - |
 
-* *返回参数：ndarray*
+- *返回参数：ndarray*
 
 #### 3.5.2.9 QwenRerankerService
 
-* *接口描述：Qwen重排序*
-* *接口原型：QwenRerankerService.rerank*
-* *输入/输出参数：*
+- *接口描述：Qwen重排序*
+- *接口原型：QwenRerankerService.rerank*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
@@ -416,13 +416,13 @@ VRS -->> U: VideoRagInferenceResult
 | documents | 输入 | list(str) | 文档列表 | - |
 | top_k | 输入 | int | 最大组数 | - |
 
-* *返回参数：list(int)*
+- *返回参数：list(int)*
 
 #### 3.5.2.9 QwenVLService
 
-* *接口描述：Qwen视觉模型*
-* *接口原型：QwenVLService.generate*
-* *输入/输出参数：*
+- *接口描述：Qwen视觉模型*
+- *接口原型：QwenVLService.generate*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
@@ -430,13 +430,13 @@ VRS -->> U: VideoRagInferenceResult
 | video | 输入 | list(str) | 视频列表 | - |
 | config | 输入 | QwenvlConfig | 视觉模型配置 | - |
 
-* *返回参数：str*
+- *返回参数：str*
 
 #### 3.5.2.11 AksBlipService
 
-* *接口描述：选择关键帧服务*
-* *接口原型：AksBlipService.select_keyframes*
-* *输入/输出参数：*
+- *接口描述：选择关键帧服务*
+- *接口原型：AksBlipService.select_keyframes*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
@@ -444,25 +444,25 @@ VRS -->> U: VideoRagInferenceResult
 | queries | 输入 | list(str) | 查询条件 | - |
 | config | 输入 | AksBlipConfig | 选择关键帧选项 | - |
 
-* *返回参数：list(int)*
+- *返回参数：list(int)*
 
 #### 3.5.2.12 WhisperService
 
-* *接口描述：语音转文字服务*
-* *接口原型：WhisperService.transcribe*
-* *输入/输出参数：*
+- *接口描述：语音转文字服务*
+- *接口原型：WhisperService.transcribe*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
 | audio_chunks | 输入 | list(ndarray) | 语音片段 | - |
 
-* *返回参数：list(str)*
+- *返回参数：list(str)*
 
 #### 3.5.2.13 MineruService
 
-* *接口描述：OCR问题提取服务*
-* *接口原型：MineruService.extract_text*
-* *输入/输出参数：*
+- *接口描述：OCR问题提取服务*
+- *接口原型：MineruService.extract_text*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
@@ -472,20 +472,20 @@ VRS -->> U: VideoRagInferenceResult
 | formula_enable | 输入 | bool | 是否提取公式 | - |
 | table_enable | 输入 | bool | 是否提取表格 | - |
 
-* *返回参数：list(str)*
+- *返回参数：list(str)*
 
 #### 3.5.2.2 BlipService
 
-* *接口描述：图文相似度*
-* *接口原型：BlipService.compute_score*
-* *输入/输出参数：*
+- *接口描述：图文相似度*
+- *接口原型：BlipService.compute_score*
+- *输入/输出参数：*
 
 | 参数名称| 输入/输出| 类型 |描述 | 取值范围 |
 | --- | --- | --- | --- | --- |
 | frames | 输入 | ndarray | 视频帧 | - |
 | queries | 输入 | list(str) | 查询文本 | - |
 
-* *返回参数：list(int)*
+- *返回参数：list(int)*
 
 ### 3.5.3 编程手册设计
 
@@ -507,4 +507,4 @@ VRS -->> U: VideoRagInferenceResult
 
 附录
 
-* **[《Multimodal SDK 26.0.0 用户指南》](https://gitcode.com/Ascend/MultimodalSDK/blob/master/README.md)**
+- **[《Multimodal SDK 26.0.0 用户指南》](https://gitcode.com/Ascend/MultimodalSDK/blob/master/README.md)**

@@ -61,16 +61,16 @@ def __init__(
 >初始化本预处理模块时，以下参数均可以传入值，但在此版本中具有以下限制：
 >
 >- **固定启用参数**（不可配置）：
->    - do_resize：该参数始终启用，不支持关闭。
->    - do_rescale：该参数始终启用，不支持关闭。
->    - do_normalize：该参数始终启用，不支持关闭。
+>   - do_resize：该参数始终启用，不支持关闭。
+>   - do_rescale：该参数始终启用，不支持关闭。
+>   - do_normalize：该参数始终启用，不支持关闭。
 >- **不支持的参数**：
->    - do_convert_rgb：不支持该参数，仅允许输入RGB图像。
->    - data_format：不支持该参数，输出数据格式固定为通道优先\(C,H,W\)。
->    - resample：不支持该参数，插值方式固定为双三次插值\(BICUBIC\)。
->    - rescale_factor：不支持该参数，缩放因子固定为1/255。
->    - input_data_format：不支持该参数，仅支持RGB格式，通道顺序为HWC。
->    - kwargs: 其他扩展参数。
+>   - do_convert_rgb：不支持该参数，仅允许输入RGB图像。
+>   - data_format：不支持该参数，输出数据格式固定为通道优先\(C,H,W\)。
+>   - resample：不支持该参数，插值方式固定为双三次插值\(BICUBIC\)。
+>   - rescale_factor：不支持该参数，缩放因子固定为1/255。
+>   - input_data_format：不支持该参数，仅支持RGB格式，通道顺序为HWC。
+>   - kwargs: 其他扩展参数。
 
 **示例**
 
@@ -147,17 +147,17 @@ def preprocess(self,
 `ImageInput` 支持以下形式：
 
 - **单张图像**（任选其一）：
-    - `Image`：多模态 SDK 的图像对象
-    - `PIL.Image.Image`：PIL 图像对象
-    - `np.ndarray`：HWC 排布（高度 × 宽度 × 通道）的 Numpy 数组
+  - `Image`：多模态 SDK 的图像对象
+  - `PIL.Image.Image`：PIL 图像对象
+  - `np.ndarray`：HWC 排布（高度 × 宽度 × 通道）的 Numpy 数组
 - **多张图像**：上述任意类型组成的 `List[...]`
 
 `VideoInput` 支持以下形式：
 
 - **单帧视频**：一张图像即视为 1 帧视频，类型同上
 - **单个视频** `SingleVideoInput`：
-    - `np.ndarray`：形状 `[T, H, W, C]` 的 4 维张量，表示 T 帧视频
-    - `List[FrameInput]`：逐帧组成的列表，每帧支持 `np.ndarray` / PIL / 多模态 `Image`
+  - `np.ndarray`：形状 `[T, H, W, C]` 的 4 维张量，表示 T 帧视频
+  - `List[FrameInput]`：逐帧组成的列表，每帧支持 `np.ndarray` / PIL / 多模态 `Image`
 - **多个视频**：`List[SingleVideoInput]`，每个元素是一个视频
 
 **通用约束**：图像或视频帧大小限制为 `10×10` 至 `4096×4096`，且宽和高均需大于 `patch_size * merge_size`；同一视频中各帧的宽、高及数据排布格式需一致。
@@ -166,22 +166,22 @@ def preprocess(self,
 >使用本函数时，无论是否在初始化中初始化过以下参数，其均具有以下约束：
 >
 >- **固定启用参数**（不可配置）：
->    - do_resize：该参数始终启用，不支持关闭。
->    - do_rescale：该参数始终启用，不支持关闭。
->    - do_normalize：该参数始终启用，不支持关闭。
+>   - do_resize：该参数始终启用，不支持关闭。
+>   - do_rescale：该参数始终启用，不支持关闭。
+>   - do_normalize：该参数始终启用，不支持关闭。
 >- **不支持的参数**：
->    - do_convert_rgb：不支持该参数，仅允许输入RGB图像。
->    - data_format：不支持该参数，输出数据格式固定为通道优先 \(C,H,W\)。
->    - resample：不支持该参数，插值方式固定为双三次插值 \(BICUBIC\)。
->    - rescale_factor：不支持该参数，缩放因子固定为1/255。
->    - input_data_format：不支持该参数，仅支持RGB格式，通道顺序为HWC。
+>   - do_convert_rgb：不支持该参数，仅允许输入RGB图像。
+>   - data_format：不支持该参数，输出数据格式固定为通道优先 \(C,H,W\)。
+>   - resample：不支持该参数，插值方式固定为双三次插值 \(BICUBIC\)。
+>   - rescale_factor：不支持该参数，缩放因子固定为1/255。
+>   - input_data_format：不支持该参数，仅支持RGB格式，通道顺序为HWC。
 >- **使用时还需满足的额外约束如下**：
->    - 输入图像或视频帧为U8类型RGB图像，数据排布限制为HWC，大小限制为10\*10-4096\*4096。
->    - 输入min_pixels范围为\[10\*10, max_pixels\)。
->    - 输入max_pixels范围为\(min_pixels, 4096\*4096\]。
->    - 输入Image的宽和高均大于patch_size \* merge_size。
->    - 对于传入的每一张图像，或者每一个视频帧，若其宽高分别为 w, h，则需满足 `min_pixels < max_pixels`,`max_pixels >= w/h * (patch_size * merge_size)^2`，`patch_size * merge_size <= h, w`。
->    - 对于传入的视频，每一个视频帧的宽、高及数据排布格式需一致。
+>   - 输入图像或视频帧为U8类型RGB图像，数据排布限制为HWC，大小限制为10\*10-4096\*4096。
+>   - 输入min_pixels范围为\[10\*10, max_pixels\)。
+>   - 输入max_pixels范围为\(min_pixels, 4096\*4096\]。
+>   - 输入Image的宽和高均大于patch_size \* merge_size。
+>   - 对于传入的每一张图像，或者每一个视频帧，若其宽高分别为 w, h，则需满足 `min_pixels < max_pixels`,`max_pixels >= w/h * (patch_size * merge_size)^2`，`patch_size * merge_size <= h, w`。
+>   - 对于传入的视频，每一个视频帧的宽、高及数据排布格式需一致。
 
 **示例**
 

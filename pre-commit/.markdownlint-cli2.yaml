@@ -1,0 +1,36 @@
+gitignore: true
+
+globs:
+  - "**/*.md"
+
+ignores:
+  - ".cursor/**"
+  - "doc-eval-report-*.md"
+
+config:
+  default: true
+  MD013: false
+  MD024:
+    siblings_only: true
+  MD033:
+    allowed_elements:
+      - a
+      - br
+      - div
+      - h1
+      - h2
+      - img
+      - details
+      - summary
+      - span
+      - sub
+  MD036: false
+  MD040: false
+  MD041: false
+  MD045: false
+  MD060: false
+  MD025: false
+  MD007:
+    indent: 2
+
+fix: true

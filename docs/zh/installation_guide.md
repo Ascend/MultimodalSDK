@@ -110,6 +110,7 @@ Python 3.10.12
 
 **下载依赖软件包**
 
+<a id="table-npu-cann-deps"></a>
 **表 2** NPU/CANN 软件包清单
 
 | 软件类型      | 软件包名称                                                         | 版本要求                    |
@@ -124,12 +125,10 @@ Python 3.10.12
 > - `{version}` 表示软件版本号。
 > - `{arch}` 表示 CPU 架构。
 
-请根据您使用的 CANN 版本类型，从对应下载入口获取表 2 所列软件包：
+请根据您使用的 CANN 版本类型，从对应下载入口获取[表 2](#table-npu-cann-deps)所列软件包：
 
-| 版本类型 | 软件包下载入口 |
-| -- | -- |
-| 商用版 | [昇腾商用版资源下载](https://www.hiascend.com/developer/download/commercial/result?module=cann) |
-| 社区版 | [昇腾社区版资源下载](https://www.hiascend.com/developer/download/community/result) |
+- [昇腾商用版资源下载](https://www.hiascend.com/developer/download/commercial/result?module=cann)
+- [昇腾社区版资源下载](https://www.hiascend.com/developer/download/community/result)
 
 **安装步骤**
 
@@ -144,7 +143,7 @@ Python 3.10.12
 > - 安装 CANN 时，为确保 Multimodal SDK 正常使用，CANN 的相关依赖也需要一并安装。
 > - CANN 版本兼容性请参阅 [CANN 兼容性矩阵](https://www.hiascend.com/document)。
 
-**安装 CANN 后验收**
+**安装 CANN 后验证环境**
 
 完成 NPU 驱动固件及 CANN 安装后，执行以下命令确认环境就绪：
 
