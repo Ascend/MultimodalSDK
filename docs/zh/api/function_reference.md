@@ -243,11 +243,12 @@ def normalize(mean: list[float], std: list[float], device_mode: DeviceMode = Dev
 **示例**
 
 ```python
-from mm import Tensor
+from mm import Tensor, TensorFormat
 import torch
 
-tensor = torch.zeros((1024, 768, 3), dtype=torch.uint8)
+tensor = torch.randn(1, 3, 224, 224, dtype=torch.float32)
 mm_tensor = Tensor.from_torch(tensor)
+mm_tensor.set_format(TensorFormat.NCHW)
 mean = [0.1, 0.1, 0.1]
 std = [0.1, 0.1, 0.1]
 dst_mm_tensor = mm_tensor.normalize(mean, std)
@@ -780,11 +781,12 @@ def normalize(src: Tensor, mean: list[float], std: list[float], device_mode: Dev
 **示例**
 
 ```python
-from mm import Tensor, normalize, DeviceMode
+from mm import Tensor, TensorFormat, normalize, DeviceMode
 import torch
 
-tensor = torch.zeros((1024, 768, 3), dtype=torch.uint8)
+tensor = torch.randn(1, 3, 224, 224, dtype=torch.float32)
 mm_tensor = Tensor.from_torch(tensor)
+mm_tensor.set_format(TensorFormat.NCHW)
 mean = [0.1, 0.1, 0.1]
 std = [0.1, 0.1, 0.1]
 dst_mm_tensor = normalize(mm_tensor, mean, std, DeviceMode.CPU)

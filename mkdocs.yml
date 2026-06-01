@@ -1,0 +1,79 @@
+site_name: Multimodal SDK 开发者文档
+site_description: Multimodal SDK 中文开发者文档
+docs_dir: docs/zh
+site_dir: site
+repo_url: https://gitcode.com/Ascend/MultimodalSDK
+edit_uri: edit/master/docs/zh/
+
+theme:
+  name: material
+  language: zh
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: 切换到浅色模式
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      toggle:
+        icon: material/brightness-7
+        name: 切换到深色模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      toggle:
+        icon: material/brightness-2
+        name: 跟随系统
+  features:
+    - content.action.edit
+    - content.code.copy
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - search.share
+    - toc.follow
+  custom_dir: docs/mkdocs/overrides
+
+nav:
+  - 文档首页: README.md
+  - 入门:
+      - 简介: introduction.md
+      - 安装部署: installation_guide.md
+      - 快速入门: quick_start.md
+      - 样例和指导: user_guide.md
+  - API 参考:
+      - Python 接口说明: api/README.md
+      - 功能函数参考: api/function_reference.md
+      - Adapter: api/adapter.md
+      - patcher: api/patcher.md
+  - 其他:
+      - 版本配套说明: release_notes.md
+      - 安全加固: security_hardening.md
+      - 附录: appendix.md
+      - 常见问题: faq.md
+      - 免责声明: disclaimer.md
+
+markdown_extensions:
+  - attr_list
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+extra_css:
+  - mkdocs/stylesheets/extra.css

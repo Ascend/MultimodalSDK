@@ -1,58 +1,101 @@
 # 快速入门
 
-**简介**
+Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resize/crop、视频帧解码与音频加载等。本文将帮助你在 **5 分钟内** 通过 Docker 启动环境并跑通第一个 Python 示例。
 
-Multimodal SDK 提供了一系列 CPU 高性能和易用性的接口，本章节通过介绍部分接口的使用，帮助用户熟悉使用本软件。
+如需在宿主机原生安装，请参阅 [安装部署](./installation_guide.md)。
 
-**环境准备**
+## 前置条件
 
-- 准备 Atlas A2 推理系列产品的服务器，并安装对应的驱动和固件，具体安装过程请参见《CANN 软件安装指南》中的"安装 NPU 驱动和固件"章节（商用版）或"安装 NPU 驱动和固件"章节（社区版）。
-- 安装 CANN Toolkit，具体安装过程请参见《CANN 软件安装指南》的"安装 CANN"章节（商用版）或《CANN 软件安装指南》的"安装 CANN"章节（社区版）。
-- 安装 Multimodal SDK 以及相关依赖，具体安装过程请参见[安装部署](./installation_guide.md)。
+开始之前，请确认：
 
-**使用流程**
+- **硬件**：Atlas 800I A2 推理服务器（ARM64），详见 [简介 - 支持的硬件](./introduction.md#支持的硬件和操作系统)
+- **驱动**：宿主机已安装与 CANN 9.0.0 兼容的 NPU 驱动，请参阅 [CANN 兼容性矩阵](https://www.hiascend.com/document)
+- **Docker**：已安装 Docker，且当前用户可运行容器
+- **测试图片**：准备一张 jpg/jpeg 图片，文件权限不高于 640（`chmod 640`）
 
-- 使用高性能接口
+## 步骤 1：拉取镜像
 
-    Multimodal SDK 提供了一系列 CPU 高性能接口（当前 Python API 的 `DeviceMode` 仅支持 CPU）。在 Ascend 环境下如需 NPU 加速，可通过 [patcher](./api/patcher.md) 集成 vLLM 补丁实现。用户可以根据这些接口自行选用集成到自己的业务流程中，本章节提供几个高性能接口的示例作为参考。
+```bash
+docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64
+docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64 \
+  multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64
+```
 
-    1. 高性能图像解码接口：
+## 步骤 2：启动容器
 
-        ```python
-        from mm import Image
-        img = Image.open("/home/test.jpg", "cpu")  # 样例代码的图片需要开发者自行替换
-        ```
+> [!NOTE] 说明
+>
+> - `--device /dev/davinci0` 中的设备编号需按宿主机实际 NPU 编号调整（如 `davinci1`）。
+> - `-v /path/to/testdata:/data` 将宿主机测试图片目录挂载到容器内，便于步骤 4 读取。
 
-    2. 高性能图像数据处理 resize 接口：
+将 `/path/to/testdata` 替换为宿主机上存放测试图片的目录（需包含至少一张 jpg/jpeg 文件）：
 
-        ```python
-        from mm import Image, DeviceMode, Interpolation
-        img = Image.open("/home/test.jpg", "cpu")  # 样例代码的图片需要开发者自行替换
-        img_resize = img.resize((500, 500), Interpolation.BICUBIC, DeviceMode.CPU)
-        ```
+```bash
+docker run \
+    --name multimodal_container \
+    --device /dev/davinci0 \
+    --device /dev/davinci_manager \
+    --device /dev/devmm_svm \
+    --device /dev/hisi_hdc \
+    -v /usr/local/dcmi:/usr/local/dcmi \
+    -v /usr/local/bin/npu-smi:/usr/local/bin/npu-smi \
+    -v /usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64 \
+    -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
+    -v /etc/ascend_install.info:/etc/ascend_install.info \
+    -v /path/to/testdata:/data \
+    -itd multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64 bash
+```
 
-    3. 高性能图像数据处理 crop 接口：
+## 步骤 3：进入容器并加载环境
 
-        ```python
-        from mm import Image, DeviceMode
-        img = Image.open("/home/test.jpg", "cpu")  # 样例代码的图片需要开发者自行替换
-        img_crop = img.crop(10, 10, 10, 10, DeviceMode.CPU)
-        ```
+```bash
+docker exec -it multimodal_container bash
+source ${MULTIMODAL_SDK_HOME}/script/set_env.sh
+```
 
-- 端到端验证示例
+## 步骤 4：运行验证脚本
 
-    完成[安装部署](./installation_guide.md)后，可按以下步骤验证 SDK 是否正常工作（请将 `/home/test.jpg` 替换为实际 jpg/jpeg 文件路径，并确保文件权限不高于 640）：
+使用容器内挂载路径下的图片（示例为 `/data/test.jpg`），然后执行：
 
-    ```python
-    # 1. 安装完成后在 shell 中执行：source ${MULTIMODAL_SDK_HOME}/script/set_env.sh
-    from mm import Image, DeviceMode, Interpolation
+```bash
+export TEST_IMAGE="/data/test.jpg"
+chmod 640 "$TEST_IMAGE"
+python3 - <<'EOF'
+import os
+from mm import Image, DeviceMode, Interpolation
 
-    img = Image.open("/home/test.jpg", "cpu")
-    img_resize = img.resize((500, 500), Interpolation.BICUBIC, DeviceMode.CPU)
-    arr = img_resize.numpy()
-    print(f"resize output shape: {arr.shape}")  # 预期输出 (500, 500, 3)
-    ```
+test_image = os.environ["TEST_IMAGE"]
+img = Image.open(test_image, "cpu")
+img_resize = img.resize((500, 500), Interpolation.BICUBIC, DeviceMode.CPU)
+print(f"resize output shape: {img_resize.numpy().shape}")
+EOF
+```
 
-- 使用开源推理框架对接接口
+### 验证成功
 
-    基于 Multimodal SDK 提供的高性能接口，Multimodal SDK 也提供了对接开源推理框架 vLLM 的适配方案，基于 vLLM 以及 vLLM-Ascend 的 patch 机制，用户可以根据 [patcher](./api/patcher.md) 中的操作指导将 Multimodal SDK 的加速效果应用在自己的程序之中。
+若输出以下结果，说明 SDK 已就绪：
+
+```text
+resize output shape: (500, 500, 3)
+```
+
+## 下一步
+
+| 目标 | 文档 |
+| -- | -- |
+| 图像 resize/crop 可视化样例 | [样例和指导 - 图片处理](./user_guide.md#图片处理) |
+| 视频帧解码 | [样例和指导 - 视频处理](./user_guide.md#视频处理) |
+| 音频加载 | [样例和指导 - 音频处理](./user_guide.md#音频处理) |
+| Qwen2VL / InternVL2 预处理加速 | [Adapter](./api/adapter.md) |
+| vLLM 推理框架集成 | [patcher](./api/patcher.md) |
+| API 完整参考 | [功能函数参考](./api/function_reference.md) |
+
+## 常见问题速查
+
+| 现象 | 处理方式 |
+| -- | -- |
+| 文件权限报错 | 确保图片权限不高于 640：`chmod 640 "$TEST_IMAGE"` |
+| 容器内找不到测试图片 | 确认步骤 2 已挂载宿主机目录，且 `TEST_IMAGE` 使用容器内路径（如 `/data/test.jpg`） |
+| 容器无法访问 NPU | 检查 NPU 驱动挂载与 `--device /dev/davinci*` 设备号 |
+| 导入 `mm` 失败 | 确认已执行 `source ${MULTIMODAL_SDK_HOME}/script/set_env.sh` |
+| 更多问题 | [FAQ](./faq.md)、[附录](./appendix.md) |
