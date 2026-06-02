@@ -82,7 +82,7 @@ docker run ... -v /path/to/testdata:/data ...
 export TEST_IMAGE="/data/test.jpg"
 ```
 
-详见 [快速入门 - 步骤 2](./quick_start.md#步骤-2启动容器)。
+详见 [快速入门 - 步骤 2](./quickstart.md#步骤-2启动容器)。
 
 ### Q: 容器无法访问 NPU？
 

@@ -9,7 +9,7 @@
 
 | 场景 | 文档 |
 | -- | -- |
-| Docker 快速体验（约 5 分钟） | [快速入门](./quick_start.md) |
+| Docker 快速体验（约 5 分钟） | [快速入门](./quickstart.md) |
 | 宿主机原生安装部署 | [安装部署](./installation_guide.md) |
 | 已安装，查阅 API | [Python 接口说明](./api/README.md) |
 

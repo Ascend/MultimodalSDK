@@ -8,7 +8,7 @@
 | -- | -- |
 | [简介](./introduction.md) | 产品概述、软件架构与硬件支持 |
 | [安装部署](./installation_guide.md) | 环境准备、依赖安装与软件包部署 |
-| [快速入门](./quick_start.md) | Docker 5 分钟上手与首次验证 |
+| [快速入门](./quickstart.md) | Docker 5 分钟上手与首次验证 |
 | [样例和指导](./user_guide.md) | 图像、视频、音频处理参考样例 |
 
 ## API 参考

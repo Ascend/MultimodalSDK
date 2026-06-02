@@ -86,7 +86,7 @@ docker exec -it multimodal_container bash
 
 MultimodalSDK provides sample code to help developers get started quickly. You can access the examples through the following link:
 
-- [MultimodalSDK Samples](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docs/zh/quick_start.md)
+- [MultimodalSDK Samples](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docs/zh/quickstart.md)
 
 ### Development
 
