@@ -12,8 +12,8 @@
 
 ## ✨ 最新消息
 
-🔹 **[2026.04.30]**：Multimodal SDK 26.0.0发布
-🔹 **[2025.12.30]**：Multimodal SDK 开源发布
+- **[2026.04.25]**：[Multimodal SDK 26.0.0](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.0.0) 发布
+- **[2025.12.30]**：Multimodal SDK 开源发布
 
 ## ℹ️ 简介
 
@@ -32,11 +32,11 @@
 
 ## 🚀 快速入门
 
-首次使用请阅读 [快速入门](docs/zh/quick_start.md)，通过 Docker 在约 5 分钟内完成环境启动与首次验证。
+首次使用请阅读 [快速入门](docs/zh/quickstart.md)，通过 Docker 在约 5 分钟内完成环境启动与首次验证。
 
 | 场景 | 指南 |
 |:--|:--|
-| Docker 快速体验 | [快速入门](docs/zh/quick_start.md) |
+| Docker 快速体验 | [快速入门](docs/zh/quickstart.md) |
 | 原生安装部署 | [安装部署](docs/zh/installation_guide.md) |
 | 参考样例 | [样例和指导](docs/zh/user_guide.md)（含图像、视频、音频） |
 | 常见问题 | [FAQ](docs/zh/faq.md) |
@@ -63,7 +63,7 @@
 | -- | -- |
 | [简介](docs/zh/introduction.md) | 产品概述、软件架构与硬件支持 |
 | [安装部署](docs/zh/installation_guide.md) | 环境准备、依赖安装与软件包部署 |
-| [快速入门](docs/zh/quick_start.md) | 最小可运行示例与接口概览 |
+| [快速入门](docs/zh/quickstart.md) | 最小可运行示例与接口概览 |
 | [样例和指导](docs/zh/user_guide.md) | 图像、视频、音频处理参考样例 |
 
 ### API 参考

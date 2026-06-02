@@ -6,7 +6,7 @@ Multimodal SDK 提供宿主机原生安装方式。完整安装（含 NPU 驱动
 
 | 场景                  | 推荐路径                              |
 | ------------------- | --------------------------------- |
-| 首次体验 / 开发调试（约 5 分钟） | [快速入门 - Docker](./quick_start.md) |
+| 首次体验 / 开发调试（约 5 分钟） | [快速入门 - Docker](./quickstart.md) |
 | 生产环境宿主机原生部署         | 本文                                |
 | 版本兼容性查询             | [版本配套说明](./release_notes.md)      |
 
@@ -360,7 +360,7 @@ EOF
 resize output shape: (500, 500, 3)
 ```
 
-更多样例请参阅 [快速入门](./quick_start.md) 与 [样例和指导](./user_guide.md)。
+更多样例请参阅 [快速入门](./quickstart.md) 与 [样例和指导](./user_guide.md)。
 
 ---
 
