@@ -839,3 +839,158 @@ waveform, sr = load_audio(single_audio_path)
 batch_from_filelist = load_audio(audio_file_paths)
 batch_from_directory = load_audio(audio_directory)
 ```
+
+## mm.BaseFrameSelector<a name="ZH-CN_TOPIC_0000002483785934"></a>
+
+基于文本-图像匹配的关键帧选择器抽象基类，封装模型初始化、特征提取、边界定位、输入校验和相似度计算等公共能力。该类不可直接实例化，需通过子类KRangFrameSelector或KFrameSelector使用。
+
+### BaseFrameSelector属性列表<a name="ZH-CN_TOPIC_0000002483785935"></a>
+
+|属性名|类型|说明|
+|--|--|--|
+|model_path|str|CLIP模型权重路径。|
+|device_id|int|NPU设备索引。|
+|model_type|str|模型类型，取值为"clip"（英文）或"cn_clip"（中文）。|
+|batch_size|int|图像特征提取批次大小，默认为64。|
+|similar_threshold|float|文本-图像相似度衰减阈值，相似度低于（最大相似度 - 该值）的帧将被过滤。默认为0.025。|
+|similar_threshold_image|float|图像-图像相似度梯度阈值，用于场景边界检测，相邻帧间余弦相似度梯度超过该值时判定为场景切换。默认为0.015。|
+|image_size|tuple|输入图像缩放尺寸，需与模型训练尺寸一致。默认为(672, 672)。|
+
+### BaseFrameSelector.\_\_init\_\_<a name="ZH-CN_TOPIC_0000002483785936"></a>
+
+**功能描述<a name="section957011509130"></a>**
+
+初始化关键帧选择器，加载指定模型并完成参数校验。
+
+**函数原型<a name="section12411139493"></a>**
+
+```typescript
+__init__(model_path: str, device_id: int, model_type: str = "clip", similar_threshold: float = 0.025, image_similar_threshold: float = 0.015, image_size: tuple = (672, 672))
+```
+
+**输入参数说明<a name="section56731639596"></a>**
+
+|参数名|数据类型|可选/必选|说明|
+|--|--|--|--|
+|model_path|str|必选|CLIP模型权重路径，必须为非空字符串，且指向有效的目录。|
+|device_id|int|必选|NPU设备索引，必须为整数。|
+|model_type|str|可选|模型类型，取值为"clip"（英文）或"cn_clip"（中文），默认为"clip"。|
+|similar_threshold|float|可选|文本-图像相似度衰减阈值，取值范围为[0, 1]，默认为0.025。|
+|image_similar_threshold|float|可选|图像相似度梯度阈值，用于场景边界检测，取值范围为[0, 1]，默认为0.015。|
+|image_size|tuple|可选|输入图像缩放尺寸，形如(width, height)，宽高取值范围为[10, 8192]，默认为(672, 672)。|
+
+>[!NOTE] 说明
+>
+>- BaseFrameSelector为抽象类，不可直接实例化，需通过子类KRangFrameSelector或KFrameSelector创建实例。
+>- model_path所指向的目录必须存在，且目录权限必须为640，目录属主必须与当前用户一致。
+
+### BaseFrameSelector.select\_keyframes<a name="ZH-CN_TOPIC_0000002483785937"></a>
+
+**功能描述<a name="section957011509130"></a>**
+
+从视频帧序列中选择与查询文本相关的关键帧，为抽象方法，由子类实现具体选择策略。
+
+**函数原型<a name="section12411139493"></a>**
+
+```typescript
+select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resample: bool) -> Tuple[List[int], List[np.ndarray]]
+```
+
+**输入参数说明<a name="section56731639596"></a>**
+
+|参数名|数据类型|可选/必选|说明|
+|--|--|--|--|
+|query|str|必选|描述目标视觉内容的查询文本，必须为非空字符串。|
+|frames|List[np.ndarray]|必选|视频帧列表。|
+|sample_num|int|必选|最大关键帧数量，必须为正整数。|
+|do_resample|bool|必选|是否在区间内进行自适应重采样。|
+
+**返回值说明<a name="section108231036193513"></a>**
+
+|数据类型|说明|
+|--|--|
+|Tuple[List[int], List[np.ndarray]]|元组，包含关键帧索引列表和关键帧图像列表。|
+
+## mm.KRangFrameSelector<a name="ZH-CN_TOPIC_0000002483785938"></a>
+
+基于区间合并的关键帧选择器，继承自BaseFrameSelector。定位与查询文本相关的连续场景区间，并在区间内自适应采样关键帧, 适用于需要时序上下文的任务。
+
+### KRangFrameSelector.select\_keyframes<a name="ZH-CN_TOPIC_0000002483785939"></a>
+
+**功能描述<a name="section957011509130"></a>**
+
+区间关键帧选择主流程：提取特征并计算相似度后，贪心选择候选帧并扩展为场景区间，合并相邻语义相似区间，最后在区间内自适应重采样。
+
+**函数原型<a name="section12411139493"></a>**
+
+```typescript
+select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resample: bool) -> Tuple[List[int], List[np.ndarray]]
+```
+
+**输入参数说明<a name="section56731639596"></a>**
+
+|参数名|数据类型|可选/必选|说明|
+|--|--|--|--|
+|query|str|必选|描述目标视觉内容的查询文本，必须为非空字符串。|
+|frames|List[np.ndarray]|必选|视频帧列表。|
+|sample_num|int|必选|最大关键帧数量，必须为正整数。|
+|do_resample|bool|必选|是否在合并区间内进行自适应重采样。为True时，在区间内按相似度top-k与均匀填充策略重采样；为False时，仅返回合并后的区间端点。|
+
+**返回值说明<a name="section108231036193513"></a>**
+
+|数据类型|说明|
+|--|--|
+|Tuple[List[int], List[np.ndarray]]|元组，包含关键帧索引列表（已去重排序）和关键帧图像列表。|
+
+**示例<a name="section1587174015349"></a>**
+
+```python
+from mm import KRangFrameSelector
+import numpy as np
+
+selector = KRangFrameSelector(model_path="/path/to/clip_model", device_id=0, model_type="clip")
+frames = [np.random.randint(0, 255, (720, 1280, 3), dtype=np.uint8) for _ in range(100)]
+indices, key_frames = selector.select_keyframes(query="a cat sitting on a sofa", frames=frames, sample_num=8, do_resample=True)
+```
+
+## mm.KFrameSelector<a name="ZH-CN_TOPIC_0000002483785940"></a>
+
+离散关键帧选择器，继承自BaseFrameSelector。选择与查询文本相关且视觉多样的离散关键帧, 适用于需要视觉多样性的任务。
+
+### KFrameSelector.select\_keyframes<a name="ZH-CN_TOPIC_0000002483785941"></a>
+
+**功能描述<a name="section957011509130"></a>**
+
+离散关键帧选择主流程：提取特征并计算相似度后，贪心选择候选帧，并通过特征距离去重保证视觉多样性。
+
+**函数原型<a name="section12411139493"></a>**
+
+```typescript
+select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resample: bool = False) -> Tuple[List[int], List[np.ndarray]]
+```
+
+**输入参数说明<a name="section56731639596"></a>**
+
+|参数名|数据类型|可选/必选|说明|
+|--|--|--|--|
+|query|str|必选|描述目标视觉内容的查询文本，必须为非空字符串。|
+|frames|List[np.ndarray]|必选|视频帧列表。|
+|sample_num|int|必选|最大关键帧数量，必须为正整数。|
+|do_resample|bool|可选|该参数在KFrameSelector中未使用，默认为False。|
+
+**返回值说明<a name="section108231036193513"></a>**
+
+|数据类型|说明|
+|--|--|
+|Tuple[List[int], List[np.ndarray]]|元组，包含关键帧索引列表（已去重排序）和关键帧图像列表。|
+
+**示例<a name="section1587174015349"></a>**
+
+```python
+from mm import KFrameSelector
+import numpy as np
+
+selector = KFrameSelector(model_path="/path/to/clip_model", device_id=0, model_type="clip")
+frames = [np.random.randint(0, 255, (720, 1280, 3), dtype=np.uint8) for _ in range(100)]
+indices, key_frames = selector.select_keyframes(query="a dog running in the park", frames=frames, sample_num=8)
+```

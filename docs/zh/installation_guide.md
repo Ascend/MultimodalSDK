@@ -177,6 +177,7 @@ echo $ASCEND_HOME
 | 依赖名称         | 版本建议   | 说明                 |
 | ------------ | ------ | ------------------ |
 | transformers | 4.51.3 | 通过 pip 安装          |
+| einops | 0.8.2 | 通过 pip 安装          |
 | pillow       | 11.2.1 | 通过 pip 安装          |
 | numpy        | 1.26.4 | 通过 pip 安装          |
 | torch        | 2.5.1  | 见下方昇腾 aarch64 安装说明 |
