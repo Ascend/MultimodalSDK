@@ -16,7 +16,6 @@
 # See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
 
-
 __all__ = ["BaseFrameSelector", "KRangFrameSelector", "KFrameSelector"]
 
 from .frame_selector import BaseFrameSelector, KRangFrameSelector, KFrameSelector
