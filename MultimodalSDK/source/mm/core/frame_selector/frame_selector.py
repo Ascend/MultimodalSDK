@@ -530,7 +530,7 @@ class KRangFrameSelector(BaseFrameSelector):
         if do_resample:
             resampled_frame_indices = self._resample(merged_frame_indices, image_features, query_feature, sample_num)
         else:
-            resampled_frame_indices = merged_frame_indices
+            resampled_frame_indices = [(interval[0] + interval[1]) // 2 for interval in merged_frame_indices]
         unique_indices = sorted(set(resampled_frame_indices))
         key_frames = [frames[i] for i in unique_indices]
         return unique_indices, key_frames
