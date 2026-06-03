@@ -48,6 +48,9 @@ export PYTHONPATH="${PYTHONPATH}:$PRESMOKE_DIR"
 pip3 install pillow==12.0.0
 pip3 install torchvision==0.24.1
 pip3 install librosa
+pip3 install torch-npu==2.9.1
+pip3 install transformers==4.51.3
+pip3 install einops
 
 # Run pytest on all test cases in mm_acc directory
 python3 -m pytest "$PRESMOKE_DIR/mm_acc/" -v

@@ -46,6 +46,9 @@ done
 
 pip3 install pillow==12.0.0
 pip3 install torchvision==0.24.1
+pip3 install torch-npu==2.9.1
+pip3 install transformers==4.51.3
+pip3 install einops
 
 BUILD_ARGS=("${PARSED_BUILD_ARGS[@]}")
 echo "[INFO] Cleaning build, dist, egg-info..."
@@ -139,9 +142,9 @@ if [[ "${BUILD_ARGS[*]}" == *"test"* ]]; then
     echo "[INFO] Executing pytest with coverage report..."
 
     cd "${A_ROOT_DIR}"
-    export LD_LIBRARY_PATH="${A_ROOT_DIR}/output/lib:/usr1/AccSDK/output/opensource/libjpeg-turbo/lib:$LD_LIBRARY_PATH"
-    export LD_LIBRARY_PATH="/usr1/AccSDK/output/opensource/FFmpeg/lib:$LD_LIBRARY_PATH"
-    export LD_LIBRARY_PATH="/usr1/AccSDK/output/opensource/soxr/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="${A_ROOT_DIR}/output/lib:${OUTPUT_DIR}/opensource/libjpeg-turbo/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="${OUTPUT_DIR}/opensource/FFmpeg/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="${OUTPUT_DIR}/opensource/soxr/lib:$LD_LIBRARY_PATH"
     # clean coverage first
     coverage erase
     LD_PRELOAD=/opt/buildtools/python-3.11.4/lib/python3.11/site-packages/torch.libs/libgomp-98df74fd.so.1.0.0 \

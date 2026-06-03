@@ -15,12 +15,39 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
-from .acc import (Tensor, TensorFormat, DataType, Image, ImageFormat, DeviceMode, Interpolation, video_decode,
-                  normalize, load_audio)
+from .acc import (
+    Tensor,
+    TensorFormat,
+    DataType,
+    Image,
+    ImageFormat,
+    DeviceMode,
+    Interpolation,
+    video_decode,
+    normalize,
+    load_audio,
+)
 from .comm import LogLevel, register_log_conf
 from .adapter import MultimodalQwen2VLImageProcessor, InternVL2PreProcessor
+from .core import BaseFrameSelector, KFrameSelector, KRangFrameSelector
 
-__all__ = ["Tensor", 'DataType', 'TensorFormat', 'Image', 'ImageFormat', 'LogLevel', 'register_log_conf', 'DeviceMode',
-           'Interpolation', 'video_decode', 'normalize', 'MultimodalQwen2VLImageProcessor', 'InternVL2PreProcessor',
-           'load_audio']
+__all__ = [
+    'Tensor',
+    'DataType',
+    'TensorFormat',
+    'Image',
+    'ImageFormat',
+    'LogLevel',
+    'register_log_conf',
+    'DeviceMode',
+    'Interpolation',
+    'video_decode',
+    'normalize',
+    'MultimodalQwen2VLImageProcessor',
+    'InternVL2PreProcessor',
+    'load_audio',
+    'BaseFrameSelector',
+    'KFrameSelector',
+    'KRangFrameSelector',
+]
 register_log_conf(LogLevel.INFO, None)
