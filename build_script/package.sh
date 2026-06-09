@@ -19,13 +19,16 @@
 # Author: Multimodal SDK
 # Create: 2025
 # History: NA
-set -e
+set -euo pipefail
 
 echo "==============Start packing=============="
 
 # MultimodalSDK目录
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-readonly SDK_VERSION=$(sed -n 's/^version:[[:space:]]*//p' "${ROOT_DIR}"/../ci/config/config.ini)
+SDK_VERSION="${SDK_VERSION:-$(sed -n 's/^version:[[:space:]]*//p' "${ROOT_DIR}/../ci/config/config.ini" 2>/dev/null)}"
+SDK_VERSION="${SDK_VERSION:-dev}"
+readonly SDK_VERSION
+
 cp -f ${ROOT_DIR}/MultimodalSDK/output/script/install.sh ${ROOT_DIR}/MultimodalSDK/output/
 # 创建输出目录
 OUTPUT_DIR="${ROOT_DIR}/output/"

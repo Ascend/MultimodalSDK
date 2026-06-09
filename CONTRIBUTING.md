@@ -47,16 +47,19 @@
 4. **代码开发**：请遵循代码规范。
 5. **开发构建验证**：
 
-   环境准备请参阅[安装指南](docs/zh/installation_guide.md)（Atlas 800I A2、Ubuntu 22.04 aarch64、CANN 9.0.0）。编译前请确保已执行 CANN 环境变量脚本，且 `AccSDK/opensource.tar.gz` 已就绪：
+   环境准备请参阅[安装指南](docs/zh/installation_guide.md)（Atlas 800I A2、Ubuntu 22.04 aarch64、CANN 9.0.0）。clone 后直接执行 `bash build_script/build_merge.sh`，脚本会自动下载并准备全部编译依赖（opensource、makeself、pybind11、googletest 等）：
 
    ```bash
    source /usr/local/Ascend/ascend-toolkit/set_env.sh
 
-   # 全量编译 + 打包
+   # 全量编译 + 打包（自动 fetch 依赖）
    bash build_script/build_merge.sh
 
    # 运行 AccSDK gtest + MultimodalSDK pytest
    bash build_script/build_merge.sh test
+
+   # 清理三方依赖、构建中间产物与输出产物（无需 CANN 环境）
+   bash build_script/build_merge.sh clean
    ```
 
    子项目也可独立构建：

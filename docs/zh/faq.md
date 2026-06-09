@@ -4,9 +4,35 @@
 
 ### Q: 导入 `mm` 失败，提示 `ModuleNotFoundError: No module named 'mm'`？
 
-**原因**：Multimodal SDK 环境变量未加载，或 Python 未找到已安装的 `mm` 包。
+**原因**：Python 未找到已安装的 `mm` 包（尚未安装 whl，或安装到了其他 Python 环境）。
 
 **处理**：
+
+```bash
+pip3 show mm
+python3 -c "import mm; print('mm import: OK')"
+```
+
+若 `pip3 show mm` 无输出，请先按[3.1 方式一：`.run` 包安装](./installation_guide.md#31-方式一run-包安装)或[3.2 方式二：Wheel 包安装](./installation_guide.md#32-方式二wheel-包安装)完成安装。
+
+### Q: 导入 `mm` 失败，提示 `libcore.so` 或 `libascendcl.so` 找不到？
+
+**原因**：
+
+- **Wheel 安装**：CANN 环境变量未加载，或 whl 版本不匹配/安装不完整。
+- **`.run` 安装**：未执行 `source set_env.sh`，或安装目录不完整。
+
+**处理（Wheel 安装）**：
+
+```bash
+source /usr/local/Ascend/ascend-toolkit/set_env.sh   # 路径以实际为准
+pip3 install --force-reinstall --no-deps /path/to/mm-*.whl
+python3 -c "import mm; print('mm import: OK')"
+```
+
+Wheel 包无需设置 `MULTIMODAL_SDK_HOME`，原生库已捆绑在 whl 内并在 `import mm` 时自动加载。
+
+**处理（`.run` 安装）**：
 
 ```bash
 source ${MULTIMODAL_SDK_HOME}/script/set_env.sh

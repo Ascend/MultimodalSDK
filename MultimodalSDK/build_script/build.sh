@@ -80,6 +80,32 @@ SO_DST="${PACKAGE_DIR}/$(basename "$SO_SRC")"
 cp -f "$SO_SRC" "$SO_DST"
 echo "[INFO] Copying acc.py to: ${SO_DST}"
 
+# copy native libs into package for wheel bundling
+IMPL_LIB_DIR="${PACKAGE_DIR}/lib"
+IMPL_OPENSOURCE_DIR="${PACKAGE_DIR}/opensource"
+rm -rf "${IMPL_LIB_DIR}" "${IMPL_OPENSOURCE_DIR}"
+mkdir -p "${IMPL_LIB_DIR}"
+
+if compgen -G "${B_REPO_DIR}/output/lib/libcore.so" > /dev/null; then
+  cp -Lf "${B_REPO_DIR}/output/lib/libcore.so" "${IMPL_LIB_DIR}/"
+  echo "[INFO] Copying libcore.so to: ${IMPL_LIB_DIR}/"
+else
+  echo "[ERROR] File not found: libcore.so"
+  exit 1
+fi
+
+for _lib_component in FFmpeg libjpeg-turbo soxr; do
+  _src_lib="${B_REPO_DIR}/output/opensource/${_lib_component}/lib"
+  if [ -d "${_src_lib}" ]; then
+    mkdir -p "${IMPL_OPENSOURCE_DIR}/${_lib_component}"
+    cp -rLf "${_src_lib}" "${IMPL_OPENSOURCE_DIR}/${_lib_component}/"
+    echo "[INFO] Copying ${_lib_component} libs to: ${IMPL_OPENSOURCE_DIR}/${_lib_component}/lib/"
+  else
+    echo "[ERROR] Directory not found: ${_src_lib}"
+    exit 1
+  fi
+done
+
 # build whl
 cd "${A_ROOT_DIR}"
 echo "[INFO] Executing python3 setup.py bdist_wheel..."
