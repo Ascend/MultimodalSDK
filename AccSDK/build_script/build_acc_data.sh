@@ -52,6 +52,15 @@ print_build_failure() {
 echo "[INFO] Starting build script for ACC_DATA repo: ${ACC_DATA_REPO_DIR}"
 print_build_start
 
+# ----------------------
+# Fetch third-party sources (pybind11, etc.)
+# ----------------------
+chmod +x "${SCRIPT_DIR_ACC_DATA}/fetch_acc_data_3rdparty.sh"
+if ! bash "${SCRIPT_DIR_ACC_DATA}/fetch_acc_data_3rdparty.sh"; then
+    echo "[ERROR] Failed to fetch acc_data third-party dependencies." >&2
+    print_build_failure
+    exit 1
+fi
 
 # ----------------------
 # 基础检查
@@ -108,10 +117,9 @@ echo "[INFO] Running build step for ACCDATA repo with type: ${ACC_DATA_BUILD_TYP
 if bash "${ACC_DATA_BUILD_SCRIPT}" "${ACC_DATA_BUILD_TYPE}"; then
     echo "[INFO] Build succeeded."
     print_build_success
-    return 0
+    return 0 2>/dev/null || exit 0
 else
     echo "[ERROR] Build failed." >&2
     print_build_failure
     exit 1
 fi
-

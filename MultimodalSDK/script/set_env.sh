@@ -21,7 +21,7 @@
 
 export MULTIMODAL_SDK_HOME=""
 
-export LD_LIBRARY_PATH="${MULTIMODAL_SDK_HOME}/lib:$LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH="${MULTIMODAL_SDK_HOME}/opensource/FFmpeg/lib:$LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH="${MULTIMODAL_SDK_HOME}/opensource/libjpeg-turbo/lib:$LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH="${MULTIMODAL_SDK_HOME}/opensource/soxr/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="${MULTIMODAL_SDK_HOME}/lib:${LD_LIBRARY_PATH:-}"
+export LD_LIBRARY_PATH="${MULTIMODAL_SDK_HOME}/opensource/FFmpeg/lib:${LD_LIBRARY_PATH:-}"
+export LD_LIBRARY_PATH="${MULTIMODAL_SDK_HOME}/opensource/libjpeg-turbo/lib:${LD_LIBRARY_PATH:-}"
+export LD_LIBRARY_PATH="${MULTIMODAL_SDK_HOME}/opensource/soxr/lib:${LD_LIBRARY_PATH:-}"

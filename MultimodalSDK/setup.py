@@ -23,7 +23,13 @@ setup(
     packages=find_packages(where='source'),
     package_dir={'': 'source'},
     package_data={
-        'mm.acc._impl': ['_acc.so'],
+        'mm.acc._impl': [
+            '_acc.so',
+            'lib/*.so*',
+            'opensource/FFmpeg/lib/*.so*',
+            'opensource/libjpeg-turbo/lib/*.so*',
+            'opensource/soxr/lib/*.so*',
+        ],
     },
     include_package_data=True,
     zip_safe=False,
