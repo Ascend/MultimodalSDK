@@ -1,0 +1,430 @@
+diff --git a/vllm_ascend/ops/scc_compressor.py b/vllm_ascend/ops/scc_compressor.py
+new file mode 100644
+index 00000000..7f5f5de6
+--- /dev/null
++++ b/vllm_ascend/ops/scc_compressor.py
+@@ -0,0 +1,424 @@
++#
++# Copyright (c) 2026 Huawei Technologies Co., Ltd. All Rights Reserved.
++# This file is a part of the vllm-ascend project.
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++#
++# SCC (Semantic Connected Components) vision token compression.
++# Algorithm adapted from LLaVA-CR (llava/model/llava_arch_zip.py).
++#
++# Pipeline: Spatial merge per frame -> Temporal merge across frames ->
++# Token merge of all original tokens into the surviving cluster centers.
++
++import numpy as np
++import torch
++
++DEFAULT_TAU = 0.95
++DEFAULT_EPSILON = 0.05
++NORM_EPS = 1e-12
++MIN_LOG_GRAPH_SIZE = 2
++DETERMINISTIC_SEED_MASK = 0x7FFFFFFF
++CPU_DEVICE_TYPE = "cpu"
++DEFAULT_LABEL_PROP_MAX_ITERS = 64
++LABEL_PROP_FLATTEN_ITERS = 8
++CENTER_SELF_COUNT = 1
++
++
++class UnionFind:
++    def __init__(self, size: int):
++        self.parent = np.arange(size, dtype=np.int64)
++        self.rank = np.zeros(size, dtype=np.int32)
++
++    def find(self, x: int) -> int:
++        while self.parent[x] != x:
++            self.parent[x] = self.parent[self.parent[x]]
++            x = self.parent[x]
++        return x
++
++    def batch_union(self, x_arr: np.ndarray, y_arr: np.ndarray) -> None:
++        for x, y in zip(x_arr, y_arr):
++            x_root = self.find(int(x))
++            y_root = self.find(int(y))
++            if x_root == y_root:
++                continue
++            if self.rank[x_root] < self.rank[y_root]:
++                self.parent[x_root] = y_root
++            else:
++                self.parent[y_root] = x_root
++                if self.rank[x_root] == self.rank[y_root]:
++                    self.rank[x_root] += 1
++
++
++def approximate_components(adj_matrix: np.ndarray,
++                           epsilon: float = DEFAULT_EPSILON):
++    """Approximate connected components on a dense boolean adjacency matrix.
++
++    Samples O(log n / eps^2) anchors, unions them with their neighbours, and
++    reports the resulting clusters. Unsampled nodes that have no edge to any
++    sampled anchor become singleton clusters. Output is a list of int lists.
++    """
++    n = adj_matrix.shape[0]
++    if n == 0:
++        return []
++
++    unassigned_nodes = np.ones(n, dtype=bool)
++
++    sample_size = min(
++        n,
++        int(np.ceil(np.log(max(n, MIN_LOG_GRAPH_SIZE)) / epsilon**2)),
++    )
++    seed = int(adj_matrix.sum()) & DETERMINISTIC_SEED_MASK
++    rng = np.random.default_rng(seed)
++    sampled_nodes = rng.choice(n, size=sample_size, replace=False)
++    unassigned_nodes[sampled_nodes] = False
++
++    neighbor_dict: dict[int, np.ndarray] = {}
++    for i in sampled_nodes:
++        neighbors = np.nonzero(adj_matrix[i])[0]
++        neighbor_dict[i] = neighbors
++        unassigned_nodes[neighbors] = False
++
++    remain_nodes = np.nonzero(unassigned_nodes)[0]
++    remain_nodes = [[int(e)] for e in remain_nodes]
++
++    uf = UnionFind(n)
++    all_x, all_y = [], []
++    for i in sampled_nodes:
++        for j in neighbor_dict[i]:
++            all_x.append(int(i))
++            all_y.append(int(j))
++    if all_x:
++        uf.batch_union(np.array(all_x), np.array(all_y))
++
++    sampled_roots = np.array([uf.find(int(i)) for i in sampled_nodes])
++    unique_roots = np.unique(sampled_roots)
++
++    roots_all = np.array([uf.find(int(i)) for i in range(n)])
++    components = []
++    for root in unique_roots:
++        cluster = np.where(roots_all == root)[0].tolist()
++        if len(cluster) > 0:
++            components.append([int(x) for x in cluster])
++    components.extend(remain_nodes)
++
++    degrees = np.count_nonzero(adj_matrix, axis=1)
++
++    def get_sort_key(cluster):
++        max_degree = -1
++        min_node = float("inf")
++        for node in cluster:
++            current_degree = degrees[node]
++            if (current_degree > max_degree) or (
++                current_degree == max_degree and node < min_node
++            ):
++                max_degree = current_degree
++                min_node = node
++        return min_node
++
++    components.sort(key=get_sort_key)
++    return components
++
++
++def _l2_normalize(x: torch.Tensor, dim: int = -1) -> torch.Tensor:
++    norm = torch.norm(x, p=2, dim=dim, keepdim=True).clamp_min(NORM_EPS)
++    return x / norm
++
++
++def _cosine_adjacency(x: torch.Tensor, tau: float) -> torch.Tensor:
++    """Return adjacency where entry (i, j) means cos(x_i, x_j) > tau."""
++    x_n = _l2_normalize(x)
++    if x.dim() == 2:
++        sim = torch.matmul(x_n, x_n.transpose(0, 1))
++    elif x.dim() == 3:
++        sim = torch.matmul(x_n, x_n.transpose(1, 2))
++    else:
++        raise ValueError(f"Unsupported feature dim: {x.dim()}")
++    return sim > tau
++
++
++def _merge_by_components(features: torch.Tensor, components) -> torch.Tensor:
++    """Mean-pool tokens in each component. features: [N, D] -> [K, D]."""
++    out = []
++    for comp in components:
++        selected = features[comp]
++        out.append(selected.mean(dim=0))
++    return torch.stack(out, dim=0)
++
++
++def _token_merge_back(
++    centers: torch.Tensor, originals: torch.Tensor
++) -> torch.Tensor:
++    """After clustering, fold every original token into its nearest cluster center.
++
++    Mirrors LLaVA-CR's "Token Merge for all tokens" step (llava_arch_zip.py
++    L478-498): each original token contributes to its closest center by
++    averaging.
++
++    centers:   [K, D]
++    originals: [N, D]
++    returns:   [K, D]
++    """
++    c_n = _l2_normalize(centers, dim=1)
++    o_n = _l2_normalize(originals, dim=1)
++    sim = torch.matmul(o_n, c_n.t())  # [N, K]
++    closest = torch.argmax(sim, dim=1)  # [N]
++
++    K = centers.shape[0]
++    merged = torch.zeros_like(centers)
++    merged.scatter_add_(
++        dim=0,
++        index=closest.view(-1, 1).expand(-1, centers.shape[1]),
++        src=originals,
++    )
++    counts = torch.bincount(closest, minlength=K).to(centers.dtype)
++    counts = counts + CENTER_SELF_COUNT
++    out = centers + merged
++    out = out / counts.unsqueeze(1)
++    return out
++
++
++# The NPU path keeps SCC on the same device as the vision tower. It uses exact
++# label propagation; `epsilon` only affects the CPU fallback sampler.
++def _label_prop_components(
++    adj: torch.Tensor,
++    max_iters: int = DEFAULT_LABEL_PROP_MAX_ITERS,
++):
++    """Connected-component labels on a boolean adjacency via label propagation.
++
++    adj: [N, N] bool (assumed ~symmetric; self-loops added internally).
++    Returns (labels[N] in [0, K), K).
++    """
++    N = adj.shape[0]
++    device = adj.device
++    if N == 0:
++        return torch.zeros(0, dtype=torch.long, device=device), 0
++
++    adj = adj | adj.transpose(0, 1)
++    eye = torch.eye(N, dtype=torch.bool, device=device)
++    adj = adj | eye
++
++    sentinel = N
++    labels = torch.arange(N, dtype=torch.long, device=device)
++
++    for _ in range(max_iters):
++        neighbor_labels = torch.where(
++            adj,
++            labels.unsqueeze(0).expand(N, N),
++            torch.full((1,), sentinel, dtype=torch.long, device=device),
++        )
++        new_labels = neighbor_labels.min(dim=1).values
++        new_labels = torch.minimum(new_labels, labels[new_labels.clamp_max(N - 1)])
++        if torch.equal(new_labels, labels):
++            labels = new_labels
++            break
++        labels = new_labels
++
++    for _ in range(LABEL_PROP_FLATTEN_ITERS):
++        jumped = labels[labels]
++        if torch.equal(jumped, labels):
++            break
++        labels = jumped
++
++    unique_roots, inverse = torch.unique(labels, sorted=True, return_inverse=True)
++    K = int(unique_roots.numel())
++    return inverse, K
++
++
++def _component_means(features: torch.Tensor, labels: torch.Tensor,
++                     K: int) -> torch.Tensor:
++    """Mean-pool `features` ([N, D]) by `labels` ([N] in [0, K)) -> [K, D]."""
++    D = features.shape[1]
++    sums = torch.zeros((K, D), dtype=features.dtype, device=features.device)
++    sums.scatter_add_(0, labels.unsqueeze(-1).expand(-1, D), features)
++    counts = torch.bincount(labels, minlength=K)
++    if counts.numel() != K or torch.any(counts == 0):
++        raise ValueError(
++            "_component_means received non-contiguous or empty component "
++            f"labels: K={K}, counts={counts.detach().cpu().tolist()}"
++        )
++    counts = counts.to(features.dtype)
++    return sums / counts.unsqueeze(-1)
++
++
++def _component_centers(
++    features: torch.Tensor,
++    adj: torch.Tensor,
++    epsilon: float,
++) -> torch.Tensor:
++    """Return SCC component centers using the backend implied by `adj.device`."""
++    if adj.device.type == CPU_DEVICE_TYPE:
++        components = approximate_components(adj.cpu().numpy(), epsilon=epsilon)
++        return _merge_by_components(features, components)
++
++    labels, num_components = _label_prop_components(adj)
++    return _component_means(features, labels, num_components)
++
++
++def _scc_image(
++    features: torch.Tensor,
++    tau: float,
++    epsilon: float,
++) -> torch.Tensor:
++    f32 = features.float()
++    adj = _cosine_adjacency(f32, tau)
++    centers = _component_centers(f32, adj, epsilon)
++    return _token_merge_back(centers, f32)
++
++
++def _scc_video(
++    features: torch.Tensor,
++    num_frames: int,
++    tokens_per_frame: int,
++    tau: float,
++    epsilon: float,
++) -> torch.Tensor:
++    f32 = features.float()
++    _, hidden_size = f32.shape
++
++    frame_features = f32.view(num_frames, tokens_per_frame, hidden_size)
++    adj_batched = _cosine_adjacency(frame_features, tau)
++    per_frame_centers = [
++        _component_centers(
++            frame_features[frame_idx],
++            adj_batched[frame_idx],
++            epsilon,
++        )
++        for frame_idx in range(num_frames)
++    ]
++    spatial_out = torch.cat(per_frame_centers, dim=0)
++
++    adj_t = _cosine_adjacency(spatial_out, tau)
++    temporal_centers = _component_centers(spatial_out, adj_t, epsilon)
++
++    return _token_merge_back(temporal_centers, f32)
++
++
++def scc_compress_image(
++    features: torch.Tensor,
++    tau: float = DEFAULT_TAU,
++    epsilon: float = DEFAULT_EPSILON,
++) -> torch.Tensor:
++    """Spatial-only SCC for a single image.
++
++    features: [N, D] -- vision tokens for ONE image.
++    returns:  [K, D] where K <= N is data-dependent.
++    """
++    if features.numel() == 0:
++        return features
++
++    orig_dtype = features.dtype
++    orig_device = features.device
++    out = _scc_image(features, tau=tau, epsilon=epsilon)
++    return out.to(device=orig_device, dtype=orig_dtype)
++
++
++def scc_compress_video(
++    features: torch.Tensor,
++    num_frames: int,
++    tokens_per_frame: int,
++    tau: float = DEFAULT_TAU,
++    epsilon: float = DEFAULT_EPSILON,
++) -> torch.Tensor:
++    """Two-stage SCC for video: spatial per-frame -> temporal across frames.
++
++    features:        [N, D] where N = num_frames * tokens_per_frame.
++    num_frames:      F
++    tokens_per_frame: tokens_per_frame
++    returns:         [K, D] K data-dependent.
++    """
++    if features.numel() == 0:
++        return features
++
++    N = features.shape[0]
++    expected = num_frames * tokens_per_frame
++    if N != expected:
++        raise ValueError(
++            f"scc_compress_video: N={N} must equal "
++            f"num_frames*tokens_per_frame={num_frames}*"
++            f"{tokens_per_frame}={expected}"
++        )
++
++    orig_dtype = features.dtype
++    orig_device = features.device
++    out = _scc_video(
++        features,
++        num_frames=num_frames,
++        tokens_per_frame=tokens_per_frame,
++        tau=tau,
++        epsilon=epsilon,
++    )
++    return out.to(device=orig_device, dtype=orig_dtype)
++
++
++def _select_topk_by_degree(degrees: torch.Tensor, k: int) -> torch.Tensor:
++    indices = torch.arange(
++        degrees.numel(),
++        device=degrees.device,
++        dtype=torch.int64,
++    )
++    scores = degrees.to(torch.int64) * (degrees.numel() + 1) - indices
++    return torch.topk(scores, k=k, largest=True).indices.sort().values
++
++
++def scc_compress_to_target(
++    features: torch.Tensor,
++    k_target: int,
++    num_frames: int = 1,
++    tokens_per_frame: int = 0,
++    tau: float = DEFAULT_TAU,
++    epsilon: float = DEFAULT_EPSILON,
++) -> torch.Tensor:
++    """Compress `features` to EXACTLY `k_target` tokens.
++
++    Runs the SCC pipeline, then adjusts to k_target:
++      - if output > k_target: keep the k_target most-connected centers
++        (by degree in the final similarity graph), average the rest into
++        their nearest survivor.
++      - if output < k_target: pad by duplicating the lowest-degree centers
++        (preserves the "image_pad" count that vLLM expects without adding
++        information).
++
++    This function exists because vLLM's prompt layout requires the vision
++    token count to be known up front via grid_thw.  We therefore estimate
++    k_target geometrically (ratio * N) outside and force SCC to land on it.
++
++    features: [N, D]
++    returns:  [k_target, D]
++    """
++    if num_frames > 1 and tokens_per_frame > 0:
++        compressed = scc_compress_video(
++            features,
++            num_frames=num_frames,
++            tokens_per_frame=tokens_per_frame,
++            tau=tau,
++            epsilon=epsilon,
++        )
++    else:
++        compressed = scc_compress_image(features, tau=tau, epsilon=epsilon)
++
++    K = compressed.shape[0]
++    if K == k_target:
++        return compressed
++
++    if K > k_target:
++        c_n = _l2_normalize(compressed.float(), dim=1)
++        sim_full = torch.matmul(c_n, c_n.t())
++        degrees = (sim_full > tau).sum(dim=1)
++        keep_idx = _select_topk_by_degree(degrees, k_target)
++        survivors = compressed[keep_idx]
++        out = _token_merge_back(survivors, compressed)
++        return out
++
++    pad_count = k_target - K
++    pad = compressed.mean(dim=0, keepdim=True).expand(pad_count, -1).clone()
++    return torch.cat([compressed, pad], dim=0)

@@ -1,0 +1,9 @@
+diff --git a/vllm_ascend/patch/platform/__init__.py b/vllm_ascend/patch/platform/__init__.py
+index bbcd1df2..a906126c 100644
+--- a/vllm_ascend/patch/platform/__init__.py
++++ b/vllm_ascend/patch/platform/__init__.py
+@@ -34,3 +34,4 @@ import vllm_ascend.patch.platform.patch_tool_choice_none_content  # noqa
+
+ if envs.VLLM_ASCEND_BALANCE_SCHEDULING:
+     import vllm_ascend.patch.platform.patch_balance_schedule  # noqa
++import vllm_ascend.patch.platform.patch_engine_core_scc  # noqa

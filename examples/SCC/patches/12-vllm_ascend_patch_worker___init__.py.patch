@@ -1,0 +1,9 @@
+diff --git a/vllm_ascend/patch/worker/__init__.py b/vllm_ascend/patch/worker/__init__.py
+index afb10063..206bd1a5 100644
+--- a/vllm_ascend/patch/worker/__init__.py
++++ b/vllm_ascend/patch/worker/__init__.py
+@@ -52,3 +52,4 @@ import vllm_ascend.patch.worker.patch_v2.patch_block_table  # noqa
+ import vllm_ascend.patch.worker.patch_qwen3vl  # noqa
+ import vllm_ascend.patch.worker.patch_deepencoder2  # noqa
+ import vllm_ascend.patch.worker.patch_qwen3_c8  # noqa
++import vllm_ascend.patch.worker.patch_qwen25vl_scc  # noqa
