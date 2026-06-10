@@ -278,7 +278,7 @@ class TestValidateModelFileSecurity:
         ):
             mock_stat_result = MagicMock()
             mock_stat_result.st_uid = 1000
-            mock_stat_result.st_mode = 0o40640
+            mock_stat_result.st_mode = 0o40750
             mock_stat.return_value = mock_stat_result
             yield {
                 "exists": mock_exists,
@@ -306,7 +306,7 @@ class TestValidateModelFileSecurity:
         mock_stat_result.st_uid = 1000
         mock_stat_result.st_mode = 0o40755
         security_mocks["stat"].return_value = mock_stat_result
-        with pytest.raises(PermissionError, match="permissions must be 640"):
+        with pytest.raises(PermissionError, match="permissions must be 750"):
             KRangFrameSelector(model_path=VALID_MODEL_PATH, device_id=0, model_type="clip")
 
     def test_valid_security(self, mock_transformers, security_mocks):

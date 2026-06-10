@@ -193,8 +193,8 @@ class BaseFrameSelector(ABC):
                 f"does not match current user (uid={current_uid})"
             )
         file_mode = stat.S_IMODE(path_stat.st_mode)
-        if file_mode != 0o640:
-            raise PermissionError(f"Model directory '{self.model_path}' permissions must be 640, got {oct(file_mode)}")
+        if file_mode != 0o750:
+            raise PermissionError(f"Model directory '{self.model_path}' permissions must be 750, got {oct(file_mode)}")
 
     def _init_model(self):
         """Dispatches to the model initializer matching model_type."""
