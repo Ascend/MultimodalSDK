@@ -1,0 +1,89 @@
+diff --git a/start_vllm_server.sh b/start_vllm_server.sh
+new file mode 100644
+index 00000000..bb414ba1
+--- /dev/null
++++ b/start_vllm_server.sh
+@@ -0,0 +1,83 @@
++#!/bin/bash
++# Start vLLM server for Qwen2.5-VL on 2x Ascend 910B (32GB each).
++#
++# first conda activate vllm-ascend
++
++# Why this script exists:
++#   Running `vllm serve` directly caused the EngineCore process to be killed
++#   by the Linux OOM killer mid-inference (confirmed via `dmesg | grep oom`).
++#   Root cause: vLLM's defaults (max_num_seqs=256, high max_model_len) reserve
++#   a lot of host RAM for scheduler/request buffers, and multimodal preprocessing
++#   spawns many OMP/BLAS threads, each with its own buffers. On a host with
++#   limited RAM this overflows and the kernel kills the server.
++#
++# Fix strategy:
++#   1. Cap CPU-side thread pools (OMP/BLAS/tokenizers) to a small number.
++#   2. Set --max-num-seqs=1 to match the client's num_concurrent=1 — no reason
++#      to reserve space for 256 concurrent requests we'll never send.
++#   3. Trim --max-model-len to what videomme actually needs:
++#      16 frames × ~700 tokens/frame ≈ 11.2K prompt + ~1K gen → 12288 is enough.
++#   4. --limit-mm-per-prompt tells vLLM the exact multimodal budget, so it
++#      doesn't pre-allocate buffers for unused video slots.
++
++set -euo pipefail
++
++# ── Environment ──
++export HF_HOME="${HF_HOME:-$HOME/.cache/huggingface}"
++
++# Source CANN environment (adjust path if your install differs)
++source /usr/local/Ascend/ascend-toolkit/set_env.sh
++
++# ── Limit host RAM consumption (critical) ──
++# Each BLAS/OMP thread keeps its own scratch buffer. On multimodal workloads
++# with TP=2 worker processes, the per-thread footprint multiplies quickly
++# and pushes the EngineCore over the host RAM limit.
++export OMP_NUM_THREADS=2
++export OPENBLAS_NUM_THREADS=2
++export MKL_NUM_THREADS=2
++export NUMEXPR_NUM_THREADS=2
++export TOKENIZERS_PARALLELISM=false
++
++# ── Configuration ──
++MODEL_PATH="${MODEL_PATH:-/path/to/Qwen2.5-VL-7B-Instruct}"
++HOST="${HOST:-0.0.0.0}"
++PORT="${PORT:-8000}"
++TP_SIZE="${TP_SIZE:-2}"
++
++# ── SCC vision-token compression (optional) ──
++# Toggle via env var at call time; defaults keep SCC OFF (= baseline).
++#   Baseline:  bash start_vllm_server.sh
++#   Enable:    VLLM_ASCEND_ENABLE_SCC=1 bash start_vllm_server.sh
++#   Tune:      VLLM_ASCEND_ENABLE_SCC=1 VLLM_ASCEND_SCC_RATIO=0.5 VLLM_ASCEND_SCC_TAU=0.98 VLLM_ASCEND_SCC_EPSILON=0.05\
++#              bash start_vllm_server.sh
++# NOTE: VLLM_ASCEND_ENABLE_SCC must be 0 or 1 (parsed as bool(int(...))).
++# See docs: docs/source/developer_guide/feature_guide/scc_vision_token_compression.md
++export VLLM_ASCEND_ENABLE_SCC="${VLLM_ASCEND_ENABLE_SCC:-0}"
++export VLLM_ASCEND_SCC_RATIO="${VLLM_ASCEND_SCC_RATIO:-0.5}"
++export VLLM_ASCEND_SCC_TAU="${VLLM_ASCEND_SCC_TAU:-0.98}"
++export VLLM_ASCEND_SCC_EPSILON="${VLLM_ASCEND_SCC_EPSILON:-0.05}"
++
++if [[ "${VLLM_ASCEND_ENABLE_SCC}" == "1" ]]; then
++    SCC_STATUS="ON (ratio=${VLLM_ASCEND_SCC_RATIO}, tau=${VLLM_ASCEND_SCC_TAU}, epsilon=${VLLM_ASCEND_SCC_EPSILON})"
++else
++    SCC_STATUS="OFF (baseline)"
++fi
++
++echo "=== Starting vLLM server ==="
++echo "  Model:    ${MODEL_PATH}"
++echo "  Endpoint: http://${HOST}:${PORT}/v1"
++echo "  TP size:  ${TP_SIZE}"
++echo "  HF_HOME:  ${HF_HOME}"
++echo "  SCC:      ${SCC_STATUS}"
++echo "============================"
++
++vllm serve "${MODEL_PATH}" \
++    --dtype bfloat16 \
++    --max-model-len 12288 \
++    --max-num-batched-tokens 12288 \
++    --max-num-seqs 1 \
++    --gpu-memory-utilization 0.85 \
++    --limit-mm-per-prompt '{"image":16,"video":0}' \
++    --tensor-parallel-size ${TP_SIZE} \
++    --host ${HOST} \
++    --port ${PORT}

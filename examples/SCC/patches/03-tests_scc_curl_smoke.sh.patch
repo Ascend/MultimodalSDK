@@ -1,0 +1,76 @@
+diff --git a/tests/scc/curl_smoke.sh b/tests/scc/curl_smoke.sh
+new file mode 100644
+index 00000000..74388699
+--- /dev/null
++++ b/tests/scc/curl_smoke.sh
+@@ -0,0 +1,70 @@
++#!/bin/bash
++# Layer 3: smoke-test a running vLLM server with the smallest possible
++# multimodal request — one 1×1 PNG + 4-token generation.
++#
++# What this proves:
++#   - /v1/chat/completions route works
++#   - Vision preprocessor actually runs on a real payload
++#   - Qwen2.5-VL's ViT is invoked → patched `_process_image_input` fires
++#     → the extra `logger.info("[SCC] ...")` you added in the patch prints
++#
++# What this does NOT prove:
++#   - Output correctness (if you're pointing at start_vllm_server_debug.sh
++#     the weights are random; generated text is gibberish by design).
++#
++# Usage
++#   Terminal 1:  bash examples/models/start_vllm_server_debug.sh
++#   Terminal 2:  bash tests/scc/curl_smoke.sh
++#
++# After it returns, scan terminal 1's log for:
++#   [SCC] Qwen2.5-VL vision-token compression ENABLED (...)     ← startup banner
++#   [SCC] shrink placeholders: N=... -> K=...                   ← processor path
++#   [SCC] compress ViT out: ... -> ...                          ← model-forward path
++#
++# If you only see the first line, the model class wasn't patched (→ Layer 2
++# says "patched" but the class moved, OR the request didn't actually hit
++# Qwen2.5-VL). If you see none, SCC isn't loaded at all.
++
++set -euo pipefail
++
++HOST="${HOST:-127.0.0.1}"
++PORT="${PORT:-8000}"
++MODEL="${MODEL:-Qwen2.5-VL-7B-Instruct}"
++
++# 1×1 transparent PNG, base64-encoded. Smallest valid PNG the vision
++# preprocessor will accept. Using a canonical known-good byte string so
++# nothing here depends on `base64` / `openssl` flavour.
++PNG_B64="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
++
++echo "=== Layer 3 smoke test ==="
++echo "  Endpoint: http://${HOST}:${PORT}/v1/chat/completions"
++echo "  Model:    ${MODEL}"
++echo "=========================="
++
++# --fail-with-body : exit non-zero but still show the server's error message.
++# --max-time 60    : if the server hangs on the ViT path, fail fast instead of
++#                    blocking the terminal. 60s is generous even for a cold
++#                    ViT dummy-weights run.
++curl -sS --fail-with-body --max-time 60 \
++    -H 'Content-Type: application/json' \
++    -X POST "http://${HOST}:${PORT}/v1/chat/completions" \
++    -d @- <<EOF
++{
++  "model": "${MODEL}",
++  "messages": [
++    {
++      "role": "user",
++      "content": [
++        {"type": "image_url",
++         "image_url": {"url": "data:image/png;base64,${PNG_B64}"}},
++        {"type": "text", "text": "ok?"}
++      ]
++    }
++  ],
++  "max_tokens": 4,
++  "temperature": 0
++}
++EOF
++
++echo
++echo "=== Request completed. Now check the server log for [SCC] lines. ==="

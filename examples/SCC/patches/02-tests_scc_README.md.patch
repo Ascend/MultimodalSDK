@@ -1,0 +1,135 @@
+diff --git a/tests/scc/README.md b/tests/scc/README.md
+new file mode 100644
+index 00000000..28389320
+--- /dev/null
++++ b/tests/scc/README.md
+@@ -0,0 +1,129 @@
++# SCC Test Suite
++
++Three-layer smoke verification for the SCC vision-token compression feature.
++Formal unit tests live under `tests/ut`; use this directory when you want
++manual wiring checks or an end-to-end server smoke.
++
++| Layer | Runtime | Needs vLLM server? | Needs NPU? | What it proves |
++|---|---|---|---|---|
++| 1 -- algorithm | ~1 s | no | no | `scc_compress_to_target` math is correct |
++| 2 -- patch wiring | ~5-30 s | no | no (import-only) | env vars parse, monkey-patch applies |
++| 3 -- end-to-end | ~1-2 min | **yes** (running server) | yes | a real request triggers the SCC path |
++
++## Unit Tests
++
++```bash
++pytest tests/ut/ops/test_scc_compressor.py
++pytest tests/ut/patch/platform/test_patch_engine_core_scc.py
++```
++
++## Files
++
++```
++tests/scc/
++├── README.md                     (this file)
++├── test_layer1_algorithm.py      CPU-only, no vLLM
++├── test_layer2_patch.py          imports vllm, does not start server
++├── curl_smoke.sh                 one POST to /v1/chat/completions
++└── collect_env.sh                environment debugging utility
++```
++
++## Prerequisites
++
++```bash
++conda activate vllm-ascend
++# Confirm the package is findable
++python -c "import vllm_ascend, vllm; print(vllm_ascend.__file__); print(vllm.__version__)"
++```
++
++## Layer 1 -- Algorithm
++
++```bash
++python tests/scc/test_layer1_algorithm.py
++```
++
++**Expect:** `Layer 1: all tests passed.`
++
++**If it fails:** The bug is in `vllm_ascend/ops/scc_compressor.py`. Fix it
++there; don't touch the patch file or the server.
++
++## Layer 2 -- Patch Registration
++
++Run both the enabled and disabled paths (separate invocations, because the
++enable flag is read on import and caching matters):
++
++```bash
++# Enable path
++VLLM_ASCEND_ENABLE_SCC=1 VLLM_ASCEND_SCC_RATIO=0.3 \
++  python tests/scc/test_layer2_patch.py
++
++# Disable path
++VLLM_ASCEND_ENABLE_SCC=0 python tests/scc/test_layer2_patch.py
++```
++
++**Expect:** `Layer 2: all tests passed.` for both.
++
++**Common failures & fixes:**
++
++| Failure | Likely cause |
++|---|---|
++| `VLLM_ASCEND_ENABLE_SCC expected True, got False` | `envs.py` entry is missing or typo'd |
++| `ImportError: patch_qwen25vl_scc` | Worker entry point not installed on the server |
++| `_scc_patched is missing` | `patch/platform/__init__.py` or `patch/worker/__init__.py` missing the SCC import line; OR `apply_qwen25vl_scc_patch()` is short-circuiting (check guards) |
++| `get_num_image_tokens still points at upstream` | `_scc_patched` got set but the rebinding was skipped |
++| `SCC is disabled but patch still marked target class` | Disable branch is broken in `apply_qwen25vl_scc_patch()` |
++
++## Layer 3 -- End-to-End Smoke
++
++```bash
++# Terminal 1: start the server with SCC enabled
++VLLM_ASCEND_ENABLE_SCC=1 bash start_vllm_server.sh
++
++# Terminal 2: wait for "Uvicorn running on http://..." then run:
++bash tests/scc/curl_smoke.sh
++```
++
++**Expect in Terminal 1's log:**
++
++1. Startup banner (proves patch module was imported):
++   ```
++   [SCC] Qwen2.5-VL vision-token compression ENABLED (ratio=0.3, tau=0.95, epsilon=0.05).
++   ```
++2. Placeholder shrink (proves processor-side patch fires):
++   ```
++   [SCC] shrink prompt placeholders: N=... -> K=...
++   ```
++3. ViT-output compression (proves model-side patch fires):
++   ```
++   [SCC] compress ViT out: ... -> ...
++   ```
++
++**Diagnosing partial output:**
++
++| What you see | What's broken |
++|---|---|
++| Nothing starting with `[SCC]` | Patch module not imported. Layer 2 regressed; fix there first. |
++| Only line (1) | Patch loaded but neither method was actually called. Qwen2.5-VL class name / import path changed in this vLLM version. |
++| (1) + (2) only | Processor-side OK, model-side failed. `_process_image_input` / `_process_video_input` names moved in `Qwen2_5_VLForConditionalGeneration`. |
++| (1) + (3) only | Model-side OK, processor-side failed. `Qwen2VLProcessingInfo.get_num_*` rename; placeholder count will mismatch K. |
++| All three | SCC is end-to-end wired. Proceed to real evaluation. |
++
++## Tips
++
++- Layer 3's `curl_smoke.sh` sends a 1x1 PNG. That's enough to trigger the
++  ViT; you don't need real video frames.
++- If you change `scc_compressor.py`, re-run `tests/ut/ops/test_scc_compressor.py`
++  and Layer 1. If you change `patch_engine_core_scc.py` or
++  `patch_qwen25vl_scc.py`, re-run `tests/ut/patch/platform/test_patch_engine_core_scc.py`
++  and Layer 2. Only if both pass
++  should you pay the cost of Layer 3.
++- No need to rebuild the C++ extension after editing these Python files.
++  SCC is all Python.
++
++## Environment Debugging
++
++```bash
++bash tests/scc/collect_env.sh > /tmp/env.txt 2>&1
++```
++
++This captures OS, CANN, NPU, Python, and vllm-ascend versions for bug reports.

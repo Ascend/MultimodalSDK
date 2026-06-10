@@ -1,0 +1,108 @@
+diff --git a/tests/scc/test_layer1_algorithm.py b/tests/scc/test_layer1_algorithm.py
+new file mode 100644
+index 00000000..916c0c9a
+--- /dev/null
++++ b/tests/scc/test_layer1_algorithm.py
+@@ -0,0 +1,102 @@
++"""Layer 1: algorithm-only test for SCC vision-token compression.
++
++Purpose
++-------
++Exercise `scc_compress_to_target` on a synthetic CPU tensor with two clearly
++separated clusters. No vLLM, no NPU, no model. ~1 second.
++
++Failure here = bug lives in `vllm_ascend/ops/scc_compressor.py`. If this
++passes but Layer 2 fails, the algorithm is fine; problem is in patch wiring.
++
++Run
++---
++    python tests/scc/test_layer1_algorithm.py
++"""
++
++import sys
++
++import torch
++
++from vllm_ascend.ops.scc_compressor import scc_compress_to_target
++
++
++def test_two_clusters_compress_to_k():
++    """50 tokens around +1 and 50 around -1 → compress to K=10.
++
++    Checks:
++      1. Output shape is exactly (K, D) — Path A guarantees fixed K.
++      2. Both polarities survive — compression didn't collapse the two clusters
++         into one, which would mean SCC / merge-back is broken.
++    """
++    torch.manual_seed(0)  # deterministic for CI / regression use
++    D = 64
++    f = torch.cat(
++        [
++            torch.ones(50, D) + 0.01 * torch.randn(50, D),
++            -torch.ones(50, D) + 0.01 * torch.randn(50, D),
++        ],
++        dim=0,
++    )
++
++    out = scc_compress_to_target(
++        f,
++        k_target=10,
++        num_frames=1,
++        tokens_per_frame=0,
++        tau=0.95,
++        epsilon=0.05,
++    )
++
++    assert out.shape == (10, D), f"expected (10, {D}), got {tuple(out.shape)}"
++
++    pos = (out.mean(dim=1) > 0).sum().item()
++    neg = (out.mean(dim=1) < 0).sum().item()
++    assert pos > 0 and neg > 0, (
++        f"both clusters should survive compression, got pos={pos}, neg={neg}"
++    )
++
++    print(f"  shape: {tuple(out.shape)}  (expected (10, {D}))")
++    print(f"  survivors: +cluster={pos}, -cluster={neg}")
++
++
++def test_passthrough_when_k_ge_n():
++    """If k_target >= N, compression is a no-op (documented behaviour, §5.3)."""
++    D = 32
++    f = torch.randn(5, D)
++    out = scc_compress_to_target(
++        f, k_target=10, num_frames=1, tokens_per_frame=0, tau=0.95, epsilon=0.05
++    )
++    # Implementation may return the tensor unchanged or with shape (<=10, D).
++    # The hard contract is: no crash, output leads with original rows.
++    assert out.shape[0] <= 10 and out.shape[1] == D, out.shape
++    print(f"  k>=N passthrough: input (5, {D}) -> output {tuple(out.shape)}")
++
++
++def main() -> int:
++    tests = [
++        ("two_clusters_compress_to_k", test_two_clusters_compress_to_k),
++        ("passthrough_when_k_ge_n", test_passthrough_when_k_ge_n),
++    ]
++    failed = 0
++    for name, fn in tests:
++        print(f"[RUN ] {name}")
++        try:
++            fn()
++        except Exception as exc:  # noqa: BLE001 — want the whole traceback
++            failed += 1
++            import traceback
++
++            traceback.print_exc()
++            print(f"[FAIL] {name}: {exc}\n")
++        else:
++            print(f"[PASS] {name}\n")
++
++    if failed:
++        print(f"Layer 1: {failed} test(s) failed.")
++        return 1
++    print("Layer 1: all tests passed.")
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())

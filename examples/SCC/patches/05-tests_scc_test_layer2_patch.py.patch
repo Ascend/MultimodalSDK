@@ -1,0 +1,229 @@
+diff --git a/tests/scc/test_layer2_patch.py b/tests/scc/test_layer2_patch.py
+new file mode 100644
+index 00000000..ed795790
+--- /dev/null
++++ b/tests/scc/test_layer2_patch.py
+@@ -0,0 +1,223 @@
++"""Layer 2: patch-registration test — SCC loads, envs parse, monkey-patch applies.
++
++Purpose
++-------
++Without starting `vllm serve`, verify:
++  1. `VLLM_ASCEND_ENABLE_SCC` / `_RATIO` / `_TAU` / `_EPSILON` parse correctly.
++  2. Importing `patch_engine_core_scc` installs itself on Qwen2.5-VL classes.
++  3. The disable path is clean (no patch when the env var is 0).
++
++Failure modes this catches (before you waste minutes starting a server):
++  - Patch file not synced to the server.
++  - `vllm_ascend/patch/worker/__init__.py` missing the import line.
++  - `envs.py` entries typo'd, so the env var is always False.
++  - Monkey-patch guard (`_scc_patched`) wired incorrectly — double-apply or
++    never-apply bugs.
++  - Qwen2.5-VL class moved / renamed in this vllm version, so the patch
++    silently targets something that doesn't exist.
++
++Run
++---
++    # enable path
++    VLLM_ASCEND_ENABLE_SCC=1 VLLM_ASCEND_SCC_RATIO=0.3 \
++      python tests/scc/test_layer2_patch.py
++
++    # disable path — run separately, same script, different env
++    VLLM_ASCEND_ENABLE_SCC=0 python tests/scc/test_layer2_patch.py
++"""
++
++import inspect
++import os
++import sys
++
++PATCH_SOURCE = "patch_engine_core_scc"
++
++
++def _load_envs_fresh():
++    """vllm_ascend.envs caches values at first access; reload to re-read os.environ.
++
++    Only matters if the test process is reused; stand-alone invocation is fine.
++    """
++    import importlib
++
++    import vllm_ascend.envs as envs_mod
++
++    importlib.reload(envs_mod)
++    return envs_mod
++
++
++def test_env_vars_parse():
++    envs = _load_envs_fresh()
++    want_enabled = os.environ.get("VLLM_ASCEND_ENABLE_SCC", "0") == "1"
++    got_enabled = bool(envs.VLLM_ASCEND_ENABLE_SCC)
++    assert got_enabled is want_enabled, (
++        f"VLLM_ASCEND_ENABLE_SCC expected {want_enabled}, got {got_enabled}"
++    )
++
++    # Only check the knobs when enable is on — they have defaults otherwise
++    # and testing defaults here is redundant with Layer 1.
++    if want_enabled:
++        ratio = float(os.environ.get("VLLM_ASCEND_SCC_RATIO", "0.3"))
++        assert abs(envs.VLLM_ASCEND_SCC_RATIO - ratio) < 1e-9, (
++            f"SCC_RATIO expected {ratio}, got {envs.VLLM_ASCEND_SCC_RATIO}"
++        )
++        max_tokens = int(os.environ.get("VLLM_ASCEND_SCC_MAX_TOKENS_PER_ITEM", "8192"))
++        assert envs.VLLM_ASCEND_SCC_MAX_TOKENS_PER_ITEM == max_tokens, (
++            "SCC_MAX_TOKENS_PER_ITEM expected "
++            f"{max_tokens}, got {envs.VLLM_ASCEND_SCC_MAX_TOKENS_PER_ITEM}"
++        )
++        print(f"  ratio={envs.VLLM_ASCEND_SCC_RATIO}, "
++              f"tau={envs.VLLM_ASCEND_SCC_TAU}, "
++              f"epsilon={envs.VLLM_ASCEND_SCC_EPSILON}, "
++              f"max_tokens_per_item={envs.VLLM_ASCEND_SCC_MAX_TOKENS_PER_ITEM}")
++    print(f"  ENABLE_SCC={got_enabled}")
++
++
++def test_patch_import_does_not_crash():
++    """Importing the patch module must not raise, even when disabled.
++
++    Disabled-path should log a "skipped" message and leave the target classes
++    alone; enabled-path should install the monkey-patch.
++    """
++    import vllm_ascend.patch.worker.patch_qwen25vl_scc  # noqa: F401
++    print("  patch module imported cleanly")
++
++
++def test_global_patch_applies_processor_side_when_enabled():
++    """Global/platform patch must affect prompt placeholder expansion.
++
++    vLLM builds multimodal prompt placeholders before the NPU worker is
++    initialized.  If SCC only patches the worker/model side, the ViT output is
++    compressed but the prompt still contains the original number of image_pad
++    placeholders, producing a merge-time shape mismatch.
++    """
++    enabled = os.environ.get("VLLM_ASCEND_ENABLE_SCC", "0") == "1"
++    if not enabled:
++        print("  [SKIP] VLLM_ASCEND_ENABLE_SCC=0, nothing to verify here.")
++        return
++
++    import vllm_ascend.patch.platform  # noqa: F401
++
++    from vllm.model_executor.models.qwen2_vl import Qwen2VLProcessingInfo
++
++    img_src = inspect.getsourcefile(
++        Qwen2VLProcessingInfo.get_num_image_tokens) or ""
++    assert PATCH_SOURCE in img_src, (
++        "global/platform patch did not install SCC processor-side token "
++        f"shrinking; get_num_image_tokens points at {img_src}")
++    print(f"  global processor side OK: get_num_image_tokens -> {img_src}")
++
++    from vllm.model_executor.models.qwen2_5_vl import (
++        Qwen2_5_VLMultiModalProcessor,
++    )
++
++    updates_src = inspect.getsourcefile(
++        Qwen2_5_VLMultiModalProcessor._get_prompt_updates) or ""
++    assert PATCH_SOURCE in updates_src, (
++        "global/platform patch did not install SCC prompt-update token "
++        f"shrinking; _get_prompt_updates points at {updates_src}")
++    print(f"  global prompt updates OK: _get_prompt_updates -> {updates_src}")
++
++
++def test_monkey_patch_applied_when_enabled():
++    enabled = os.environ.get("VLLM_ASCEND_ENABLE_SCC", "0") == "1"
++    if not enabled:
++        print("  [SKIP] VLLM_ASCEND_ENABLE_SCC=0, nothing to verify here.")
++        return
++
++    # Force the patch to run now (idempotent by design — §5.3).
++    import vllm_ascend.patch.worker.patch_qwen25vl_scc  # noqa: F401
++
++    # (a) Processor-side: Qwen2VLProcessingInfo should carry the guard flag
++    #     and its get_num_* methods should now live in our patch module.
++    from vllm.model_executor.models.qwen2_vl import Qwen2VLProcessingInfo
++
++    assert getattr(Qwen2VLProcessingInfo, "_scc_patched", False), (
++        "Qwen2VLProcessingInfo._scc_patched is missing — patch did not apply. "
++        "Likely causes: enable env not set at import time, ratio/tau out of "
++        "range, or qwen2_vl module import failed in apply_qwen25vl_scc_patch().")
++
++    img_src = inspect.getsourcefile(
++        Qwen2VLProcessingInfo.get_num_image_tokens) or ""
++    vid_src = inspect.getsourcefile(
++        Qwen2VLProcessingInfo.get_num_video_tokens) or ""
++    assert PATCH_SOURCE in img_src, (
++        f"get_num_image_tokens still points at upstream: {img_src}")
++    assert PATCH_SOURCE in vid_src, (
++        f"get_num_video_tokens still points at upstream: {vid_src}")
++    print(f"  processor side OK: get_num_image_tokens → {img_src}")
++
++    # (b) Model-side: Qwen2_5_VLForConditionalGeneration's
++    #     _process_image_input / _process_video_input must also be rebound.
++    #     Layer 2 used to only check (a), which would miss a model-side
++    #     failure (shape mismatch at inference — §8's mrope-desync risk).
++    from vllm.model_executor.models.qwen2_5_vl import (
++        Qwen2_5_VLForConditionalGeneration,
++    )
++
++    pim_src = inspect.getsourcefile(
++        Qwen2_5_VLForConditionalGeneration._process_image_input) or ""
++    pvi_src = inspect.getsourcefile(
++        Qwen2_5_VLForConditionalGeneration._process_video_input) or ""
++    mrope_src = inspect.getsourcefile(
++        Qwen2_5_VLForConditionalGeneration.get_mrope_input_positions) or ""
++    assert PATCH_SOURCE in pim_src, (
++        f"_process_image_input still points at upstream: {pim_src}")
++    assert PATCH_SOURCE in pvi_src, (
++        f"_process_video_input still points at upstream: {pvi_src}")
++    assert PATCH_SOURCE in mrope_src, (
++        f"get_mrope_input_positions still points at upstream: {mrope_src}")
++    print(f"  model side OK: _process_image_input → {pim_src}")
++    print(f"  model side OK: get_mrope_input_positions → {mrope_src}")
++
++
++def test_monkey_patch_absent_when_disabled():
++    """The disabled path must be genuinely inert — no side effects."""
++    enabled = os.environ.get("VLLM_ASCEND_ENABLE_SCC", "0") == "1"
++    if enabled:
++        print("  [SKIP] VLLM_ASCEND_ENABLE_SCC=1, can't verify disabled path.")
++        return
++
++    import vllm_ascend.patch.worker.patch_qwen25vl_scc  # noqa: F401
++    from vllm.model_executor.models.qwen2_vl import Qwen2VLProcessingInfo
++
++    assert not getattr(Qwen2VLProcessingInfo, "_scc_patched", False), (
++        "SCC is disabled but patch still marked target class. "
++        "The disable guard in apply_qwen25vl_scc_patch() is broken.")
++    print("  disabled path: patch correctly skipped.")
++
++
++def main() -> int:
++    print(f"[env] VLLM_ASCEND_ENABLE_SCC="
++          f"{os.environ.get('VLLM_ASCEND_ENABLE_SCC', '<unset>')}")
++    tests = [
++        ("env_vars_parse", test_env_vars_parse),
++        ("global_patch_applies_processor_side_when_enabled",
++         test_global_patch_applies_processor_side_when_enabled),
++        ("patch_import_does_not_crash", test_patch_import_does_not_crash),
++        ("monkey_patch_applied_when_enabled", test_monkey_patch_applied_when_enabled),
++        ("monkey_patch_absent_when_disabled", test_monkey_patch_absent_when_disabled),
++    ]
++    failed = 0
++    for name, fn in tests:
++        print(f"[RUN ] {name}")
++        try:
++            fn()
++        except Exception as exc:  # noqa: BLE001
++            failed += 1
++            import traceback
++
++            traceback.print_exc()
++            print(f"[FAIL] {name}: {exc}\n")
++        else:
++            print(f"[PASS] {name}\n")
++
++    if failed:
++        print(f"Layer 2: {failed} test(s) failed.")
++        return 1
++    print("Layer 2: all tests passed.")
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
