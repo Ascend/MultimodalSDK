@@ -1,0 +1,34 @@
+diff --git a/vllm_ascend/envs.py b/vllm_ascend/envs.py
+index 30151c7e..13b92be9 100644
+--- a/vllm_ascend/envs.py
++++ b/vllm_ascend/envs.py
+@@ -109,6 +109,29 @@ env_variables: dict[str, Callable[[], Any]] = {
+     "VLLM_ASCEND_FUSION_OP_TRANSPOSE_KV_CACHE_BY_BLOCK": lambda: bool(
+         int(os.getenv("VLLM_ASCEND_FUSION_OP_TRANSPOSE_KV_CACHE_BY_BLOCK", "1"))
+     ),
++    # SCC (Semantic Connected Components) vision-token compression for
++    # Qwen2.5-VL. When enabled, vllm-ascend registers a patched Qwen2.5-VL
++    # multimodal processor + model that compresses vision tokens after the
++    # vision tower, producing a SHORTER token sequence for the LLM.
++    # Based on LLaVA-CR (llava/model/llava_arch_zip.py).
++    "VLLM_ASCEND_ENABLE_SCC": lambda: bool(int(os.getenv("VLLM_ASCEND_ENABLE_SCC", "0"))),
++    # Fraction of original vision tokens to retain after SCC compression.
++    # K_target = ceil(N * ratio). Default 0.3 -> keep 30% of tokens.
++    "VLLM_ASCEND_SCC_RATIO": lambda: float(os.getenv("VLLM_ASCEND_SCC_RATIO", "0.3")),
++    # Cosine similarity threshold for SCC clustering. Tokens with similarity
++    # above this threshold are merged. Must be in (0, 1]. Default 0.95.
++    "VLLM_ASCEND_SCC_TAU": lambda: float(os.getenv("VLLM_ASCEND_SCC_TAU", "0.95")),
++    # Error tolerance for the approximate-components Union-Find sampler.
++    # Smaller -> more anchors sampled -> more accurate clustering, slower.
++    # Default 0.05.
++    "VLLM_ASCEND_SCC_EPSILON": lambda: float(os.getenv("VLLM_ASCEND_SCC_EPSILON", "0.05")),
++    # Skip SCC for very large single-item vision inputs. vLLM may run startup
++    # encoder-cache profiling with max-size dummy items, and SCC's dense
++    # similarity matrix would make startup hang. Default 8192 keeps normal
++    # requests compressible while skipping Qwen2.5-VL's 16K-token profile item.
++    "VLLM_ASCEND_SCC_MAX_TOKENS_PER_ITEM": lambda: int(
++        os.getenv("VLLM_ASCEND_SCC_MAX_TOKENS_PER_ITEM", "8192")
++    ),
+ }
+
+ # end-env-vars-definition
