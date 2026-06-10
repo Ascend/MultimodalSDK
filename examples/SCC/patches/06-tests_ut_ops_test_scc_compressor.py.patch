@@ -1,0 +1,168 @@
+diff --git a/tests/ut/ops/test_scc_compressor.py b/tests/ut/ops/test_scc_compressor.py
+new file mode 100644
+index 00000000..8cfc7111
+--- /dev/null
++++ b/tests/ut/ops/test_scc_compressor.py
+@@ -0,0 +1,162 @@
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++# This file is a part of the vllm-ascend project.
++#
++
++import torch
++from loguru import logger
++
++from tests.ut.base import TestBase
++from vllm_ascend.ops.scc_compressor import (
++    DEFAULT_EPSILON,
++    DEFAULT_TAU,
++    _component_centers,
++    _cosine_adjacency,
++    _label_prop_components,
++    _select_topk_by_degree,
++    approximate_components,
++    scc_compress_to_target,
++)
++
++HIDDEN_SIZE = 32
++TOKENS_PER_FRAME = 6
++NUM_FRAMES = 2
++TARGET_TOKENS = 4
++
++
++class TestSccCompressor(TestBase):
++
++    def test_scc_video_two_stage_contract(self):
++        torch.manual_seed(1)
++        frame_a = torch.ones(TOKENS_PER_FRAME, HIDDEN_SIZE)
++        frame_a = frame_a + 0.01 * torch.randn(
++            TOKENS_PER_FRAME,
++            HIDDEN_SIZE,
++        )
++        frame_b = -torch.ones(TOKENS_PER_FRAME, HIDDEN_SIZE)
++        frame_b = frame_b + 0.01 * torch.randn(
++            TOKENS_PER_FRAME,
++            HIDDEN_SIZE,
++        )
++        features = torch.cat([frame_a, frame_b], dim=0)
++
++        out = scc_compress_to_target(
++            features,
++            k_target=TARGET_TOKENS,
++            num_frames=NUM_FRAMES,
++            tokens_per_frame=TOKENS_PER_FRAME,
++            tau=DEFAULT_TAU,
++            epsilon=DEFAULT_EPSILON,
++        )
++
++        self.assertEqual(out.shape, (TARGET_TOKENS, HIDDEN_SIZE))
++        self.assertTrue((out.mean(dim=1) > 0).any().item())
++        self.assertTrue((out.mean(dim=1) < 0).any().item())
++
++    def test_approximate_components_uses_final_union_find_roots(self):
++        adj = torch.tensor(
++            [
++                [1, 1, 0, 0],
++                [1, 1, 1, 0],
++                [0, 1, 1, 0],
++                [0, 0, 0, 1],
++            ],
++            dtype=torch.bool,
++        ).numpy()
++
++        components = [
++            sorted(component)
++            for component in approximate_components(
++                adj,
++                epsilon=DEFAULT_EPSILON,
++            )
++        ]
++
++        self.assertIn([0, 1, 2], components)
++        self.assertIn([3], components)
++
++    def test_label_prop_components_finds_exact_connected_components_on_cpu(self):
++        adj = torch.tensor(
++            [
++                [1, 1, 0, 0],
++                [1, 1, 1, 0],
++                [0, 1, 1, 0],
++                [0, 0, 0, 1],
++            ],
++            dtype=torch.bool,
++        )
++
++        labels, num_components = _label_prop_components(adj)
++
++        self.assertEqual(num_components, 2)
++        self.assertEqual(labels[0].item(), labels[1].item())
++        self.assertEqual(labels[1].item(), labels[2].item())
++        self.assertNotEqual(labels[3].item(), labels[0].item())
++
++    def test_component_centers_uses_cpu_backend(self):
++        features = torch.tensor(
++            [
++                [1.0, 1.0],
++                [1.0, 3.0],
++                [-2.0, -2.0],
++            ]
++        )
++        adj = torch.tensor(
++            [
++                [1, 1, 0],
++                [1, 1, 0],
++                [0, 0, 1],
++            ],
++            dtype=torch.bool,
++        )
++
++        centers = _component_centers(features, adj, epsilon=DEFAULT_EPSILON)
++
++        self.assertEqual(centers.shape, (2, 2))
++        self.assertTrue(torch.allclose(
++            centers[0],
++            torch.tensor([1.0, 2.0]),
++        ))
++        self.assertTrue(torch.allclose(
++            centers[1],
++            torch.tensor([-2.0, -2.0]),
++        ))
++
++    def test_select_topk_by_degree_prefers_lower_index_on_ties(self):
++        degrees = torch.tensor([2, 2, 1, 2])
++
++        keep = _select_topk_by_degree(degrees, k=2)
++
++        self.assertEqual(keep.tolist(), [0, 1])
++
++    def test_cosine_adjacency_handles_zero_vectors(self):
++        features = torch.zeros(2, HIDDEN_SIZE)
++
++        adjacency = _cosine_adjacency(features, tau=DEFAULT_TAU)
++
++        self.assertFalse(adjacency.any().item())
++
++    def test_scc_compress_to_target_pads_with_mean_when_under_target(self):
++        features = torch.ones(4, HIDDEN_SIZE)
++
++        out = scc_compress_to_target(
++            features,
++            k_target=3,
++            tau=DEFAULT_TAU,
++            epsilon=DEFAULT_EPSILON,
++        )
++
++        self.assertEqual(out.shape, (3, HIDDEN_SIZE))
++        self.assertTrue(torch.allclose(out[0], torch.ones(HIDDEN_SIZE)))
++        self.assertTrue(torch.allclose(out[1], out[0]))
++        self.assertTrue(torch.allclose(out[2], out[0]))
