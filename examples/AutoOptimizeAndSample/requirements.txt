@@ -1,0 +1,21 @@
+pydantic==2.13.4
+bentoml==1.4.39
+cachetools==7.1.4
+faiss-cpu==1.13.2
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0.tar.gz
+spacy==3.8.14
+lingua-language-detector==2.1.1
+jinja2==3.1.6
+aiohttp==3.14.1
+transformers==4.57.6
+ffmpeg-python==0.2.0
+opencv-python==4.11.0.86
+decord2==3.4.0
+numpy==1.26.4
+torch~=2.8.0
+torch-npu==2.8.0
+torchaudio==2.8.0
+accelerate==1.12.0
+tomli==2.4.1
+mineru[pipeline]==3.2.3
+pillow==12.2.0
