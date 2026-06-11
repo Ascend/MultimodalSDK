@@ -882,7 +882,7 @@ __init__(model_path: str, device_id: int, model_type: str = "clip", similar_thre
 >[!NOTE] 说明
 >
 >- BaseFrameSelector为抽象类，不可直接实例化，需通过子类KRangFrameSelector或KFrameSelector创建实例。
->- model_path所指向的目录必须存在，且目录权限必须为750，目录属主必须与当前用户一致。
+>- model_path所指向的目录必须存在，且目录权限不能高于750，目录属主必须与当前用户一致。
 
 ### BaseFrameSelector.select\_keyframes<a name="ZH-CN_TOPIC_0000002483785937"></a>
 

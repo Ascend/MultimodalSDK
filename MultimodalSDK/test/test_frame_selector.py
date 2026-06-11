@@ -301,15 +301,51 @@ class TestValidateModelFileSecurity:
             with pytest.raises(PermissionError, match="does not match current user"):
                 KRangFrameSelector(model_path=VALID_MODEL_PATH, device_id=0, model_type="clip")
 
-    def test_wrong_permissions(self, mock_transformers, security_mocks):
+    def test_wrong_permissions_755(self, mock_transformers, security_mocks):
         mock_stat_result = MagicMock()
         mock_stat_result.st_uid = 1000
         mock_stat_result.st_mode = 0o40755
         security_mocks["stat"].return_value = mock_stat_result
-        with pytest.raises(PermissionError, match="permissions must be 750"):
+        with pytest.raises(PermissionError, match="exceed limit 750"):
             KRangFrameSelector(model_path=VALID_MODEL_PATH, device_id=0, model_type="clip")
 
-    def test_valid_security(self, mock_transformers, security_mocks):
+    def test_wrong_permissions_775(self, mock_transformers, security_mocks):
+        mock_stat_result = MagicMock()
+        mock_stat_result.st_uid = 1000
+        mock_stat_result.st_mode = 0o40775
+        security_mocks["stat"].return_value = mock_stat_result
+        with pytest.raises(PermissionError, match="exceed limit 750"):
+            KRangFrameSelector(model_path=VALID_MODEL_PATH, device_id=0, model_type="clip")
+
+    def test_wrong_permissions_777(self, mock_transformers, security_mocks):
+        mock_stat_result = MagicMock()
+        mock_stat_result.st_uid = 1000
+        mock_stat_result.st_mode = 0o40777
+        security_mocks["stat"].return_value = mock_stat_result
+        with pytest.raises(PermissionError, match="exceed limit 750"):
+            KRangFrameSelector(model_path=VALID_MODEL_PATH, device_id=0, model_type="clip")
+
+    def test_valid_security_700(self, mock_transformers, security_mocks):
+        mock_stat_result = MagicMock()
+        mock_stat_result.st_uid = 1000
+        mock_stat_result.st_mode = 0o40700
+        security_mocks["stat"].return_value = mock_stat_result
+        selector = KRangFrameSelector(model_path=VALID_MODEL_PATH, device_id=0, model_type="clip")
+        assert selector is not None
+
+    def test_valid_security_740(self, mock_transformers, security_mocks):
+        mock_stat_result = MagicMock()
+        mock_stat_result.st_uid = 1000
+        mock_stat_result.st_mode = 0o40740
+        security_mocks["stat"].return_value = mock_stat_result
+        selector = KRangFrameSelector(model_path=VALID_MODEL_PATH, device_id=0, model_type="clip")
+        assert selector is not None
+
+    def test_valid_security_750_exact(self, mock_transformers, security_mocks):
+        mock_stat_result = MagicMock()
+        mock_stat_result.st_uid = 1000
+        mock_stat_result.st_mode = 0o40750
+        security_mocks["stat"].return_value = mock_stat_result
         selector = KRangFrameSelector(model_path=VALID_MODEL_PATH, device_id=0, model_type="clip")
         assert selector is not None
 

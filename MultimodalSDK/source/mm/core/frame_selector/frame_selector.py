@@ -176,7 +176,7 @@ class BaseFrameSelector(ABC):
         """Validates model directory ownership and permissions for security.
 
         Checks that model_path is a directory owned by the current user with
-        exactly 640 (rw- r-- ---) permissions, preventing unauthorized
+        permissions not exceeding 750 (rwxr-x---), preventing unauthorized
         modification or access by other users.
         """
         if not os.path.exists(self.model_path):
@@ -193,8 +193,8 @@ class BaseFrameSelector(ABC):
                 f"does not match current user (uid={current_uid})"
             )
         file_mode = stat.S_IMODE(path_stat.st_mode)
-        if file_mode != 0o750:
-            raise PermissionError(f"Model directory '{self.model_path}' permissions must be 750, got {oct(file_mode)}")
+        if file_mode > 0o750:
+            raise PermissionError(f"Model directory '{self.model_path}' permissions {oct(file_mode)} exceed limit 750")
 
     def _init_model(self):
         """Dispatches to the model initializer matching model_type."""
