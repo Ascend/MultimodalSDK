@@ -123,6 +123,7 @@ class MineruService:
     def __init__(self) -> None:
         # use environment to set device for mineru
         os.environ["MINERU_DEVICE_MODE"] = args.mineru_device
+        os.environ["MINERU_MODEL_SOURCE"] = "local"
 
         model_manager = ModelSingleton()
         self.model = BatchAnalyze(
