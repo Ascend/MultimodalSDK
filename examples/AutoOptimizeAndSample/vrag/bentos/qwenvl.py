@@ -43,7 +43,7 @@ class QwenVLArgs(ArgsBase):
     """Default sampling temperature for generation."""
     default_top_p: float = Field(1.0, ge=0.0, le=1.0)
     """Default top-p (nucleus) sampling parameter."""
-    default_seed: Optional[int] = Field(114514, gt=0)
+    default_seed: Optional[int] = Field(42, gt=0)
     """Default random seed for reproducible generation."""
     default_timeout: float = Field(3600, gt=0)
     """Default request timeout in seconds for the vLLM API call."""
@@ -116,7 +116,8 @@ class QwenVLService:
         else:
             config = QwenVLConfig()
 
-        logger.info(f"QwenVLService set max_completion_tokens to {query_max_tokens} to generate Query.")
+        msg = f"QwenVLService set max_completion_tokens to {query_max_tokens} to generate Query."
+        logger.info(msg)
         config.max_completion_tokens = query_max_tokens
 
         raw_string = await self._generate(
