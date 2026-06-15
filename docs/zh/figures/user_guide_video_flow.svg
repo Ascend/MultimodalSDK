@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">视频处理流程</title>
+  <desc id="desc">展示 video_decode 根据帧 ID 列表或目标帧数进行视频解码的流程。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52657a"/>
+    </marker>
+    <style>
+      .box { fill: #f7f9fc; stroke: #52657a; stroke-width: 1.6; rx: 10; }
+      .main { fill: #fff3df; stroke: #c7781c; }
+      .out { fill: #e8f5f0; stroke: #328a67; }
+      .text { font-family: "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; font-size: 17px; fill: #1f2937; text-anchor: middle; dominant-baseline: middle; }
+      .small { font-size: 15px; }
+      .label { font-size: 14px; fill: #4b5563; }
+      .line { fill: none; stroke: #52657a; stroke-width: 1.8; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect x="58" y="180" width="150" height="56" class="box"/>
+  <text x="133" y="208" class="text">输入视频文件</text>
+
+  <rect x="270" y="180" width="150" height="56" class="box"/>
+  <text x="345" y="208" class="text">设置文件权限</text>
+  <path d="M 208 208 L 270 208" class="line"/>
+
+  <rect x="485" y="180" width="150" height="56" class="box main"/>
+  <text x="560" y="208" class="text">video_decode</text>
+  <path d="M 420 208 L 485 208" class="line"/>
+
+  <rect x="480" y="52" width="160" height="56" class="box main"/>
+  <text x="560" y="80" class="text small">帧 ID 列表非空</text>
+  <rect x="480" y="308" width="160" height="56" class="box main"/>
+  <text x="560" y="336" class="text small">帧 ID 列表为空</text>
+
+  <path d="M 560 180 L 560 108" class="line"/>
+  <text x="585" y="142" class="text label">按指定帧解码</text>
+  <path d="M 560 236 L 560 308" class="line"/>
+  <text x="590" y="278" class="text label">均匀采样</text>
+
+  <rect x="710" y="52" width="160" height="56" class="box out"/>
+  <text x="790" y="80" class="text small">返回指定帧列表</text>
+  <rect x="710" y="308" width="160" height="56" class="box out"/>
+  <text x="790" y="336" class="text small">返回目标帧数列表</text>
+  <path d="M 640 80 L 710 80" class="line"/>
+  <path d="M 640 336 L 710 336" class="line"/>
+
+  <rect x="710" y="180" width="160" height="56" class="box out"/>
+  <text x="790" y="208" class="text small">检查返回列表长度</text>
+  <path d="M 790 108 L 790 180" class="line"/>
+  <path d="M 790 308 L 790 236" class="line"/>
+</svg>

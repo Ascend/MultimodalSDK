@@ -1,6 +1,6 @@
 # 快速入门
 
-Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resize/crop、视频帧解码与音频加载等。本文将帮助你在 **5 分钟内** 通过 Docker 启动环境并跑通第一个 Python 示例。
+Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resize/crop、视频帧解码与音频加载等。本文将帮助你通过 Docker 启动环境并跑通第一个 Python 示例。
 
 如需在宿主机原生安装，请参阅 [安装部署](./installation_guide.md)。
 
@@ -8,18 +8,47 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 
 开始之前，请确认：
 
-- **硬件**：Atlas 800I A2 推理服务器（ARM64），详见 [简介 - 支持的硬件](./introduction.md#支持的硬件和操作系统)
-- **驱动**：宿主机已安装与 CANN 9.0.0 兼容的 NPU 驱动，请参阅 [CANN 兼容性矩阵](https://www.hiascend.com/document)
+- **硬件**：Atlas 800I A2 推理服务器，详见 [简介 - 支持的硬件](./introduction.md#支持的硬件和操作系统)
 - **Docker**：已安装 Docker，且当前用户可运行容器
 - **测试图片**：准备一张 jpg/jpeg 图片，文件权限不高于 640（`chmod 640`）
 
 ## 步骤 1：拉取镜像
 
-```bash
-docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64
-docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64 \
-  multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64
-```
+1. **选择匹配版本**
+   - 访问昇腾社区[镜像仓](https://www.hiascend.com/developer/ascendhub/detail/e0081aa3c4dd441dbd6a379bee8cc4c9)
+   - 根据当前硬件型号（如 Atlas 800I A2 推理服务器）选择对应的镜像版本
+   - 注意区分 CPU 架构（x86_64 / aarch64）和昇腾芯片型号（Ascend 310 / 910 等）
+
+2. **环境预检查**
+   - 使用 `npu-smi info` 命令验证 NPU 驱动状态
+   - 检查驱动版本与镜像 CANN 版本匹配性（参考[《固件与驱动》文档](https://www.hiascend.com/hardware/firmware-drivers/community)）
+
+3. **镜像拉取示例**
+
+   镜像 Tag 格式为 `{version}-{chip}-{os}-{python}-{arch}`，各变量含义如下：
+
+   | 变量 | 含义 | 示例值 |
+   |------|------|--------|
+   | `{version}` | Multimodal SDK 版本 | `26.0.0` |
+   | `{chip}` | 昇腾芯片系列 | `910b` |
+   | `{os}` | 基础操作系统 | `ubuntu22.04` / `openeuler24.03` |
+   | `{python}` | Python 版本 | `py3.11` |
+   | `{arch}` | CPU 架构 | `aarch64` / `x86_64` |
+
+   ```bash
+   TAG={version}-{chip}-{os}-{python}-{arch}
+   docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:${TAG}
+   docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:${TAG} \
+       multimodalsdk:${TAG}
+   ```
+
+   以 26.0.0 版本、910b 芯片、Ubuntu 22.04、Python 3.11、aarch64 架构为例：
+
+   ```bash
+   docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64
+   docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64 \
+       multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64
+   ```
 
 ## 步骤 2：启动容器
 

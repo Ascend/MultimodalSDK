@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="360" viewBox="0 0 920 360" role="img" aria-labelledby="title desc">
+  <title id="title">图片处理流程</title>
+  <desc id="desc">展示图片文件通过 mm.Image.open 读取后分别进行缩放、裁剪和原图转换的流程。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52657a"/>
+    </marker>
+    <style>
+      .box { fill: #f7f9fc; stroke: #52657a; stroke-width: 1.6; rx: 10; }
+      .main { fill: #e8f1ff; stroke: #3c73c4; }
+      .out { fill: #e8f5f0; stroke: #328a67; }
+      .text { font-family: "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; font-size: 17px; fill: #1f2937; text-anchor: middle; dominant-baseline: middle; }
+      .small { font-size: 15px; }
+      .line { fill: none; stroke: #52657a; stroke-width: 1.8; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect x="48" y="142" width="150" height="58" class="box"/>
+  <text x="123" y="171" class="text">输入图片文件</text>
+
+  <rect x="260" y="142" width="160" height="58" class="box main"/>
+  <text x="340" y="171" class="text">mm.Image.open</text>
+  <path d="M 198 171 L 260 171" class="line"/>
+
+  <rect x="505" y="42" width="150" height="52" class="box main"/>
+  <text x="580" y="68" class="text">Image.resize</text>
+  <rect x="505" y="145" width="150" height="52" class="box main"/>
+  <text x="580" y="171" class="text">Image.crop</text>
+  <rect x="505" y="266" width="150" height="52" class="box main"/>
+  <text x="580" y="292" class="text">原图 numpy</text>
+
+  <path d="M 420 171 L 460 171 L 460 68 L 505 68" class="line"/>
+  <path d="M 420 171 L 505 171" class="line"/>
+  <path d="M 420 171 L 460 171 L 460 292 L 505 292" class="line"/>
+
+  <rect x="720" y="42" width="150" height="52" class="box out"/>
+  <text x="795" y="68" class="text small">展示缩放结果</text>
+  <rect x="720" y="145" width="150" height="52" class="box out"/>
+  <text x="795" y="171" class="text small">展示裁剪结果</text>
+  <rect x="720" y="266" width="150" height="52" class="box out"/>
+  <text x="795" y="292" class="text small">展示原图</text>
+
+  <path d="M 655 68 L 720 68" class="line"/>
+  <path d="M 655 171 L 720 171" class="line"/>
+  <path d="M 655 292 L 720 292" class="line"/>
+</svg>

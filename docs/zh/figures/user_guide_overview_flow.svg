@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="520" viewBox="0 0 920 520" role="img" aria-labelledby="title desc">
+  <title id="title">样例和指导整体流程</title>
+  <desc id="desc">展示 Multimodal SDK 图片、视频、音频三个样例处理流程。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5f6f89"/>
+    </marker>
+    <style>
+      .box { fill: #f7f9fc; stroke: #5f6f89; stroke-width: 1.6; rx: 10; }
+      .start { fill: #e8f5f0; stroke: #328a67; }
+      .image { fill: #e8f1ff; stroke: #3c73c4; }
+      .video { fill: #fff3df; stroke: #c7781c; }
+      .audio { fill: #f0eafe; stroke: #7d63c7; }
+      .text { font-family: "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; font-size: 17px; fill: #1f2937; text-anchor: middle; dominant-baseline: middle; }
+      .small { font-size: 15px; }
+      .line { fill: none; stroke: #5f6f89; stroke-width: 1.8; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect x="360" y="30" width="200" height="52" class="box start"/>
+  <text x="460" y="56" class="text">准备输入数据</text>
+
+  <rect x="360" y="120" width="200" height="52" class="box"/>
+  <text x="460" y="146" class="text">选择处理场景</text>
+  <path d="M 460 82 L 460 120" class="line"/>
+
+  <rect x="80" y="220" width="210" height="52" class="box image"/>
+  <text x="185" y="246" class="text">图片处理</text>
+  <rect x="355" y="220" width="210" height="52" class="box video"/>
+  <text x="460" y="246" class="text">视频处理</text>
+  <rect x="630" y="220" width="210" height="52" class="box audio"/>
+  <text x="735" y="246" class="text">音频处理</text>
+
+  <path d="M 460 172 L 460 195 L 185 195 L 185 220" class="line"/>
+  <path d="M 460 172 L 460 220" class="line"/>
+  <path d="M 460 172 L 460 195 L 735 195 L 735 220" class="line"/>
+
+  <rect x="80" y="324" width="210" height="44" class="box image"/>
+  <text x="185" y="346" class="text small">读取图片</text>
+  <rect x="80" y="404" width="210" height="44" class="box image"/>
+  <text x="185" y="426" class="text small">resize / crop 后转 Numpy</text>
+  <path d="M 185 272 L 185 324" class="line"/>
+  <path d="M 185 368 L 185 404" class="line"/>
+
+  <rect x="355" y="324" width="210" height="44" class="box video"/>
+  <text x="460" y="346" class="text small">读取视频文件</text>
+  <rect x="355" y="404" width="210" height="44" class="box video"/>
+  <text x="460" y="426" class="text small">按帧 ID 或目标帧数解码</text>
+  <path d="M 460 272 L 460 324" class="line"/>
+  <path d="M 460 368 L 460 404" class="line"/>
+
+  <rect x="630" y="324" width="210" height="44" class="box audio"/>
+  <text x="735" y="346" class="text small">读取音频输入</text>
+  <rect x="630" y="404" width="210" height="44" class="box audio"/>
+  <text x="735" y="426" class="text small">可选重采样后返回数据</text>
+  <path d="M 735 272 L 735 324" class="line"/>
+  <path d="M 735 368 L 735 404" class="line"/>
+</svg>
