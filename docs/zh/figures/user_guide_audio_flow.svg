@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">音频处理流程</title>
+  <desc id="desc">展示 load_audio 支持单文件、文件列表和目录输入，并可选重采样的流程。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52657a"/>
+    </marker>
+    <style>
+      .box { fill: #f7f9fc; stroke: #52657a; stroke-width: 1.6; rx: 10; }
+      .main { fill: #f0eafe; stroke: #7d63c7; }
+      .out { fill: #e8f5f0; stroke: #328a67; }
+      .text { font-family: "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; font-size: 17px; fill: #1f2937; text-anchor: middle; dominant-baseline: middle; }
+      .small { font-size: 15px; }
+      .line { fill: none; stroke: #52657a; stroke-width: 1.8; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect x="55" y="184" width="150" height="56" class="box"/>
+  <text x="130" y="212" class="text">准备 wav 输入</text>
+
+  <rect x="280" y="54" width="150" height="54" class="box main"/>
+  <text x="355" y="81" class="text">单文件路径</text>
+  <rect x="280" y="184" width="150" height="54" class="box main"/>
+  <text x="355" y="211" class="text">文件路径列表</text>
+  <rect x="280" y="314" width="150" height="54" class="box main"/>
+  <text x="355" y="341" class="text">目录路径</text>
+
+  <path d="M 205 212 L 240 212 L 240 81 L 280 81" class="line"/>
+  <path d="M 205 212 L 280 211" class="line"/>
+  <path d="M 205 212 L 240 212 L 240 341 L 280 341" class="line"/>
+
+  <rect x="520" y="184" width="150" height="56" class="box main"/>
+  <text x="595" y="212" class="text">load_audio</text>
+  <path d="M 430 81 L 475 81 L 475 212 L 520 212" class="line"/>
+  <path d="M 430 211 L 520 212" class="line"/>
+  <path d="M 430 341 L 475 341 L 475 212 L 520 212" class="line"/>
+
+  <rect x="735" y="86" width="140" height="54" class="box out"/>
+  <text x="805" y="113" class="text small">指定 sr 重采样</text>
+  <rect x="735" y="282" width="140" height="54" class="box out"/>
+  <text x="805" y="309" class="text small">保持默认采样率</text>
+  <path d="M 670 212 L 700 212 L 700 113 L 735 113" class="line"/>
+  <path d="M 670 212 L 700 212 L 700 309 L 735 309" class="line"/>
+
+  <rect x="735" y="184" width="140" height="56" class="box out"/>
+  <text x="805" y="203" class="text small">返回音频数据</text>
+  <text x="805" y="224" class="text small">和采样率</text>
+  <path d="M 805 140 L 805 184" class="line"/>
+  <path d="M 805 282 L 805 240" class="line"/>
+</svg>
