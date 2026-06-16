@@ -71,9 +71,20 @@ cd "${ACC_BUILD_DIR}" || { echo "[ERROR] Cannot enter directory ${ACC_BUILD_DIR}
 chmod +x build.sh
 if [[ "${1:-}" == "test" ]]; then
     cd "${MERGE_BUILD_DIR}"
-    if ! command -v lcov >/dev/null 2>&1; then
+    NEED_LCOV=false
+    if command -v lcov >/dev/null 2>&1; then
+        LCOV_VER=$(lcov --version 2>/dev/null | grep -oP '[\d]+\.[\d]+' | head -1)
+        if [ -n "${LCOV_VER}" ] && [ "$(printf '%s\n' "2.0" "${LCOV_VER}" | sort -V | head -1)" = "2.0" ]; then
+            echo "[INFO] System lcov ${LCOV_VER} meets requirement (>=2.0), reusing."
+        else
+            NEED_LCOV=true
+        fi
+    else
+        NEED_LCOV=true
+    fi
+    if [ "${NEED_LCOV}" = true ]; then
         if [ ! -d "${MERGE_BUILD_DIR}/lcov-2.0" ]; then
-            echo "[INFO] Downloading lcov..."
+            echo "[INFO] Downloading lcov 2.0..."
             wget -q https://github.com/linux-test-project/lcov/releases/download/v2.0/lcov-2.0.tar.gz
             tar -xzf lcov-2.0.tar.gz
         fi
