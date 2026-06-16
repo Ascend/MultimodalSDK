@@ -45,7 +45,9 @@ export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/l
 source "${INSTALL_PATH}/multimodal/script/set_env.sh"
 export PYTHONPATH="${PYTHONPATH}:$PRESMOKE_DIR"
 
-pip3 install pillow==12.0.0
+# torchvision is used only as a reference implementation for presmoke accuracy checks.
+# Keep it aligned with torch/torch-npu 2.9.1; it is not a fixed Multimodal SDK runtime dependency.
+pip3 install "pillow>=11.2.1"
 pip3 install torchvision==0.24.1
 pip3 install librosa
 pip3 install torch-npu==2.9.1
