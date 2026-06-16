@@ -141,11 +141,15 @@ vllm serve /data/models/Qwen2.5-VL-32B-Instruct/ -tp=4 --max-model-len=100000 --
 ### 3.2 安装Multimodal SDK及依赖
 
 ```bash
-pip install transformers==4.51.3 pillow==11.2.1 numpy==1.26.4 opencv-python decord2 qwen_vl_utils torchvision==0.20.1 openai einops accelerate decorator scipy attrs
+pip install transformers==4.51.3 "pillow>=11.2.1" numpy==1.26.4 opencv-python decord2 qwen_vl_utils openai einops accelerate decorator scipy attrs
 wget https://gitcode.com/Ascend/MultimodalSDK/releases/download/v26.0.0/Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run
 bash Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run --install --install-path=/usr/local/
 source /usr/local/multimodal/script/set_env.sh
 ```
+
+> [!NOTE] 说明
+>
+> `torchvision` 不是本样例直接依赖的业务组件，因此上述命令不单独安装 `torchvision`。如果需要使用 `torchvision`，其版本必须与环境中的 `torch` 配套，不能直接安装未指定版本的最新版。例如，`torch==2.9.1` 对应使用 `torchvision==0.24.1`。
 
 ### 3.3 执行测试样例
 

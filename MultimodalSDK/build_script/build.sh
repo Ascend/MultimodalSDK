@@ -44,8 +44,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-pip3 install pillow==12.0.0
-pip3 install torchvision==0.24.1
+pip3 install "pillow>=11.2.1"
 pip3 install torch-npu==2.9.1
 pip3 install transformers==4.51.3
 pip3 install einops
@@ -155,6 +154,9 @@ cp "${A_ROOT_DIR}/script/install.sh" "${OUTPUT_DIR}/script/"
 chmod +x "${OUTPUT_DIR}/script/install.sh"
 if [[ "${BUILD_ARGS[*]}" == *"test"* ]]; then
     echo "[INFO] Building test: install whl first..."
+    # torchvision is only used by UTs as a reference implementation for tensor conversion and normalization.
+    # Keep it aligned with torch-npu 2.9.1.
+    pip3 install torchvision==0.24.1
     WHL_FILE=$(find "${A_ROOT_DIR}/dist" -name "*.whl" | head -n 1)
     if [ -z "$WHL_FILE" ]; then
         echo "[ERROR] whl package not found!"

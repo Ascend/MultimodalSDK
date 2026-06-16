@@ -13,7 +13,7 @@ pip3 show mm
 python3 -c "import mm; print('mm import: OK')"
 ```
 
-若 `pip3 show mm` 无输出，请先按[3.1 方式一：`.run` 包安装](./installation_guide.md#31-方式一run-包安装)或[3.2 方式二：Wheel 包安装](./installation_guide.md#32-方式二wheel-包安装)完成安装。
+若 `pip3 show mm` 无输出，请先按[`run` 包安装](./installation_guide.md#方式一run-包安装)或[`Wheel` 包安装](./installation_guide.md#方式二wheel-包安装)完成安装。
 
 ### Q: 导入 `mm` 失败，提示 `libcore.so` 或 `libascendcl.so` 找不到？
 
@@ -59,13 +59,13 @@ source /home/work/Mind_SDK/multimodal/script/set_env.sh
 
 **原因**：第三方依赖版本与 Multimodal SDK 要求不一致。
 
-**处理**：对照[安装部署 - 表 3](./installation_guide.md#table-python-deps)固定版本安装：
+**处理**：对照[安装部署 - 其他依赖](./installation_guide.md#其他依赖)固定版本安装：
 
 ```bash
 pip3 install transformers==4.51.3 pillow==11.2.1 numpy==1.26.4
 ```
 
-`torch` 与 `torch_npu` 需按 CANN 9.0.0 配套表安装，请参阅 [安装部署 - torch 安装说明](./installation_guide.md#23-安装-python-软件包依赖)。
+`torch` 与 `torch_npu` 需按 CANN 9.0.0 配套表安装，请参阅 [安装部署 - 其他依赖](./installation_guide.md#其他依赖)。
 
 ### Q: 已安装 lzma 模块，调用 torchvision 仍提示缺少 lzma？
 
