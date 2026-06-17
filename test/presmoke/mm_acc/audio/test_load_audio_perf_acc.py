@@ -26,10 +26,12 @@ def accuracy_comparison(audio_files_path, sampling_fraction):
         y_librosa, sr_librosa = librosa.load(audio_file, sr=sampling_fraction, mono=True, res_type="soxr_hq")
         try:
             assert sr == sr_librosa, f'load_audio {sr} != librosa.load {sr_librosa}'
-            assert np.allclose(mm_numpydata, y_librosa, rtol=1e-4, atol=1e-4), \
+            assert np.allclose(mm_numpydata, y_librosa, rtol=1e-4, atol=1e-4), (
                 f"Arrays differ! Max difference = {np.abs(mm_numpydata - y_librosa).max()}"
+            )
         except AssertionError as e:
-            logger.error(f"{audio_file}: Failed -> {e}")
+            msg = f"{audio_file}: Failed -> {e}"
+            logger.error(msg)
             errors.append(str(e))
     if errors:
         pytest.fail(f"error count: {len(errors)}")
@@ -39,7 +41,7 @@ def test_load_audio_acc():
     logger.info("Starting test_load_audio_acc with sampling rate 16000")
     accuracy_comparison(TEST_HW_USER_WAV_LOAD_PATH, sampling_fraction=16000)
     logger.info("Completed test_load_audio_acc with sampling rate 16000 successfully")
-    
+
     logger.info("Starting test_load_audio_acc with sampling rate 44100")
     accuracy_comparison(TEST_HW_USER_WAV_LOAD_PATH, sampling_fraction=44100)
     logger.info("Completed test_load_audio_acc with sampling rate 44100 successfully")
@@ -53,7 +55,7 @@ def test_load_audio_perf():
     if len(audio_files) > 128:
         audio_files = [f for f in audio_files if f.split('/')[-1].startswith('audio_test')]
     durations = []
-    
+
     logger.info("Testing load_audio performance for single wave files")
     for audio_file in audio_files:
         start = time.time()
@@ -62,18 +64,21 @@ def test_load_audio_perf():
         duration = end - start
         durations.append(duration)
     average_time = sum(durations) / len(audio_files)
-    logger.info(f"Single wave file average time: {average_time:.4f}s")
-    
+    msg = f"Single wave file average time: {average_time:.4f}s"
+    logger.info(msg)
+
     logger.info("Testing load_audio performance for wave file list")
     start = time.time()
     load_audio(audio_files, 16000)
     end = time.time()
     duration = end - start
-    logger.info(f"Wave file list total time: {duration:.4f}s, single file average: {average_time:.4f}s")
-    
+    msg = f"Wave file list total time: {duration:.4f}s, single file average: {average_time:.4f}s"
+    logger.info(msg)
+
     logger.info("Testing load_audio performance for wave file directory")
     start = time.time()
     load_audio(TEST_HW_USER_WAV_LOAD_PATH, 16000)
     end = time.time()
     duration = end - start
-    logger.info(f"Wave file directory total time: {duration:.4f}s, single file average: {average_time:.4f}s")
+    msg = f"Wave file directory total time: {duration:.4f}s, single file average: {average_time:.4f}s"
+    logger.info(msg)

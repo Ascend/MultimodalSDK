@@ -53,4 +53,11 @@
 
 ## 🤝 建议与交流
 
-欢迎大家为社区做贡献，贡献前，请先签署开放项目[贡献者许可协议（CLA）](https://clasign.osinfra.cn/sign/gitee_ascend-1611222220829317930)。
+欢迎大家通过以下方式提出问题、交流讨论。
+
+| 资源 | 说明 |
+|:--|:--|
+| [FAQ](./docs/zh/faq.md) | 常见问题解答与使用答疑 |
+| [创建Issue](https://gitcode.com/Ascend/MultimodalSDK/issues/new) | 提交 Bug、需求或建议 |
+| [社区任务](https://gitcode.com/Ascend/MultimodalSDK/issues) | 查看和认领社区任务 |
+| [会议日历](https://meeting.ascend.osinfra.cn/?sig=sig-MindSeriesSDK) | 社区定期例会与活动日程 |

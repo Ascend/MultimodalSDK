@@ -1,6 +1,5 @@
 import os
 import logging
-import pytest
 from mm import load_audio
 from mm_test.common import TEST_HW_USER_FILE_PATH, TEST_HW_USER_WAV_LOAD_PATH
 
@@ -12,11 +11,12 @@ logger = logging.getLogger(__name__)
 def load_audio_func(wav_name, sampling_fraction):
     if isinstance(wav_name, str) and wav_name.endswith('.wav'):
         wav_inputs = os.path.join(TEST_HW_USER_WAV_LOAD_PATH, wav_name)
-        logger.info(f'Loading audio file: {wav_inputs}')
+        msg = f'Loading audio file: {wav_inputs}'
+        logger.info(msg)
         audio, sr = load_audio(wav_inputs, sampling_fraction)
         mm_numpydata = audio.numpy()
-        logger.info(
-            f'Audio loaded successfully - shape: {mm_numpydata.shape}, sampling rate: {sr}, size: {mm_numpydata.size}')
+        msg = f'Audio loaded successfully - shape: {mm_numpydata.shape}, sampling rate: {sr}, size: {mm_numpydata.size}'
+        logger.info(msg)
         return mm_numpydata, sr
     else:
         if isinstance(wav_name, list):
@@ -24,20 +24,22 @@ def load_audio_func(wav_name, sampling_fraction):
             for wav in wav_name:
                 wav_input = os.path.join(TEST_HW_USER_WAV_LOAD_PATH, wav)
                 wav_inputs.append(wav_input)
-            logger.info(f'Loading audio files: {wav_inputs}')
+            msg = f'Loading audio files: {wav_inputs}'
+            logger.info(msg)
         elif isinstance(wav_name, str):
             wav_inputs = os.path.join(TEST_HW_USER_FILE_PATH, wav_name)
         else:
             raise TypeError("Only str or list types are supported")
-        
+
         audio_list_load = load_audio(wav_inputs, sampling_fraction)
         results = []
         for i, audio in enumerate(audio_list_load):
-            logger.info(f'Processing audio result {i+1}/{len(audio_list_load)}')
+            msg = f'Processing audio result {i + 1}/{len(audio_list_load)}'
+            logger.info(msg)
             test_audio = audio[0].numpy()
             test_sr = audio[1]
-            logger.info(
-                f'Audio {i+1} - shape: {test_audio.shape}, sampling rate: {test_sr}')
+            msg = f'Audio {i + 1} - shape: {test_audio.shape}, sampling rate: {test_sr}'
+            logger.info(msg)
             if sampling_fraction:
                 assert sampling_fraction == test_sr
             results.append((test_audio, test_sr))
@@ -50,7 +52,7 @@ def test_wav_file_sr_16000():
     mm_numpydata, sr = load_audio_func(wav_name, sampling_fraction)
     assert sr == sampling_fraction, f"Sampling rate mismatch: expected {sampling_fraction}, got {sr}"
     assert mm_numpydata.size > 0, "Audio data should not be empty"
-    
+
 
 def test_wav_list_sr_16000():
     wav_list = ['audio_test0.wav', 'audio_test1.wav']

@@ -1,7 +1,6 @@
 import os.path
 import time
 import logging
-import pytest
 from mm import video_decode
 from mm_test.common import DEVICE_CPU, TEST_HW_USER_VIDEO_PATH
 
@@ -14,25 +13,29 @@ def cpu_video_decode_perf(video_name, frame_id, frame_num, repeat=10):
     file_path = os.path.join(TEST_HW_USER_VIDEO_PATH, video_name)
     durations = []
     frame_total = []
-    
+
     # Warm up
     video_decode(file_path, DEVICE_CPU, frame_id, frame_num)
-    
+
     for _ in range(repeat):
         start = time.time()
         mm_images = video_decode(file_path, DEVICE_CPU, frame_id, frame_num)
         end = time.time()
         durations.append(end - start)
         frame_total.append(len(mm_images))
-    
+
     average_delay = sum(durations) / repeat
     frame_single = sum(frame_total) / repeat
-    
-    logger.info(f"Durations list: {durations}")
-    logger.info(f"Video decode performance - File: {file_path}, Repeat: {repeat}, "
-              f"Cumulative Frames: {sum(frame_total)}, Average Frames per Run: {frame_single}, "
-              f"Average Latency: {average_delay:.6f} s")
-    
+
+    msg = f"Durations list: {durations}"
+    logger.info(msg)
+    msg = (
+        f"Video decode performance - File: {file_path}, Repeat: {repeat}, "
+        f"Cumulative Frames: {sum(frame_total)}, Average Frames per Run: {frame_single}, "
+        f"Average Latency: {average_delay:.6f} s"
+    )
+    logger.info(msg)
+
     return average_delay
 
 
