@@ -77,10 +77,13 @@ def compare_float_np_arrays(arr1, arr2, relative_tol=1e-4, absolute_tol=1e-5, er
     error_ratio = (total_elements - correct_count) / total_elements
 
     if error_ratio >= error_tol:
-        diff_indices = np.argwhere(compare_mask == False)
+        diff_indices = np.argwhere(~compare_mask)
         for idx in diff_indices[:100]:
             idx_tuple = tuple(idx)
-            logger.error(f"index {idx_tuple} expected={arr1[idx_tuple]:.9f}, "
-                       f"actual={arr2[idx_tuple]:.9f}, "
-                       f"adiff={abs(arr1[idx_tuple] - arr2[idx_tuple]):.6f}")
+            msg = (
+                f"index {idx_tuple} expected={arr1[idx_tuple]:.9f}, "
+                f"actual={arr2[idx_tuple]:.9f}, "
+                f"adiff={abs(arr1[idx_tuple] - arr2[idx_tuple]):.6f}"
+            )
+            logger.error(msg)
     return error_ratio < error_tol

@@ -1,0 +1,31 @@
+# Configuration for presmoke test selection
+
+# List of file/directory patterns that trigger running ALL presmoke tests
+# Use prefix matching (no wildcard at end means exact match or prefix match)
+# or use standard shell wildcard patterns
+all_test:
+  - "AccSDK/acc_data/"
+  - "AccSDK/include/"
+  - "AccSDK/source/"
+  - "AccSDK/CMakeLists.txt"
+  - "MultimodalSDK/source/mm/acc/wrapper/util.py"
+  - "MultimodalSDK/source/mm/acc/wrapper/data_type.py"
+  - "MultimodalSDK/source/mm/acc/wrapper/__init__.py"
+  - "test/presmoke/mm_acc/tools.py"
+  - "test/presmoke/mm_acc/common.py"
+
+# List of directories where changes to .py files will run ONLY that specific test file
+# Use for presmoke test directories - modifying a test file there only runs that file
+single_file_test_dirs:
+  - "test/presmoke/mm_acc/image/"
+  - "test/presmoke/mm_acc/video/"
+  - "test/presmoke/mm_acc/audio/"
+  - "test/presmoke/mm_acc/tensor/"
+
+# Mapping from source file/directory to test directory to run
+# When a source file changes, run the corresponding test directory
+path_mapping:
+  "MultimodalSDK/source/mm/acc/wrapper/image_wrapper.py": "test/presmoke/mm_acc/image"
+  "MultimodalSDK/source/mm/acc/wrapper/video_wrapper.py": "test/presmoke/mm_acc/video"
+  "MultimodalSDK/source/mm/acc/wrapper/audio_wrapper.py": "test/presmoke/mm_acc/audio"
+  "MultimodalSDK/source/mm/acc/wrapper/tensor_wrapper.py": "test/presmoke/mm_acc/tensor"
