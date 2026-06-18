@@ -23,6 +23,7 @@ SCC 完全在服务端执行，客户端请求格式无需修改。
 2、 准备可正常工作的 vllm-ascend v0.18.0 环境。安装方法可参考 [vllm-ascend 安装指南](https://docs.vllm.ai/projects/ascend/zh-cn/v0.18.0/installation.html)，建议使用官方 [Docker 镜像](https://quay.io/repository/ascend/vllm-ascend?tab=tags)：
 
 ```bash
+# 宿主机执行
 docker pull quay.io/ascend/vllm-ascend:v0.18.0
 ```
 
@@ -31,6 +32,7 @@ docker pull quay.io/ascend/vllm-ascend:v0.18.0
 4、 如需进行 VideoMME 性能评估，准备 `lmms-eval` 测试框架：
 
 ```bash
+# 容器内执行；如需在独立环境评估，也可在对应评估环境中执行
 git clone https://github.com/EvolvingLMMs-Lab/lmms-eval.git
 cd lmms-eval
 pip install qwen_vl_utils accelerate decord2 sacrebleu evaluate pytz tenacity pytablewriter pytest
@@ -40,66 +42,55 @@ pip install qwen_vl_utils accelerate decord2 sacrebleu evaluate pytz tenacity py
 
 ## 快速开始
 
-### 1. 应用补丁
+### 1. 启动容器
+
+以下示例在宿主机执行，用于启动 vllm-ascend v0.18.0 官方容器。请根据实际环境调整 NPU 设备、模型目录和代码目录挂载路径。
+
+```bash
+# 宿主机执行
+export IMAGE=quay.io/ascend/vllm-ascend:v0.18.0
+docker run -itd --name vllm-ascend-scc \
+  --net=host \
+  --privileged \
+  --device /dev/davinci_manager \
+  --device /dev/devmm_svm \
+  --device /dev/hisi_hdc \
+  -v /usr/local/dcmi:/usr/local/dcmi \
+  -v /usr/local/Ascend/driver/tools/hccn_tool:/usr/local/Ascend/driver/tools/hccn_tool \
+  -v /usr/local/bin/npu-smi:/usr/local/bin/npu-smi \
+  -v /usr/local/Ascend/driver/lib64/:/usr/local/Ascend/driver/lib64/ \
+  -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
+  -v /etc/ascend_install.info:/etc/ascend_install.info \
+  -v /root/.cache:/root/.cache \
+  -v /path/to/workspace:/workspace \
+  -v /path/to/Qwen2.5-VL-7B-Instruct:/models/Qwen2.5-VL-7B-Instruct \
+  $IMAGE bash
+```
+
+其中：
+
+1. `/path/to/workspace` 是宿主机上的工作目录，建议其中包含 `MultimodalSDK` 仓库，容器内对应路径为 `/workspace/MultimodalSDK`。
+2. `/path/to/Qwen2.5-VL-7B-Instruct` 是宿主机上的模型权重目录，容器内对应路径为 `/models/Qwen2.5-VL-7B-Instruct`。
+3. 如果环境不允许使用 `--privileged`，可按实际 NPU 设备列表改为显式挂载 `--device /dev/davinci0`。
+
+容器启动后执行`docker exec -it vllm-ascend-scc bash`会进入容器内的 bash。后续快速开始、功能验证和性能验证中的命令，除明确标注“宿主机执行”外，均默认在该容器内执行。
+
+### 2. 应用补丁
 
 SCC 补丁已按目标文件拆分到 `examples/SCC/patches` 目录下，文件名中的两位数字表示推荐应用顺序。请在 vllm-ascend 仓库根目录按顺序应用这些 patch。
 
-```bash
-cd /path/to/vllm-ascend
-git apply --check /path/to/MultimodalSDK/examples/SCC/patches/*.patch
-git apply /path/to/MultimodalSDK/examples/SCC/patches/*.patch
-```
-
-如果当前就在 `MultimodalSDK` 仓库旁边，也可以使用相对路径，例如：
+下面命令在进入容器后执行。`/vllm-workspace/vllm-ascend` 指 vllm-ascend 源码仓库根目录，并以开发模式（pip install -e）安装过，无需重新安装；`/path/to/MultimodalSDK` 指当前 MultimodalSDK 仓库在容器内的路径，若使用上面的挂载示例则为 `/workspace/MultimodalSDK`。
 
 ```bash
-cd /path/to/vllm-ascend
-git apply --check ../MultimodalSDK/examples/SCC/patches/*.patch
-git apply ../MultimodalSDK/examples/SCC/patches/*.patch
+# 容器内vLLM 和 vLLM Ascend 代码位于 /vllm-workspace 目录
+cd /vllm-workspace/vllm-ascend
+# 若没有MultimodalSDK仓库，先clone
+git clone https://github.com/ModelScope/MultimodalSDK.git /workspace/MultimodalSDK
+git apply --check /workspace/MultimodalSDK/examples/SCC/patches/*.patch
+git apply /workspace/MultimodalSDK/examples/SCC/patches/*.patch
 ```
-
-也可以只应用原始完整补丁：
-
-```bash
-cd /path/to/vllm-ascend
-git apply /path/to/MultimodalSDK/examples/SCC/vllm-ascend-v0.18.0-scc.patch
-```
-
-拆分后的 patch 与原始完整 patch 内容一致，只是为了便于审阅和分阶段应用。
 
 如果曾经用循环方式应用过并出现失败，请先在 vllm-ascend 仓库中恢复到应用补丁前的干净状态，再重新执行上面的 `git apply --check` 和 `git apply`。否则已经应用成功的前半部分 patch 会导致重复应用或上下文不匹配。
-
-### 2. 启动服务
-
-补丁会新增 `start_vllm_server.sh`。启动前请确认脚本中的 `MODEL_PATH` 指向可用的 Qwen2.5-VL 模型目录，也可以通过环境变量覆盖。
-
-基线模式默认关闭 SCC：
-
-```bash
-cd /path/to/vllm-ascend
-MODEL_PATH=/path/to/Qwen2.5-VL-7B-Instruct bash start_vllm_server.sh
-```
-
-启用 SCC：
-
-```bash
-cd /path/to/vllm-ascend
-MODEL_PATH=/path/to/Qwen2.5-VL-7B-Instruct VLLM_ASCEND_ENABLE_SCC=1 bash start_vllm_server.sh
-```
-
-服务启动日志中会打印 SCC 状态：
-
-```text
-=== Starting vLLM server ===
-  Model:    /path/to/Qwen2.5-VL-7B-Instruct
-  Endpoint: http://0.0.0.0:8000/v1
-  TP size:  2
-  HF_HOME:  /root/.cache/huggingface
-  SCC:      ON (ratio=0.5, tau=0.98, epsilon=0.05)
-============================
-```
-
-`start_vllm_server.sh` 默认在 `http://0.0.0.0:8000/v1` 暴露 OpenAI 兼容 API，并使用 `--tensor-parallel-size 2`。如需调整 `HOST`、`PORT`、`TP_SIZE`，可通过环境变量覆盖。
 
 ### 3. 配置 SCC 参数
 
@@ -116,10 +107,38 @@ SCC 通过环境变量控制，需在启动 vLLM 服务前设置。
 示例：
 
 ```bash
-# 启用 SCC，使用启动脚本默认参数
-VLLM_ASCEND_ENABLE_SCC=1 bash start_vllm_server.sh
+# 容器内执行，先进入 vllm-ascend 仓库
+cd /vllm-workspace/vllm-ascend
 
-# 启用 SCC，并自定义压缩参数
+# 启用 SCC，使用 vllm-ascend 默认压缩参数
+export VLLM_ASCEND_ENABLE_SCC=1
+
+# 如需自定义压缩参数，可继续设置：
+export VLLM_ASCEND_SCC_RATIO=0.5
+export VLLM_ASCEND_SCC_TAU=0.98
+export VLLM_ASCEND_SCC_EPSILON=0.05
+```
+
+完成以上配置后，再进入下一步启动服务。也可以不提前 `export`，在启动服务命令前以内联环境变量的方式传入参数。
+
+### 4. 启动服务
+
+补丁会新增 `start_vllm_server.sh`。启动前请确认脚本中的 `MODEL_PATH` 指向容器内可用的 Qwen2.5-VL 模型目录，也可以通过环境变量覆盖。若需要启用 SCC，请先按上一节配置 SCC 参数。
+
+基线模式默认关闭 SCC：
+
+```bash
+# 容器内执行
+cd /vllm-workspace/vllm-ascend
+MODEL_PATH=/models/Qwen2.5-VL-7B-Instruct bash start_vllm_server.sh
+```
+
+启用 SCC：
+
+```bash
+# 容器内执行
+cd /path/to/vllm-ascend
+MODEL_PATH=/models/Qwen2.5-VL-7B-Instruct \
 VLLM_ASCEND_ENABLE_SCC=1 \
 VLLM_ASCEND_SCC_RATIO=0.5 \
 VLLM_ASCEND_SCC_TAU=0.98 \
@@ -127,14 +146,31 @@ VLLM_ASCEND_SCC_EPSILON=0.05 \
 bash start_vllm_server.sh
 ```
 
+服务启动日志中会打印 SCC 状态：
+
+```text
+=== Starting vLLM server ===
+  Model:    /models/Qwen2.5-VL-7B-Instruct
+  Endpoint: http://0.0.0.0:8000/v1
+  TP size:  2
+  HF_HOME:  /root/.cache/huggingface
+  SCC:      ON (ratio=0.5, tau=0.98, epsilon=0.05)
+============================
+```
+
+`start_vllm_server.sh` 默认在 `http://0.0.0.0:8000/v1` 暴露 OpenAI 兼容 API，并使用 `--tensor-parallel-size 2`。如需调整 `HOST`、`PORT`、`TP_SIZE`，可通过环境变量覆盖。
+
 ## 功能验证
+
+本章命令默认在已进入的 vllm-ascend 容器内执行。
 
 ### 1. 单元测试
 
 单元测试用于验证 SCC 算法和 patch 辅助逻辑，不依赖真实模型推理。
 
 ```bash
-cd /path/to/vllm-ascend
+# 容器内执行
+cd /vllm-workspace/vllm-ascend
 
 # SCC 算法
 pytest tests/ut/ops/test_scc_compressor.py
@@ -148,7 +184,8 @@ pytest tests/ut/patch/platform/test_patch_engine_core_scc.py
 补丁中新增了 `tests/scc` 目录，用于验证 SCC 集成链路。
 
 ```bash
-cd /path/to/vllm-ascend
+# 容器内执行
+cd /vllm-workspace/vllm-ascend
 
 # Layer 1：仅验证算法，CPU 可运行，无需启动 vLLM 服务
 python tests/scc/test_layer1_algorithm.py
@@ -163,12 +200,12 @@ VLLM_ASCEND_ENABLE_SCC=0 python tests/scc/test_layer2_patch.py
 端到端冒烟测试需要先启动服务，再发送请求：
 
 ```bash
-# 终端 1：启动带 SCC 的服务
-cd /path/to/vllm-ascend
+# 容器内终端 1：启动带 SCC 的服务
+cd /vllm-workspace/vllm-ascend
 VLLM_ASCEND_ENABLE_SCC=1 bash start_vllm_server.sh
 
-# 终端 2：发送测试请求
-cd /path/to/vllm-ascend
+# 容器内终端 2：发送测试请求
+cd /vllm-workspace/vllm-ascend
 bash tests/scc/curl_smoke.sh
 ```
 
@@ -219,20 +256,24 @@ print(result.get("usage", {}))
 
 性能评估建议使用同一套模型、同一份数据集，分别在基线模式和 SCC 模式下运行 `lmms-eval`，对比 `value` 和 `avg_speed`。
 
+本章命令默认在已进入的 vllm-ascend 容器内执行。
+
 ### 1. 启动服务端
 
 基线模式：
 
 ```bash
-cd /path/to/vllm-ascend
-MODEL_PATH=/path/to/Qwen2.5-VL-7B-Instruct bash start_vllm_server.sh
+# 容器内执行
+cd /vllm-workspace/vllm-ascend
+MODEL_PATH=/models/Qwen2.5-VL-7B-Instruct bash start_vllm_server.sh
 ```
 
 SCC 模式：
 
 ```bash
-cd /path/to/vllm-ascend
-MODEL_PATH=/path/to/Qwen2.5-VL-7B-Instruct \
+# 容器内执行
+cd /vllm-workspace/vllm-ascend
+MODEL_PATH=/models/Qwen2.5-VL-7B-Instruct \
 VLLM_ASCEND_ENABLE_SCC=1 \
 VLLM_ASCEND_SCC_RATIO=0.5 \
 VLLM_ASCEND_SCC_TAU=0.98 \
@@ -277,6 +318,7 @@ python3 -m lmms_eval \
 运行：
 
 ```bash
+# 容器内执行
 cd /path/to/lmms-eval
 
 # 基线结果
@@ -296,6 +338,7 @@ RUN_TAG=scc_ratio0.5_tau0.98_eps0.05 bash qwen25vl_vllm.sh
 如果无法在线下载 VideoMME，可先下载数据集到本地，并通过环境变量指定本地路径：
 
 ```bash
+# 容器内执行
 export LMMS_LOCAL_DATASET_PATH=/path/to/Video-MME
 export LMMS_LOCAL_VIDEOMME_PATH=/path/to/Video-MME
 export HF_HUB_OFFLINE=1
