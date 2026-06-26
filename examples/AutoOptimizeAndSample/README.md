@@ -98,11 +98,11 @@ VideoRagService
 #### 4.1.1 镜像
 
 vrag镜像 `swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:9.0.0-910b-ubuntu22.04-py3.11`
-大模型镜像 `quay.io/vllm/vllm-ascend:v0.15.0rc1`
+大模型镜像 `quay.io/ascend/vllm-ascend:v0.15.0rc1`
 
 ```bash
 docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:9.0.0-910b-ubuntu22.04-py3.11
-docker pull quay.io/vllm/vllm-ascend:v0.15.0rc1
+docker pull quay.io/ascend/vllm-ascend:v0.15.0rc1
 ```
 
 ### 4.2 准备模型权重
@@ -140,7 +140,7 @@ docker run -it \
   -v /usr/local/Ascend/driver:/usr/local/Ascend/driver \
   -v /models/:/models/ \
   -p 8000:8000 \
-  quay.io/vllm/vllm-ascend:v0.15.0rc1 \
+  quay.io/ascend/vllm-ascend:v0.15.0rc1 \
   /bin/bash
 ```
 
@@ -404,7 +404,7 @@ docker run -it \
   -v /usr/local/Ascend/driver:/usr/local/Ascend/driver \
   -v /models/:/models/ \
   -p 8000:8000 \
-  quay.io/vllm/vllm-ascend:v0.15.0rc1 \
+  quay.io/ascend/vllm-ascend:v0.15.0rc1 \
   /bin/bash
 
 # 容器内启动 vLLM 服务
