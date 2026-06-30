@@ -1,0 +1,29 @@
+# English docs are exported from Word/HTML and use inline HTML tables and
+# blockquote-nested lists that do not match the default markdown style rules.
+config:
+  MD005: false
+  MD007: false
+  MD027: false
+  MD046: false
+  MD056: false
+  MD033:
+    allowed_elements:
+      - a
+      - br
+      - div
+      - h1
+      - h2
+      - img
+      - details
+      - summary
+      - span
+      - sub
+      - table
+      - thead
+      - tbody
+      - tr
+      - th
+      - td
+      - ul
+      - li
+      - p
