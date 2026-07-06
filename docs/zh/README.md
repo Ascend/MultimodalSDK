@@ -1,4 +1,4 @@
-# 欢迎使用Multimodal SDk
+# 欢迎使用Multimodal SDK
 
 <div style="text-align: center; margin: 0.5rem 0 0.3rem 0; font-family: 'Avenir Next', 'Avenir', 'Century Gothic', 'Segoe UI', sans-serif;">
   <span style="font-size: 4.5rem; font-weight: 300; letter-spacing: 0.02em;">Multimodal SDK</span>
