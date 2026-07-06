@@ -840,7 +840,9 @@ batch_from_filelist = load_audio(audio_file_paths)
 batch_from_directory = load_audio(audio_directory)
 ```
 
-## mm.BaseFrameSelector<a name="ZH-CN_TOPIC_0000002483785934"></a>
+<a id="mmbaseframeselector"></a>
+
+## mm.BaseFrameSelector
 
 基于文本-图像匹配的关键帧选择器抽象基类，封装模型初始化、特征提取、边界定位、输入校验和相似度计算等公共能力。该类不可直接实例化，需通过子类KRangFrameSelector或KFrameSelector使用。
 

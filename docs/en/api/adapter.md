@@ -132,8 +132,8 @@ def preprocess(self,
 |do_rescale|Optional[bool]|Whether to rescale pixel values.|Optional|×|
 |rescale_factor|Optional[float]|The scaling factor is fixed to `1/255`.|Optional|×|
 |do_normalize|Optional[bool]|Whether to normalize the image.|Optional|×|
-|image_mean|Optional[Union[float, List[float32]]]|Normalization mean. If `None`, the initialization value is used. The valid range is [0, 1].|Optional|√|
-|image_std|Optional[Union[float32, List[float32]]]|Normalization standard deviation. If `None`, the initialization value is used. The valid range is (0, `FLOAT32_MAX`).|Optional|√|
+|image_mean|Optional[Union[float, List[float]]]|Normalization mean. If `None`, the initialization value is used. The valid range is [0, 1].|Optional|√|
+|image_std|Optional[Union[float, List[float]]]|Normalization standard deviation. If `None`, the initialization value is used. The valid range is (0, `FLOAT32_MAX`).|Optional|√|
 |patch_size|Optional[int]|Patch size for slicing along the spatial dimensions, in pixels. If `None`, the initialization value is used.|Optional|√|
 |temporal_patch_size|Optional[int]|Patch size for slicing along the temporal dimension, in frames. The default is 2.|Optional|×|
 |merge_size|Optional[int]|Size used when merging patches. If `None`, the initialization value is used.|Optional|√|
