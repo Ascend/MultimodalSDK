@@ -132,8 +132,8 @@ def preprocess(self,
 |do_rescale|Optional[bool]|是否执行像素值缩放。|可选|✗|
 |rescale_factor|Optional[float]|缩放因子固定为1/255。|可选|✗|
 |do_normalize|Optional[bool]|是否执行归一化。|可选|✗|
-|image_mean|Optional[Union[float, List[float32]]]|标准化均值，若为None，则使用初始化值，取值范围为[0, 1]。|可选|✓|
-|image_std|Optional[Union[float32, List[float32]]]|标准化方差，若为None，则使用初始化值，取值范围在(0, FLOAT32_MAX)。|可选|✓|
+|image_mean|Optional[Union[float, List[float]]]|标准化均值，若为None，则使用初始化值，取值范围为[0, 1]。|可选|✓|
+|image_std|Optional[Union[float, List[float]]]|标准化方差，若为None，则使用初始化值，取值范围在(0, FLOAT32_MAX)。|可选|✓|
 |patch_size|Optional[int]|空间维度切分patch的大小（像素），若为None，则使用初始化值。|可选|✓|
 |temporal_patch_size|Optional[int]|时间维度切分patch的大小（帧），默认为2。|可选|✗|
 |merge_size|Optional[int]|patch合并时的大小，若为None，则使用初始化值。|可选|✓|

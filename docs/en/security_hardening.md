@@ -12,7 +12,7 @@ The security hardening measures listed in this document are basic recommendation
 
 ## OS Security Hardening
 
-### Firewall Configuration
+### PATH Configuration for Regular Users
 
 After installing the OS, if common users are configured, you can add `ALWAYS_SET_PATH yes` to the `/etc/login.defs` file to prevent unauthorized privilege escalation.
 

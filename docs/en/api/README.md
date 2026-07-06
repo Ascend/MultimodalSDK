@@ -31,6 +31,8 @@ The printed output is the path to the source file.
     - [Log Registration](./function_reference.md#log-registration)
     - [mm.video_decode](./function_reference.md#mmvideo_decode)
     - [mm.normalize](./function_reference.md#mmnormalize)
+    - [mm.load_audio](./function_reference.md#mmload_audio)
+    - [Key Frame Extraction](./function_reference.md#mmbaseframeselector)
 - [Adapter](./adapter.md)
     - [MultimodalQwen2VLImageProcessor](./adapter.md#multimodalqwen2vlimageprocessor)
     - [InternVL2PreProcessor](./adapter.md#internvl2preprocessor)
