@@ -25,7 +25,7 @@ python3 -c "import mm; print('mm import: OK')"
 **处理（Wheel 安装）**：
 
 ```bash
-source /usr/local/Ascend/ascend-toolkit/set_env.sh   # 路径以实际为准
+source /usr/local/Ascend/cann/set_env.sh   # 默认CANN安装路径，请按实际安装路径修改
 pip3 install --force-reinstall --no-deps /path/to/mm-*.whl
 python3 -c "import mm; print('mm import: OK')"
 ```
@@ -65,7 +65,7 @@ source /home/work/Mind_SDK/multimodal/script/set_env.sh
 pip3 install transformers==4.51.3 pillow==11.2.1 numpy==1.26.4
 ```
 
-`torch` 与 `torch_npu` 需按 CANN 9.0.0 配套表安装，请参阅 [安装部署 - 其他依赖](./installation_guide.md#其他依赖)。
+`torch` 与 `torch-npu` 需按 CANN 9.0.0 配套表安装，请参阅 [安装部署 - 其他依赖](./installation_guide.md#其他依赖)。
 
 ### Q: 已安装 lzma 模块，调用 torchvision 仍提示缺少 lzma？
 

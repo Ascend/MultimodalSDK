@@ -2,6 +2,8 @@
 
 ## mm.Tensor
 
+本文档适用于 Multimodal SDK 最新发布版本。接口异常通常以 `ValueError`、`TypeError`、`RuntimeError` 或 `ImportError` 抛出，错误码处理建议请参见[附录 - 错误码](../appendix.md#错误码)。
+
 Tensor类将被用于承载任意模态的通用数据，实现通用数据的创建、管理以及数据复制等操作。
 
 ### Tensor属性列表
@@ -225,7 +227,7 @@ def normalize(mean: list[float], std: list[float], device_mode: DeviceMode = Dev
 |参数名|数据类型|可选/必选|说明|
 |--|--|--|--|
 |mean|list[float]|必选|均值数组，长度必须为3，参数范围为[0, 1]。|
-|std|list[float]|必选|标准差数组，长度必须为3，参数范围大于0，小于3.4028235e38。|
+|std|list[float]|必选|标准差数组，长度必须为3，参数范围大于[0, 3.4028235e38]。|
 |device_mode|DeviceMode|可选|运行的模式，当前仅支持CPU。|
 
 **返回值说明**
@@ -740,7 +742,7 @@ def video_decode(video_path: str | bytes, device: str | bytes, frame_indices: se
 from mm import video_decode
 
 file_path = "test.mp4"
-mm_images = video_decode(file_path, "cpu", [], 32)
+mm_images = video_decode(file_path, "cpu", list(), 32)
 ```
 
 <a id="mmnormalize"></a>
@@ -763,7 +765,7 @@ def normalize(src: Tensor, mean: list[float], std: list[float], device_mode: Dev
 |--|--|--|--|
 |src|Tensor|必选|输入Tensor实例。|
 |mean|list[float]|必选|均值数组，长度必须为3，参数范围为[0, 1]。|
-|std|list[float]|必选|方差数组，长度必须为3，参数范围为[0，3.4028235e38]。|
+|std|list[float]|必选|标准差数组，长度必须为3，参数范围大于[0, 3.4028235e38]。|
 |device_mode|DeviceMode|可选|运行的模式，当前仅支持CPU。|
 
 **返回值说明**
@@ -866,7 +868,7 @@ batch_from_directory = load_audio(audio_directory)
 
 **函数原型<a name="section12411139493"></a>**
 
-```typescript
+```python
 __init__(model_path: str, device_id: int, model_type: str = "clip", similar_threshold: float = 0.025, image_similar_threshold: float = 0.015, image_size: tuple = (672, 672))
 ```
 
@@ -894,7 +896,7 @@ __init__(model_path: str, device_id: int, model_type: str = "clip", similar_thre
 
 **函数原型<a name="section12411139493"></a>**
 
-```typescript
+```python
 select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resample: bool) -> Tuple[List[int], List[np.ndarray]]
 ```
 
@@ -925,7 +927,7 @@ select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resam
 
 **函数原型<a name="section12411139493"></a>**
 
-```typescript
+```python
 select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resample: bool) -> Tuple[List[int], List[np.ndarray]]
 ```
 
@@ -967,7 +969,7 @@ indices, key_frames = selector.select_keyframes(query="a cat sitting on a sofa",
 
 **函数原型<a name="section12411139493"></a>**
 
-```typescript
+```python
 select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resample: bool = False) -> Tuple[List[int], List[np.ndarray]]
 ```
 
