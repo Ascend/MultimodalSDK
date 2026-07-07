@@ -4,6 +4,7 @@
 >
 > - 对于资料中注明的类、接口为公开的，可供用户调用。对于其他类，接口均为内部使用，不建议直接调用。如有特殊需要可以通过源码查看。
 > - 引入多模态 SDK 时会显式设置环境变量 `HF_DATASETS_OFFLINE` 和 `HF_HUB_OFFLINE` 为 1，即显式启用 huggingface 的离线模式，不会联网获取数据。
+> - 本文档适用于 Multimodal SDK 最新发布版本，建议 Python 版本为 3.10 或 3.11，操作系统为 Ubuntu 22.04 / openEuler 24.03。
 
 **源码查看方式**
 
@@ -70,10 +71,10 @@ ImageFormat 枚举类
 
 | 属性名 | 说明 |
 | -- | -- |
-| ImageFormat.RGB | RGB 类型。 |
-| ImageFormat.BGR | BGR 类型。 |
-| ImageFormat.RGB_PLANAR | RGB_PLANAR 类型。 |
-| ImageFormat.BGR_PLANAR | BGR_PLANAR 类型。 |
+| ImageFormat.RGB | RGB 类型，数组通道顺序为 `[H, W, 3]`，通道含义为 R/G/B。 |
+| ImageFormat.BGR | BGR 类型，数组通道顺序为 `[H, W, 3]`，通道含义为 B/G/R。 |
+| ImageFormat.RGB_PLANAR | RGB_PLANAR 类型，数组通道顺序为 `[3, H, W]`，通道含义为 R/G/B。 |
+| ImageFormat.BGR_PLANAR | BGR_PLANAR 类型，数组通道顺序为 `[3, H, W]`，通道含义为 B/G/R。 |
 
 ### LogLevel
 

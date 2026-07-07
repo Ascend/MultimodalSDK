@@ -77,6 +77,10 @@ docker run \
 
 ## 步骤 3：进入容器并加载环境
 
+> [!NOTE] 说明
+>
+> `MULTIMODAL_SDK_HOME` 环境变量表示 Multimodal SDK 安装路径，默认值为 `/usr/local/multimodal_sdk`。可通过 `echo $MULTIMODAL_SDK_HOME` 验证。
+
 ```bash
 docker exec -it multimodal_container bash
 source ${MULTIMODAL_SDK_HOME}/script/set_env.sh
@@ -85,6 +89,10 @@ source ${MULTIMODAL_SDK_HOME}/script/set_env.sh
 ## 步骤 4：运行验证脚本
 
 使用容器内挂载路径下的图片（示例为 `/data/test.jpg`），然后执行：
+
+> [!NOTE] 说明
+>
+> `Image.open` 的第二个参数为解码设备字符串，当前仅支持 `"cpu"`；`resize` 等算子接口的运行模式使用 `DeviceMode.CPU` 枚举。
 
 ```bash
 export TEST_IMAGE="/data/test.jpg"

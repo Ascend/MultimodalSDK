@@ -2,7 +2,7 @@
 
 ## MultimodalQwen2VLImageProcessor
 
-该函数继承transformers库中的Qwen2VLImageProcessor，将使用多模态内部的加速能力对Qwen2VL模型的图像/视频预处理环节进行加速，返回与transformers一致的BatchFeature类型。
+该类继承transformers库中的Qwen2VLImageProcessor，将使用多模态内部的加速能力对Qwen2VL模型的图像/视频预处理环节进行加速，返回与transformers一致的BatchFeature类型。
 
 **使用基本说明**
 
@@ -23,13 +23,13 @@ def __init__(
         size: Dict[str, int] = None,
         resample: Resampling = Resampling.BICUBIC,
         do_rescale: bool = True,
-        rescale_factor: Union[int, float] = RESCALE_FACTOR,
+        rescale_factor: Union[int, float] = 1 / 255,
         do_normalize: bool = True,
         image_mean: Optional[Union[float, List[float]]] = None,
         image_std: Optional[Union[float, List[float]]] = None,
         do_convert_rgb: bool = True,
         min_pixels: Optional[int] = 56 * 56,
-        max_pixels: Optional[int] = 28 *28 *1280,
+        max_pixels: Optional[int] = 28 * 28 * 1280,
         patch_size: int = 14,
         temporal_patch_size: int = 2,
         merge_size: int = 2,
@@ -45,13 +45,13 @@ def __init__(
 |size|Dict[str, int]|输入图像的最小和最大尺寸，格式必须为{"shortest_edge": min_pixels, "longest_edge": max_pixels}，默认为None。|可选|✓|
 |resample|Resampling|图像缩放插值方式，默认为Resampling.BICUBIC。|可选|✗|
 |do_rescale|bool|是否执行rescale（缩放像素值到特定范围），默认为True。|可选|✗|
-|rescale_factor|Union[int, float]|像素缩放因子，通常为1/255，默认为RESCALE_FACTOR。|可选|✗|
-|do_normalize|bool|是否对图像执行标准化，默认为True。|可选|✗|
-|image_mean|Optional[Union[float, List[float]]]|图像标准化均值，若为None，则使用默认值。默认值为[0.48145466, 0.4578275, 0.40821073]。|可选|✓|
-|image_std|Optional[Union[float, List[float]]]|图像标准化方差，若为None，则使用默认值。默认值为[0.26862954, 0.26130258, 0.27577711]。|可选|✓|
+|rescale_factor|Union[int, float]|像素缩放因子，默认为1/255。|可选|✗|
+|do_normalize|bool|是否对图像执行归一化，默认为True。|可选|✗|
+|image_mean|Optional[Union[float, List[float]]]|图像归一化均值，若为None，则使用默认值。默认值为[0.48145466, 0.4578275, 0.40821073]。|可选|✓|
+|image_std|Optional[Union[float, List[float]]]|图像归一化标准差，若为None，则使用默认值。默认值为[0.26862954, 0.26130258, 0.27577711]。|可选|✓|
 |do_convert_rgb|bool|是否将输入图像转换为RGB，默认为True。|可选|✗|
 |min_pixels|Optional[int]|输入图像的最小像素数。默认为56*56。|可选|✓|
-|max_pixels|Optional[int]|输入图像的最大像素数。高于该值时会触发降采样。默认为28*28*1280。|可选|✓|
+|max_pixels|Optional[int]|输入图像的最大像素数。高于该值时会触发降采样。默认为28\*28\*1280。|可选|✓|
 |patch_size|int|空间维度切分patch的大小（像素），默认为14。|可选|✓|
 |temporal_patch_size|int|时间维度切分patch的大小（帧），默认为2，且不支持设置。|可选|✗|
 |merge_size|int|patch合并时的大小，默认为2。|可选|✓|
@@ -132,8 +132,8 @@ def preprocess(self,
 |do_rescale|Optional[bool]|是否执行像素值缩放。|可选|✗|
 |rescale_factor|Optional[float]|缩放因子固定为1/255。|可选|✗|
 |do_normalize|Optional[bool]|是否执行归一化。|可选|✗|
-|image_mean|Optional[Union[float, List[float]]]|标准化均值，若为None，则使用初始化值，取值范围为[0, 1]。|可选|✓|
-|image_std|Optional[Union[float, List[float]]]|标准化方差，若为None，则使用初始化值，取值范围在(0, FLOAT32_MAX)。|可选|✓|
+|image_mean|Optional[Union[float, List[float]]]|归一化均值，若为None，则使用初始化值，取值范围为[0, 1]。|可选|✓|
+|image_std|Optional[Union[float, List[float]]]|归一化标准差，若为None，则使用初始化值，取值范围在(0, FLOAT32_MAX)。|可选|✓|
 |patch_size|Optional[int]|空间维度切分patch的大小（像素），若为None，则使用初始化值。|可选|✓|
 |temporal_patch_size|Optional[int]|时间维度切分patch的大小（帧），默认为2。|可选|✗|
 |merge_size|Optional[int]|patch合并时的大小，若为None，则使用初始化值。|可选|✓|
