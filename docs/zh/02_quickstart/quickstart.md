@@ -2,13 +2,13 @@
 
 Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resize/crop、视频帧解码与音频加载等。本文将帮助你通过 Docker 启动环境并跑通第一个 Python 示例。
 
-如需在宿主机原生安装，请参阅 [安装部署](./installation_guide.md)。
+如需在宿主机原生安装，请参阅 [安装部署](../03_installation_guide/installation_guide.md)。
 
 ## 前置条件
 
 开始之前，请确认：
 
-- **硬件**：Atlas 800I A2 推理服务器，详见 [简介 - 支持的硬件](./introduction.md#支持的硬件和操作系统)
+- **硬件**：Atlas 800I A2 推理服务器，详见 [简介 - 支持的硬件](../01_introduction/01_introduction.md#支持的硬件和操作系统)
 - **Docker**：已安装 Docker，且当前用户可运行容器
 - **测试图片**：准备一张 jpg/jpeg 图片，文件权限不高于 640（`chmod 640`）
 
@@ -16,8 +16,8 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 
 1. **选择匹配版本**
    - 访问昇腾社区[镜像仓](https://www.hiascend.com/developer/ascendhub/detail/e0081aa3c4dd441dbd6a379bee8cc4c9)
-   - 根据当前硬件型号（如 Atlas 800I A2 推理服务器）选择对应的镜像版本
-   - 注意区分 CPU 架构（x86_64 / aarch64）和昇腾芯片型号（Ascend 310 / 910 等）
+   - 根据当前硬件型号（Atlas 800I A2 推理服务器）选择对应的镜像版本
+   - 注意当前仅支持 aarch64 CPU 架构
 
 2. **环境预检查**
    - 使用 `npu-smi info` 命令验证 NPU 驱动状态
@@ -25,24 +25,22 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 
 3. **镜像拉取示例**
 
-   镜像 Tag 格式为 `{version}-{chip}-{os}-{python}-{arch}`，各变量含义如下：
+   镜像 Tag 格式为 `{version}-910b-{os}-{python}-aarch64`，各变量含义如下：
 
    | 变量 | 含义 | 示例值 |
    |------|------|--------|
    | `{version}` | Multimodal SDK 版本 | `26.0.0` |
-   | `{chip}` | 昇腾芯片系列 | `910b` |
    | `{os}` | 基础操作系统 | `ubuntu22.04` / `openeuler24.03` |
    | `{python}` | Python 版本 | `py3.11` |
-   | `{arch}` | CPU 架构 | `aarch64` / `x86_64` |
 
    ```bash
-   TAG={version}-{chip}-{os}-{python}-{arch}
+   TAG={version}-910b-{os}-{python}-aarch64
    docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:${TAG}
    docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:${TAG} \
        multimodalsdk:${TAG}
    ```
 
-   以 26.0.0 版本、910b 芯片、Ubuntu 22.04、Python 3.11、aarch64 架构为例：
+   以 26.0.0 版本、Ubuntu 22.04、Python 3.11为例：
 
    ```bash
    docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64
@@ -120,12 +118,12 @@ resize output shape: (500, 500, 3)
 
 | 目标 | 文档 |
 | -- | -- |
-| 图像 resize/crop 可视化样例 | [样例和指导 - 图片处理](./user_guide.md#图片处理) |
-| 视频帧解码 | [样例和指导 - 视频处理](./user_guide.md#视频处理) |
-| 音频加载 | [样例和指导 - 音频处理](./user_guide.md#音频处理) |
-| Qwen2VL / InternVL2 预处理加速 | [Adapter](./api/adapter.md) |
-| vLLM 推理框架集成 | [patcher](./api/patcher.md) |
-| API 完整参考 | [功能函数参考](./api/function_reference.md) |
+| 图像 resize/crop 可视化样例 | [样例和指导 - 图片处理](../04_user_guide/user_guide.md#图片处理) |
+| 视频帧解码 | [样例和指导 - 视频处理](../04_user_guide/user_guide.md#视频处理) |
+| 音频加载 | [样例和指导 - 音频处理](../04_user_guide/user_guide.md#音频处理) |
+| Qwen2VL / InternVL2 预处理加速 | [Adapter](../05_api/adapter.md) |
+| vLLM 推理框架集成 | [patcher](../05_api/patcher.md) |
+| API 完整参考 | [功能函数参考](../05_api/function_reference.md) |
 
 ## 常见问题速查
 
@@ -135,4 +133,4 @@ resize output shape: (500, 500, 3)
 | 容器内找不到测试图片 | 确认步骤 2 已挂载宿主机目录，且 `TEST_IMAGE` 使用容器内路径（如 `/data/test.jpg`） |
 | 容器无法访问 NPU | 检查 NPU 驱动挂载与 `--device /dev/davinci*` 设备号 |
 | 导入 `mm` 失败 | 确认已执行 `source ${MULTIMODAL_SDK_HOME}/script/set_env.sh` |
-| 更多问题 | [FAQ](./faq.md)、[附录](./appendix.md) |
+| 更多问题 | [FAQ](../06_references/faq.md)、[附录](../06_references/appendix.md) |

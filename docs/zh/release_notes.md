@@ -131,7 +131,7 @@
 
 | 文档名称 | 内容简介 | 更新说明 |
 | -- | -- | -- |
-| [《Multimodal SDK 26.1.0 用户指南》](./user_guide.md) | 主要包括 Multimodal SDK 图片处理、视频处理和音频处理典型场景的基础预处理接口使用样例与操作指导。 | 变更详见[《Multimodal SDK 26.1.0 用户指南》](./user_guide.md)。 |
+| [《Multimodal SDK 26.1.0 用户指南》](./04_user_guide/user_guide.md) | 主要包括 Multimodal SDK 图片处理、视频处理和音频处理典型场景的基础预处理接口使用样例与操作指导。 | 变更详见[《Multimodal SDK 26.1.0 用户指南》](./04_user_guide/user_guide.md)。 |
 
 ## 病毒扫描结果
 

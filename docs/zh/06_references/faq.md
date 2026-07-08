@@ -13,7 +13,7 @@ pip3 show mm
 python3 -c "import mm; print('mm import: OK')"
 ```
 
-若 `pip3 show mm` 无输出，请先按[`run` 包安装](./installation_guide.md#方式一run-包安装)或[`Wheel` 包安装](./installation_guide.md#方式二wheel-包安装)完成安装。
+若 `pip3 show mm` 无输出，请先按[`run` 包安装](../03_installation_guide/installation_guide.md#方式一run-包安装)或[`Wheel` 包安装](../03_installation_guide/installation_guide.md#方式二wheel-包安装)完成安装。
 
 ### Q: 导入 `mm` 失败，提示 `libcore.so` 或 `libascendcl.so` 找不到？
 
@@ -59,13 +59,13 @@ source /home/work/Mind_SDK/multimodal/script/set_env.sh
 
 **原因**：第三方依赖版本与 Multimodal SDK 要求不一致。
 
-**处理**：对照[安装部署 - 其他依赖](./installation_guide.md#其他依赖)固定版本安装：
+**处理**：对照[安装部署 - 其他依赖](../03_installation_guide/installation_guide.md#其他依赖)固定版本安装：
 
 ```bash
 pip3 install transformers==4.51.3 pillow==11.2.1 numpy==1.26.4
 ```
 
-`torch` 与 `torch-npu` 需按 CANN 9.0.0 配套表安装，请参阅 [安装部署 - 其他依赖](./installation_guide.md#其他依赖)。
+`torch` 与 `torch-npu` 需按 CANN 9.0.0 配套表安装，请参阅 [安装部署 - 其他依赖](../03_installation_guide/installation_guide.md#其他依赖)。
 
 ### Q: 已安装 lzma 模块，调用 torchvision 仍提示缺少 lzma？
 
@@ -108,7 +108,7 @@ docker run ... -v /path/to/testdata:/data ...
 export TEST_IMAGE="/data/test.jpg"
 ```
 
-详见 [快速入门 - 步骤 2](./quickstart.md#步骤-2启动容器)。
+详见 [快速入门 - 步骤 2](../02_quickstart/quickstart.md#步骤-2启动容器)。
 
 ### Q: 容器无法访问 NPU？
 
@@ -134,4 +134,4 @@ chmod 640 /path/to/your/file.jpg
 
 - 遇到错误码？参见 [附录 - 错误码](./appendix.md#错误码)
 - 环境变量问题？参见 [附录 - 环境变量说明](./appendix.md#环境变量说明)
-- 安装步骤问题？参见 [安装部署 - 常见问题](./installation_guide.md#常见问题)
+- 安装步骤问题？参见 [安装部署 - 常见问题](../03_installation_guide/installation_guide.md#常见问题)

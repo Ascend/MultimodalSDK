@@ -2,12 +2,12 @@
 
 本文通过图片、视频和音频三个典型场景，说明 Multimodal SDK 的基础预处理接口使用方式。整体流程如下：
 
-![样例和指导整体流程](figures/user_guide_overview_flow.svg)
+![样例和指导整体流程](../figures/user_guide_overview_flow.svg)
 
 ## 使用前准备
 
 - 本文档适用于 Multimodal SDK 最新发布版本，建议使用 Python 3.10 或 3.11。
-- 请先完成[快速入门](./quickstart.md)或[安装部署](./installation_guide.md)，确认 `import mm` 成功。
+- 请先完成[快速入门](../02_quickstart/quickstart.md)或[安装部署](../03_installation_guide/installation_guide.md)，确认 `import mm` 成功。
 - 图片示例需要安装 `matplotlib`，仅用于展示处理结果：`pip3 install matplotlib`。
 - 示例文件权限不应高于 640。图片当前支持 jpg/jpeg，视频当前支持 mp4，音频当前支持 wav。
 
@@ -15,7 +15,7 @@
 
 以下是一个简单的参考样例，通过多模态 SDK 的 Image 类读取图像，并进行缩放、裁剪，最后转化为通用的 Numpy 数组展示上述操作的效果。
 
-![图片处理流程](figures/user_guide_image_flow.svg)
+![图片处理流程](../figures/user_guide_image_flow.svg)
 
 ```python
 import mm  # 引入多模态SDK包
@@ -50,7 +50,7 @@ plt.axis("off")
 plt.show()
 ```
 
-![](figures/zh-cn_image_0000002433291540.png)
+![](../figures/zh-cn_image_0000002433291540.png)
 
 ## 视频处理
 
@@ -59,7 +59,7 @@ plt.show()
 - 如果传入了**期望解码的视频帧 ID**集合且其内容合法，SDK 会根据这些帧 ID 进行解码，返回的 image 对象列表长度与帧 ID 集合大小一致。
 - 如果帧 ID 集合为空，则可以通过**期望解码后获取的总帧数**参数进行设置，此时接口会从视频中均匀采样指定数量的帧，最终返回的 image 对象列表长度等于设定的帧数。
 
-![视频处理流程](figures/user_guide_video_flow.svg)
+![视频处理流程](../figures/user_guide_video_flow.svg)
 
 1. 传入目标解码的帧 ID 集合，得到的返回值列表大小为传入的帧 ID 集合大小。
 
@@ -98,7 +98,7 @@ plt.show()
 
 以下示例演示单音频文件加载与批量加载（请将路径替换为实际 wav 文件，并确保文件权限不高于 640）：
 
-![音频处理流程](figures/user_guide_audio_flow.svg)
+![音频处理流程](../figures/user_guide_audio_flow.svg)
 
 ```python
 from mm import load_audio
@@ -130,7 +130,7 @@ print(f"directory batch count: {len(batch_from_directory)}")
 
 | 目标 | 文档 |
 | -- | -- |
-| 查看完整 API 参数和约束 | [功能函数参考](./api/function_reference.md) |
-| 排查常见错误码 | [附录 - 错误码](./appendix.md#错误码) |
-| Qwen2VL / InternVL2 预处理加速 | [Adapter](./api/adapter.md) |
-| vLLM 推理框架集成 | [patcher](./api/patcher.md) |
+| 查看完整 API 参数和约束 | [功能函数参考](../05_api/function_reference.md) |
+| 排查常见错误码 | [附录 - 错误码](../06_references/appendix.md#错误码) |
+| Qwen2VL / InternVL2 预处理加速 | [Adapter](../05_api/adapter.md) |
+| vLLM 推理框架集成 | [patcher](../05_api/patcher.md) |

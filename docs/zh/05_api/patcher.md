@@ -286,7 +286,7 @@ curl -X POST "http://<host>:<port>/v1/chat/completions" \
 | 未看到 `Multimodal SDK ... Patcher Enabled!` 提示 | 确认已在文档指定文件和位置添加对应 `import mm.patcher.vllm...` 语句，并重启 vLLM 服务。 |
 | 图像或视频读取失败 | 确认文件路径使用 `file:` 协议前缀，文件格式满足当前 patcher 约束，且文件权限不高于 640。 |
 | transformers 版本不匹配 | 在容器内执行 `python3 -c "import transformers; print(transformers.__version__)"`，确认版本为 4.51.3。 |
-| 仍无法定位问题 | 查看 vLLM 服务日志，并参见[附录 - 错误码](../appendix.md#错误码)排查文件权限、路径、格式等错误。 |
+| 仍无法定位问题 | 查看 vLLM 服务日志，并参见[附录 - 错误码](../06_references/appendix.md#错误码)排查文件权限、路径、格式等错误。 |
 
 ---
 
