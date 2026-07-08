@@ -776,7 +776,7 @@ def normalize(src: Tensor, mean: list[float], std: list[float], device_mode: Dev
 **Example**
 
 ```python
-from mm import Tensor
+from mm import Tensor, TensorFormat, normalize, DeviceMode
 import torch
 
 tensor = torch.zeros((1024, 768, 3), dtype=torch.uint8)
@@ -830,4 +830,161 @@ audio_directory = "/path/to/audio_dir"
 waveform, sr = load_audio(single_audio_path)
 batch_from_filelist = load_audio(audio_file_paths)
 batch_from_directory = load_audio(audio_directory)
+```
+
+<a id="mmbaseframeselector"></a>
+
+## mm.BaseFrameSelector
+
+Abstract base class for text-image matching based key frame selection. It encapsulates common capabilities such as model initialization, feature extraction, boundary localization, input validation, and similarity computation. This class cannot be directly instantiated and must be used through subclasses KRangFrameSelector or KFrameSelector.
+
+### BaseFrameSelector Properties
+
+|Property|Type|Description|
+|--|--|--|
+|model_path|str|CLIP model weight path.|
+|device_id|int|NPU device index.|
+|model_type|str|Model type, values are "clip" (English) or "cn_clip" (Chinese).|
+|batch_size|int|Image feature extraction batch size, default is 64.|
+|similar_threshold|float|Text-image similarity decay threshold. Frames with similarity below (max similarity - this value) will be filtered. Default is 0.025.|
+|image_similar_threshold|float|Image-image similarity gradient threshold for scene boundary detection. When the cosine similarity gradient between adjacent frames exceeds this value, it is determined as a scene switch. Default is 0.015.|
+|image_size|tuple|Input image resize dimensions, must match model training dimensions. Default is (672, 672).|
+
+### BaseFrameSelector.\_\_init\_\_
+
+**Function Description**
+
+Initialize the key frame selector, load the specified model and complete parameter validation.
+
+**Function Prototype**
+
+```typescript
+__init__(model_path: str, device_id: int, model_type: str = "clip", similar_threshold: float = 0.025, image_similar_threshold: float = 0.015, image_size: tuple = (672, 672))
+```
+
+**Parameters**
+
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|model_path|str|Required|CLIP model weight path, must be a non-empty string and point to a valid directory.|
+|device_id|int|Required|NPU device index, must be an integer.|
+|model_type|str|Optional|Model type, values are "clip" (English) or "cn_clip" (Chinese), default is "clip".|
+|similar_threshold|float|Optional|Text-image similarity decay threshold, range is [0, 1], default is 0.025.|
+|image_similar_threshold|float|Optional|Image similarity gradient threshold for scene boundary detection, range is [0, 1], default is 0.015.|
+|image_size|tuple|Optional|Input image resize dimensions, format is (width, height), range is [10, 8192], default is (672, 672).|
+
+>[!NOTE] Note
+>
+>- BaseFrameSelector is an abstract class and cannot be directly instantiated. Use subclasses KRangFrameSelector or KFrameSelector.
+>- The directory pointed to by model_path must exist, directory permissions cannot be higher than 750, and the directory owner must be the current user.
+
+### BaseFrameSelector.select\_keyframes
+
+**Function Description**
+
+Select key frames related to the query text from video frame sequences. This is an abstract method implemented by subclasses with specific selection strategies.
+
+**Function Prototype**
+
+```typescript
+select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resample: bool) -> Tuple[List[int], List[np.ndarray]]
+```
+
+**Parameters**
+
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|query|str|Required|Query text describing target visual content, must be a non-empty string.|
+|frames|List[np.ndarray]|Required|Video frame list.|
+|sample_num|int|Required|Maximum number of key frames, must be a positive integer.|
+|do_resample|bool|Required|Whether to perform adaptive resampling within intervals.|
+
+**Returns**
+
+|Data Type|Description|
+|--|--|
+|Tuple[List[int], List[np.ndarray]]|Tuple containing key frame index list and key frame image list.|
+
+## mm.KRangFrameSelector
+
+Interval merging based key frame selector, inheriting from BaseFrameSelector. Locates continuous scene intervals related to the query text and adaptively samples key frames within intervals. Suitable for tasks requiring temporal context.
+
+### KRangFrameSelector.select\_keyframes
+
+**Function Description**
+
+Interval key frame selection main process: after extracting features and calculating similarity, greedily select candidate frames and expand into scene intervals, merge adjacent semantically similar intervals, and finally perform adaptive resampling within intervals.
+
+**Function Prototype**
+
+```typescript
+select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resample: bool) -> Tuple[List[int], List[np.ndarray]]
+```
+
+**Parameters**
+
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|query|str|Required|Query text describing target visual content, must be a non-empty string.|
+|frames|List[np.ndarray]|Required|Video frame list.|
+|sample_num|int|Required|Maximum number of key frames, must be a positive integer.|
+|do_resample|bool|Required|Whether to perform adaptive resampling within merged intervals. When True, resamples using similarity top-k and uniform fill strategy; when False, only returns merged interval endpoints.|
+
+**Returns**
+
+|Data Type|Description|
+|--|--|
+|Tuple[List[int], List[np.ndarray]]|Tuple containing key frame index list (deduplicated and sorted) and key frame image list.|
+
+**Example**
+
+```python
+from mm import KRangFrameSelector
+import numpy as np
+
+selector = KRangFrameSelector(model_path="/path/to/clip_model", device_id=0, model_type="clip")
+frames = [np.random.randint(0, 255, (720, 1280, 3), dtype=np.uint8) for _ in range(100)]
+indices, key_frames = selector.select_keyframes(query="a cat sitting on a sofa", frames=frames, sample_num=8, do_resample=True)
+```
+
+## mm.KFrameSelector
+
+Discrete key frame selector, inheriting from BaseFrameSelector. Selects visually diverse discrete key frames related to the query text. Suitable for tasks requiring visual diversity.
+
+### KFrameSelector.select\_keyframes
+
+**Function Description**
+
+Discrete key frame selection main process: after extracting features and calculating similarity, greedily select candidate frames and ensure visual diversity through feature distance deduplication.
+
+**Function Prototype**
+
+```typescript
+select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resample: bool = False) -> Tuple[List[int], List[np.ndarray]]
+```
+
+**Parameters**
+
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|query|str|Required|Query text describing target visual content, must be a non-empty string.|
+|frames|List[np.ndarray]|Required|Video frame list.|
+|sample_num|int|Required|Maximum number of key frames, must be a positive integer.|
+|do_resample|bool|Optional|This parameter is not used in KFrameSelector, default is False.|
+
+**Returns**
+
+|Data Type|Description|
+|--|--|
+|Tuple[List[int], List[np.ndarray]]|Tuple containing key frame index list (deduplicated and sorted) and key frame image list.|
+
+**Example**
+
+```python
+from mm import KFrameSelector
+import numpy as np
+
+selector = KFrameSelector(model_path="/path/to/clip_model", device_id=0, model_type="clip")
+frames = [np.random.randint(0, 255, (720, 1280, 3), dtype=np.uint8) for _ in range(100)]
+indices, key_frames = selector.select_keyframes(query="a dog running in the park", frames=frames, sample_num=8)
 ```

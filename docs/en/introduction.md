@@ -7,9 +7,11 @@ Multimodal inference workflows need to process large volumes of complex data. Mu
 
 **User Guide**
 
-If you are using this software for the first time, start with the examples in the quick start document, and ensure that you prepare the required environment and software packages as described there.
-
-If you are already familiar with the process, you can go directly to the API section to find the required functions and interfaces and accelerate your data processing.
+| Scenario | Document |
+| -- | -- |
+| Docker quick experience (about 5 minutes) | [Quick Start](./quickstart.md) |
+| Native installation on host | [Installation Guide](./installation_guide.md) |
+| Already installed, check API | [Python API Reference](./api/README.md) |
 
 # Software Architecture
 

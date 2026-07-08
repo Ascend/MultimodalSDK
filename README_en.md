@@ -168,7 +168,7 @@ This section uses the CANN 8.5.0 compatible release as an example to describe ho
 
 # Quick Start
 
-Multimodal SDK provides a set of high-performance, easy-to-use interfaces. For details, see [Quick Start](docs/en/quick_start.md) and [Examples and Guidance](docs/en/user_guide.md).
+Multimodal SDK provides a set of high-performance, easy-to-use interfaces. For details, see [Quick Start](docs/en/quickstart.md) and [Examples and Guidance](docs/en/user_guide.md).
 
 # Features
 

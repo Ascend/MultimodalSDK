@@ -41,7 +41,7 @@ load_file: Multimodal SDK Video Patcher Enabled!
 
 The following example request body cannot be copied and used directly. For other vLLM parameters, see the [official vLLM documentation](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api).
 
-Send the request body to the OpenAI-compatible API exposed by vLLM. This document uses `/v1/chat/completion`.
+Send the request body to the OpenAI-compatible API exposed by vLLM. This document uses `/v1/chat/completions`.
 
 ```json
 {
@@ -70,6 +70,19 @@ Send the request body to the OpenAI-compatible API exposed by vLLM. This documen
 }
 ```
 
+**Key Parameter Description**
+
+| Parameter | Description |
+| -- | -- |
+| `model` | Model path loaded when the vLLM service starts. Must be consistent with the startup parameter `--model`. |
+| `messages` | Conversation message list. `role` is usually `user`, and `content` is an array of text and multimodal content. |
+| `content[].type` | Multimodal content type. Use `video_url` for video requests and `text` for text prompts. |
+| `content[].video_url.url` | Local video path using the `file:` protocol prefix. Must be in **mp4** format, and file permissions must not be higher than **640** (see the note above). |
+| `content[].text` | Text prompt for the video. |
+| `max_tokens` | Maximum number of tokens in the generated response. |
+| `temperature` / `top_p` | Sampling parameters that control output randomness. Setting to `0` and a small `top_p` produces more stable output. |
+| `stream` | Whether to return results in streaming mode. `false` means wait for the complete response before returning. |
+
 ## `qwen2_vl_image_processor_patcher`
 
 This patch accelerates image and video preprocessing when vLLM uses the Qwen2VL model. Compared with transformers, it can significantly reduce preprocessing latency.
@@ -96,11 +109,11 @@ import mm.patcher.vllm.qwen2_vl_image_processor_patcher
 
 You need to add the content in the following two locations:
 
-Add it on the line before `from transformer import AutoProcessor` in the `get_processor` function. If you use a container, this is line 62 or 63, as shown in the following figure.
+Add it on the line before `from transformers import AutoProcessor` in the `get_processor` function. If you use a container, this is line 62 or 63, as shown in the following figure.
 
 ![](../figures/zh-cn_image_0000002466503549.png)
 
-Add it on the line before `from transformer import AutoImageProcessor` in the `get_image_processor` function. If you use a container, this is line 174 or 175, as shown in the following figure.
+Add it on the line before `from transformers import AutoImageProcessor` in the `get_image_processor` function. If you use a container, this is line 174 or 175, as shown in the following figure.
 
 ![](../figures/zh-cn_image_0000002466423417.png)
 
@@ -143,6 +156,20 @@ Send the request body to the OpenAI-compatible API exposed by vLLM. This documen
 }
 ```
 
+**Key Parameter Description**
+
+| Parameter | Description |
+| -- | -- |
+| `model` | Model path loaded when the vLLM service starts. Must be consistent with the startup parameter `--model`. |
+| `messages` | Conversation message list. `role` is usually `user`, and `content` is an array of text and multimodal content. |
+| `content[].type` | Multimodal content type. Use `video_url` for video requests, `image_url` for image requests, and `text` for text prompts. |
+| `content[].video_url.url` | Local video path using the `file:` protocol prefix. |
+| `content[].image_url.url` | Local image path using the `file:` protocol prefix. |
+| `content[].text` | Text prompt for the video or image. |
+| `max_tokens` | Maximum number of tokens in the generated response. |
+| `temperature` / `top_p` | Sampling parameters that control output randomness. Setting to `0` and a small `top_p` produces more stable output. |
+| `stream` | Whether to return results in streaming mode. `false` means wait for the complete response before returning. |
+
 The following is an image example request body. It cannot be copied and used directly. For other vLLM parameters, see the [official vLLM documentation](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api).
 
 ```json
@@ -171,6 +198,20 @@ The following is an image example request body. It cannot be copied and used dir
   "stream": false      // Whether to use streaming output
 }
 ```
+
+**Key Parameter Description**
+
+| Parameter | Description |
+| -- | -- |
+| `model` | Model path loaded when the vLLM service starts. Must be consistent with the startup parameter `--model`. |
+| `messages` | Conversation message list. `role` is usually `user`, and `content` is an array of text and multimodal content. |
+| `content[].type` | Multimodal content type. Use `video_url` for video requests, `image_url` for image requests, and `text` for text prompts. |
+| `content[].video_url.url` | Local video path using the `file:` protocol prefix. |
+| `content[].image_url.url` | Local image path using the `file:` protocol prefix. |
+| `content[].text` | Text prompt for the video or image. |
+| `max_tokens` | Maximum number of tokens in the generated response. |
+| `temperature` / `top_p` | Sampling parameters that control output randomness. Setting to `0` and a small `top_p` produces more stable output. |
+| `stream` | Whether to return results in streaming mode. `false` means wait for the complete response before returning. |
 
 ## `image_patcher`
 
@@ -213,7 +254,7 @@ load_file: Multimodal SDK Image Patcher Enabled!
 
 The following example request body cannot be copied and used directly. For other vLLM parameters, see the [official vLLM documentation](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api).
 
-Send the request body to the OpenAI-compatible API exposed by vLLM. This document uses `/v1/chat/completion`.
+Send the request body to the OpenAI-compatible API exposed by vLLM. This document uses `/v1/chat/completions`.
 
 ```json
 {
@@ -231,6 +272,19 @@ Send the request body to the OpenAI-compatible API exposed by vLLM. This documen
 "stream": false // Whether to use streaming output
 }
 ```
+
+**Key Parameter Description**
+
+| Parameter | Description |
+| -- | -- |
+| `model` | Model path loaded when the vLLM service starts. Must be consistent with the startup parameter `--model`. |
+| `messages` | Conversation message list. `role` is usually `user`, and `content` is an array of text and multimodal content. |
+| `content[].type` | Multimodal content type. Use `image_url` for image requests and `text` for text prompts. |
+| `content[].image_url.url` | Local image path using the `file:` protocol prefix. Must be in **jpeg** format with file extension **jpg** or **jpeg**, and file permissions must not be higher than **640** (see the note above). |
+| `content[].text` | Text prompt for the image. |
+| `max_tokens` | Maximum number of tokens in the generated response. |
+| `temperature` / `top_p` | Sampling parameters that control output randomness. |
+| `stream` | Whether to return results in streaming mode. `false` means wait for the complete response before returning. |
 
 ## `internvl2_image_processor_patcher`
 
@@ -260,7 +314,7 @@ Add it at the location shown in the following figure:
 
 ![](../figures/zh-cn_image_0000002436163564.png)
 
-After you add the line, when you run the vLLM service normally, if the following message appears after a normal conversation, it indicates that the multimodal Qwen2VL image and video preprocessing acceleration feature is in use:
+After you add the line, when you run the vLLM service normally, if the following message appears after a normal conversation, it indicates that the multimodal InternVL2 image and video preprocessing acceleration feature is in use:
 
 ```ColdFusion
 _images_to_pixel_values_lst: Multimodal SDK InternVL2 Image Patcher Enabled!
@@ -286,3 +340,16 @@ The following image example request body cannot be copied and used directly. For
 "stream": false // Whether to use streaming output
 }
 ```
+
+**Key Parameter Description**
+
+| Parameter | Description |
+| -- | -- |
+| `model` | Model path loaded when the vLLM service starts. Must be consistent with the startup parameter `--model`. |
+| `messages` | Conversation message list. `role` is usually `user`, and `content` is an array of text and multimodal content. |
+| `content[].type` | Multimodal content type. Use `image_url` for image requests and `text` for text prompts. |
+| `content[].image_url.url` | Local image path using the `file:` protocol prefix. |
+| `content[].text` | Text prompt for the image. |
+| `max_tokens` | Maximum number of tokens in the generated response. |
+| `temperature` / `top_p` | Sampling parameters that control output randomness. |
+| `stream` | Whether to return results in streaming mode. `false` means wait for the complete response before returning. |
