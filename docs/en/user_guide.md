@@ -68,3 +68,30 @@ The video decoding interface in Multimodal SDK provides two custom parameters fo
     ```
 
     ![](figures/zh-cn_image_0000002466895825.png)
+
+## Audio Processing
+
+The following examples demonstrate single audio file loading and batch loading. Please replace the paths with actual wav files and ensure file permissions do not exceed 640:
+
+![Audio Processing Flow](figures/user_guide_audio_flow.svg)
+
+```python
+from mm import load_audio
+
+# Single file loading
+single_audio_path = "/path/to/speech.wav"
+waveform, sr = load_audio(single_audio_path)
+print(f"single audio shape: {waveform.shape}, sample rate: {sr}")
+
+# Batch loading from file list
+audio_file_paths = ["/path/to/audio1.wav", "/path/to/audio2.wav"]
+batch_from_filelist = load_audio(audio_file_paths)
+print(f"batch count: {len(batch_from_filelist)}")
+
+# Batch loading from directory
+audio_directory = "/path/to/audio_dir"
+batch_from_directory = load_audio(audio_directory)
+print(f"directory batch count: {len(batch_from_directory)}")
+```
+
+To specify a resampling rate, pass the `sr` parameter, for example `load_audio(single_audio_path, sr=16000)`.
