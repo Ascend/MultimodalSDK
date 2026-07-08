@@ -2,7 +2,7 @@
 
 ## mm.Tensor
 
-本文档适用于 Multimodal SDK 最新发布版本。接口异常通常以 `ValueError`、`TypeError`、`RuntimeError` 或 `ImportError` 抛出，错误码处理建议请参见[附录 - 错误码](../appendix.md#错误码)。
+本文档适用于 Multimodal SDK 最新发布版本。接口异常通常以 `ValueError`、`TypeError`、`RuntimeError` 或 `ImportError` 抛出，错误码处理建议请参见[附录 - 错误码](../06_references/appendix.md#错误码)。
 
 Tensor类将被用于承载任意模态的通用数据，实现通用数据的创建、管理以及数据复制等操作。
 

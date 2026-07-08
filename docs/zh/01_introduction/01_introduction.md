@@ -5,17 +5,9 @@
 - 包括图像视频加载和解码，resize、crop 等预处理常用操作。
 - 支持多种开源数据结构与加速库数据结构的相互转换，方便快速使用和移植。
 
-**使用导引**
-
-| 场景 | 文档 |
-| -- | -- |
-| Docker 快速体验 | [快速入门](./quickstart.md) |
-| 宿主机原生安装部署 | [安装部署](./installation_guide.md) |
-| 已安装，查阅 API | [Python 接口说明](./api/README.md) |
-
 ## 软件架构
 
-![](./figures/mmsdk_arch.svg)
+![](../figures/mmsdk_arch.svg)
 
 **架构图模块介绍**
 
@@ -26,6 +18,16 @@
 
 ## 支持的硬件和操作系统
 
+> **查询设备产品型号**
+>
+> 在 Linux 系统中，可通过以下两种方式查询设备产品型号：
+>
+> 1. 使用 `dmidecode` 命令：dmidecode -s system-product-name
+>
+> 2. 读取 sysfs 文件：cat /sys/class/dmi/id/product_name
+>
+> 两种方式均可获取设备的产品型号信息，您可根据实际需求选择使用。
+
 | 产品系列 | 产品型号 | 操作系统版本 |
 | -- | -- | -- |
-| Atlas A2 推理系列产品 | Atlas 800I A2 推理服务器 | Ubuntu 22.04 |
+| Atlas A2 推理系列产品 | Atlas 800I A2 推理服务器 | Ubuntu 22.04 / openEuler 24.03 |
