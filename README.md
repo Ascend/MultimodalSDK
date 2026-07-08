@@ -25,18 +25,18 @@
 
 | 类别 | 模块 | 功能简介 | 文档 |
 |:--:|:--|:--|:--|
-| 加速库 | 功能函数 | Tensor / Image / video_decode / load_audio 等预处理接口 | [功能函数参考](docs/zh/api/function_reference.md) |
-| 适配器 | Adapter | Qwen2VL、InternVL2 模型预处理适配 | [Adapter](docs/zh/api/adapter.md) |
-| 补丁 | Patcher | vLLM 框架预处理加速补丁 | [patcher](docs/zh/api/patcher.md) |
-| API | Python 接口 | 数据类型枚举与接口目录 | [Python 接口说明](docs/zh/api/README.md) |
+| 加速库 | 功能函数 | Tensor / Image / video_decode / load_audio 等预处理接口 | [功能函数参考](docs/zh/05_api/function_reference.md) |
+| 适配器 | Adapter | Qwen2VL、InternVL2 模型预处理适配 | [Adapter](docs/zh/05_api/adapter.md) |
+| 补丁 | Patcher | vLLM 框架预处理加速补丁 | [patcher](docs/zh/05_api/patcher.md) |
+| API | Python 接口 | 数据类型枚举与接口目录 | [Python 接口说明](docs/zh/05_api/README.md) |
 
 ## 🚀 快速入门
 
-只需约 5 分钟，即可通过 Docker 快速启动环境并完成首次体验，详见[快速入门](docs/zh/quickstart.md)。
+Multimodal SDK提供了一个简单的样例，帮助用户通过 Docker 快速启动环境并完成首次体验，详见[快速入门](docs/zh/02_quickstart/quickstart.md)。
 
 ## 📦 安装指南
 
-详细的安装部署说明请参见[安装指南](docs/zh/installation_guide.md)。
+详细的安装部署说明请参见[安装指南](docs/zh/03_installation_guide/installation_guide.md)。
 
 ## 📘 使用指南
 
@@ -49,7 +49,7 @@
 ## ⚖️ 相关说明
 
 - [许可证声明](LICENSE.md)（docs 文档适用 CC-BY 4.0，见 [docs/LICENSE](docs/LICENSE)）
-- [免责声明](docs/zh/disclaimer.md)
+- [免责声明](docs/zh/01_introduction/02_disclaimer.md)
 
 ## 🤝 建议与交流
 
@@ -57,7 +57,7 @@
 
 | 资源 | 说明 |
 |:--|:--|
-| [FAQ](./docs/zh/faq.md) | 常见问题解答与使用答疑 |
+| [FAQ](./docs/zh/06_references/faq.md) | 常见问题解答与使用答疑 |
 | [创建Issue](https://gitcode.com/Ascend/MultimodalSDK/issues/new) | 提交 Bug、需求或建议 |
 | [社区任务](https://gitcode.com/Ascend/MultimodalSDK/issues) | 查看和认领社区任务 |
 | [会议日历](https://meeting.ascend.osinfra.cn/?sig=sig-MindSeriesSDK) | 社区定期例会与活动日程 |
