@@ -4,7 +4,7 @@
 
 使用以下任一 patcher 前，请完成以下准备工作：
 
-- 目前仅支持从 vllm-ascend 社区获取 **0.8.5.rc1** 镜像版。
+- 目前仅支持从 vllm-ascend 社区获取 **v0.8.5rc1** 镜像版。
 - 镜像安装方式请参见 [vllm-ascend](https://vllm-ascend.readthedocs.io/en/v0.8.5rc1/installation.html)，安装时请选择 **Using docker**（从容器中安装）。
 - 在镜像中使用 Multimodal SDK 能力时，请首先执行以下命令：
 
@@ -13,7 +13,7 @@ export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/l
 ```
 
 > [!CAUTION] 注意
-> 使用 qwen2_vl_image_processor_patcher 或 internvl2_image_processor_patcher 时，还需保证 transformers 版本为 **4.51.3**。
+> 使用 qwen2_vl_image_processor_patcher 或 internvl2_image_processor_patcher 时，还需保证 transformers 版本为 **4.51.3**。Multimodal SDK 官方镜像已包含该版本；若在自定义环境中使用，请执行 `python3 -c "import transformers; print(transformers.__version__)"` 确认版本。
 
 本文档仅提供通过社区获取镜像的使用方式。对于其他使用方式，您需要自行找到以下所提到的文件并执行操作。
 
@@ -278,6 +278,15 @@ curl -X POST "http://<host>:<port>/v1/chat/completions" \
 | `max_tokens` | 生成回复的最大 token 数。 |
 | `temperature` / `top_p` | 采样参数，控制输出随机性。 |
 | `stream` | 是否以流式方式返回结果；`false` 表示等待完整响应后一次性返回。 |
+
+## 常见问题与排障
+
+| 现象 | 处理方式 |
+| -- | -- |
+| 未看到 `Multimodal SDK ... Patcher Enabled!` 提示 | 确认已在文档指定文件和位置添加对应 `import mm.patcher.vllm...` 语句，并重启 vLLM 服务。 |
+| 图像或视频读取失败 | 确认文件路径使用 `file:` 协议前缀，文件格式满足当前 patcher 约束，且文件权限不高于 640。 |
+| transformers 版本不匹配 | 在容器内执行 `python3 -c "import transformers; print(transformers.__version__)"`，确认版本为 4.51.3。 |
+| 仍无法定位问题 | 查看 vLLM 服务日志，并参见[附录 - 错误码](../06_references/appendix.md#错误码)排查文件权限、路径、格式等错误。 |
 
 ---
 

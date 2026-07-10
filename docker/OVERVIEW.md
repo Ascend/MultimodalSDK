@@ -29,7 +29,7 @@ Tags follow this pattern:
 
 | Field            | Example Values                  | Description               |
 | ---------------- | ------------------------------- | ------------------------- |
-| `multimodalsdk_version` | `26.0.0`   | MultimodalSDK version              |
+| `multimodalsdk_version` | `26.1.0`   | MultimodalSDK version              |
 | `chip_series`    | `910`         | Target Atlas chip family |
 | `os`             | `ubuntu22.04`, `openeuler24.03` | Base operating system     |
 | `python_version` | `py3.11`    | Python version            |
@@ -38,8 +38,8 @@ Tags follow this pattern:
 
 | Tag                                | Dockerfile                                                   |
 | ---------------------------------- | ------------------------------------------------------------ |
-| `26.0.0-910b-openeuler24.03-py3.11`   | [Dockerfile.910b.openEuler](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/Dockerfile.910b.openEuler) |
-| `26.0.0-910b-ubuntu22.04-py3.11`    | [Dockerfile.910b.ubuntu](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/Dockerfile.910b.ubuntu)      |
+| `26.1.0-910b-openeuler24.03-py3.11`   | [Dockerfile.910b.openEuler](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/Dockerfile.910b.openEuler) |
+| `26.1.0-910b-ubuntu22.04-py3.11`    | [Dockerfile.910b.ubuntu](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/Dockerfile.910b.ubuntu)      |
 
 ---
 
@@ -86,13 +86,13 @@ docker exec -it multimodal_container bash
 
 MultimodalSDK provides sample code to help developers get started quickly. You can access the examples through the following link:
 
-- [MultimodalSDK Samples](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docs/zh/quickstart.md)
+- [MultimodalSDK Samples](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docs/zh/02_quickstart/quickstart.md)
 
 ### Development
 
 ```bash
 # Add required software by developer
-FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64
+FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-910b-ubuntu22.04-py3.11-aarch64
 
 RUN apt update -y && \
     apt install gcc ...
