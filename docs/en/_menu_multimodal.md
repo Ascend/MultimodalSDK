@@ -2,7 +2,7 @@
 
 - [Introduction](introduction.md)
 - [Installation_Guide](installation_guide.md)
-- [Quick Start](quick_start.md)
+- [Quick Start](quickstart.md)
 - [Python API](./api/README.md)
   - [Data Types](./api/README.md)
   - [Function_Reference](./api/function_reference.md)

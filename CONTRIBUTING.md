@@ -47,7 +47,7 @@
 4. **代码开发**：请遵循代码规范。
 5. **开发构建验证**：
 
-   环境准备请参阅[安装指南](docs/zh/installation_guide.md)（Atlas 800I A2、Ubuntu 22.04 aarch64、CANN 9.0.0）。clone 后直接执行 `bash build_script/build_merge.sh`，脚本会自动下载并准备全部编译依赖（opensource、makeself、pybind11、googletest 等）：
+   环境准备请参阅[安装指南](docs/zh/03_installation_guide/installation_guide.md)（Atlas 800I A2、Ubuntu 22.04 aarch64、CANN 9.1.0）。clone 后直接执行 `bash build_script/build_merge.sh`，脚本会自动下载并准备全部编译依赖（opensource、makeself、pybind11、googletest 等）：
 
    ```bash
    source /usr/local/Ascend/ascend-toolkit/set_env.sh

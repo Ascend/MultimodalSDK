@@ -142,8 +142,8 @@ vllm serve /data/models/Qwen2.5-VL-32B-Instruct/ -tp=4 --max-model-len=100000 --
 
 ```bash
 pip install transformers==4.51.3 "pillow>=11.2.1" numpy==1.26.4 opencv-python decord2 qwen_vl_utils openai einops accelerate decorator scipy attrs
-wget https://gitcode.com/Ascend/MultimodalSDK/releases/download/v26.0.0/Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run
-bash Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run --install --install-path=/usr/local/
+wget https://gitcode.com/Ascend/MultimodalSDK/releases/download/v26.1.0/Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run
+bash Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run --install --install-path=/usr/local/
 source /usr/local/multimodal/script/set_env.sh
 ```
 
