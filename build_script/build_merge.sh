@@ -30,7 +30,7 @@ if [[ "${1:-}" == "clean" ]]; then
     exit 0
 fi
 
-SDK_VERSION="${SDK_VERSION:-$(sed -n 's/^version:[[:space:]]*//p' "${MERGE_BUILD_DIR}/../ci/config/config.ini" 2>/dev/null)}"
+SDK_VERSION="${SDK_VERSION:-$(sed -n 's/^version:[[:space:]]*//p' "${MERGE_BUILD_DIR}/../ci/config/config.ini" 2>/dev/null || true)}"
 SDK_VERSION="${SDK_VERSION:-dev}"
 
 ASCEND_SET_ENV="/usr/local/Ascend/ascend-toolkit/set_env.sh"

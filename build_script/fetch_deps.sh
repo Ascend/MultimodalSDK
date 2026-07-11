@@ -50,6 +50,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 check_prerequisites() {
+    if ! command -v swig >/dev/null 2>&1; then
+        echo "[ERROR] SWIG is required to build the AccSDK Python bindings." >&2
+        echo "[ERROR] Install it with: Ubuntu/Debian: sudo apt-get install -y swig; openEuler: sudo yum install -y swig" >&2
+        exit 1
+    fi
+
     if [ "${SKIP_FETCH}" -eq 1 ]; then
         return 0
     fi
