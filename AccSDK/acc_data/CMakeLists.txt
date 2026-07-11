@@ -46,16 +46,25 @@ else ()
 endif (${CMAKE_BUILD_TYPE} MATCHES "Release")
 string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
-file(GLOB_RECURSE SECUREC_HEADERS
-        ${PROJECT_SECUREC_DIR}/securec.h
+set(PROJECT_SECUREC_SEARCH_DIRS
+    ${PROJECT_SECUREC_DIR}
+    /usr/local/Ascend/ascend-toolkit/latest
 )
-
-if(NOT SECUREC_HEADERS)
-    message(FATAL_ERROR "securec.h not found!")
+if(DEFINED ENV{ASCEND_HOME_PATH})
+    list(APPEND PROJECT_SECUREC_SEARCH_DIRS "$ENV{ASCEND_HOME_PATH}")
+endif()
+if(DEFINED ENV{ASCEND_TOOLKIT_HOME})
+    list(APPEND PROJECT_SECUREC_SEARCH_DIRS "$ENV{ASCEND_TOOLKIT_HOME}")
 endif()
 
-list(GET SECUREC_HEADERS 0 SECUREC_HEADER)
-get_filename_component(SECUREC_INCLUDE_DIR ${SECUREC_HEADER} DIRECTORY)
+find_path(SECUREC_INCLUDE_DIR
+    NAMES securec.h
+    PATHS ${PROJECT_SECUREC_SEARCH_DIRS}
+    PATH_SUFFIXES include aarch64-linux/include x86_64-linux/include runtime/include compiler/include
+)
+if(NOT SECUREC_INCLUDE_DIR)
+    message(FATAL_ERROR "securec.h not found in Ascend driver or toolkit paths")
+endif()
 
 add_subdirectory(3rdparty)
 include_directories(
