@@ -10,7 +10,7 @@ Before you begin, please confirm:
 
 - **Hardware**: Atlas 800I A2 inference server, see [Introduction - Supported Hardware](./introduction.md#supported-hardware-and-oss)
 - **Docker**: Docker is installed and the current user can run containers
-- **Test Image**: Prepare a jpg/jpeg image with file permissions no higher than 640 (`chmod 640`)
+- **Test Image**: The image already provides `/data/test.jpg`; no extra test image directory mount is required.
 
 ## Step 1: Pull the Image
 
@@ -55,9 +55,8 @@ Before you begin, please confirm:
 > [!NOTE]
 >
 > - The device number in `--device /dev/davinci0` needs to be adjusted according to the actual NPU number on the host (e.g., `davinci1`).
-> - `-v /path/to/testdata:/data` mounts the host test image directory into the container for Step 4 to read.
 
-Replace `/path/to/testdata` with the directory on the host that stores test images (must contain at least one jpg/jpeg file):
+Run the following command to start the container:
 
 ```bash
 docker run \
@@ -71,7 +70,6 @@ docker run \
     -v /usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64 \
     -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
     -v /etc/ascend_install.info:/etc/ascend_install.info \
-    -v /path/to/testdata:/data \
     -itd multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64 bash
 ```
 
@@ -84,7 +82,7 @@ source ${MULTIMODAL_SDK_HOME}/script/set_env.sh
 
 ## Step 4: Run the Verification Script
 
-Use an image in the mounted path inside the container (example: `/data/test.jpg`), then execute:
+Use the built-in image `/data/test.jpg`, then execute:
 
 ```bash
 export TEST_IMAGE="/data/test.jpg"
@@ -124,7 +122,7 @@ resize output shape: (500, 500, 3)
 | Symptom | Solution |
 | -- | -- |
 | File permission error | Ensure image permissions are no higher than 640: `chmod 640 "$TEST_IMAGE"` |
-| Test image not found in container | Confirm Step 2 mounted the host directory, and `TEST_IMAGE` uses the container path (e.g., `/data/test.jpg`) |
+| Test image not found in container | Confirm that the image version includes `/data/test.jpg`, and `TEST_IMAGE` uses the container path `/data/test.jpg` |
 | Container cannot access NPU | Check NPU driver mounting and `--device /dev/davinci*` device number |
 | Failed to import `mm` | Confirm `source ${MULTIMODAL_SDK_HOME}/script/set_env.sh` was executed |
 | More issues | [FAQ](./faq.md), [Appendix](./appendix.md) |

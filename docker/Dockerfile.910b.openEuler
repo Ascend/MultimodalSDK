@@ -65,6 +65,11 @@ RUN wget https://gitcode.com/Ascend/MultimodalSDK/releases/download/v26.0.0/Asce
     bash Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run --install --install-path=/usr/local && \
     ln -s /usr/lib64/libbz2.so.1.0.8 /usr/local/multimodal/opensource/FFmpeg/lib/libbz2.so.1.0
 
+# Download the MultimodalSDK test image into the container.
+RUN mkdir -p /data && \
+    wget --tries=3 --timeout=30 --waitretry=5 -O /data/test.jpg https://raw.gitcode.com/Ascend/MultimodalSDK/blobs/f1f648b7a8b8a67c7509b3425a89f743bbf59563/dog_1920_1080.jpg && \
+    chmod 640 /data/test.jpg
+
 RUN sed -i '$a\source /usr/local/Ascend/ascend-toolkit/set_env.sh' ~/.bashrc && \
     sed -i '$a\source /usr/local/multimodal/script/set_env.sh' ~/.bashrc && \
     sed -i '$a\export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64/driver:$LD_LIBRARY_PATH' ~/.bashrc
