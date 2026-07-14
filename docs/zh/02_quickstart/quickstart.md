@@ -10,7 +10,7 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 
 - **硬件**：Atlas 800I A2 推理服务器，详见 [简介 - 支持的硬件](../01_introduction/01_introduction.md#支持的硬件和操作系统)
 - **Docker**：已安装 Docker，且当前用户可运行容器
-- **测试图片**：准备一张 jpg/jpeg 图片，文件权限不高于 640（`chmod 640`）
+- **测试图片**：镜像内已提供 `/data/test.jpg`，无需额外挂载测试图片目录。
 
 ## 步骤 1：拉取镜像
 
@@ -53,9 +53,8 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 > [!NOTE] 说明
 >
 > - `--device /dev/davinci0` 中的设备编号需按宿主机实际 NPU 编号调整（如 `davinci1`）。
-> - `-v /path/to/testdata:/data` 将宿主机测试图片目录挂载到容器内，便于步骤 4 读取。
 
-将 `/path/to/testdata` 替换为宿主机上存放测试图片的目录（需包含至少一张 jpg/jpeg 文件）：
+执行以下命令启动容器：
 
 ```bash
 docker run \
@@ -69,7 +68,6 @@ docker run \
     -v /usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64 \
     -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
     -v /etc/ascend_install.info:/etc/ascend_install.info \
-    -v /path/to/testdata:/data \
     -itd multimodalsdk:26.1.0-910b-ubuntu22.04-py3.11-aarch64 bash
 ```
 
@@ -86,7 +84,7 @@ source ${MULTIMODAL_SDK_HOME}/script/set_env.sh
 
 ## 步骤 4：运行验证脚本
 
-使用容器内挂载路径下的图片（示例为 `/data/test.jpg`），然后执行：
+使用镜像内置图片 `/data/test.jpg`，然后执行：
 
 > [!NOTE] 说明
 >
@@ -130,7 +128,7 @@ resize output shape: (500, 500, 3)
 | 现象 | 处理方式 |
 | -- | -- |
 | 文件权限报错 | 确保图片权限不高于 640：`chmod 640 "$TEST_IMAGE"` |
-| 容器内找不到测试图片 | 确认步骤 2 已挂载宿主机目录，且 `TEST_IMAGE` 使用容器内路径（如 `/data/test.jpg`） |
+| 容器内找不到测试图片 | 确认使用的镜像版本已内置 `/data/test.jpg`，且 `TEST_IMAGE` 使用容器内路径 `/data/test.jpg` |
 | 容器无法访问 NPU | 检查 NPU 驱动挂载与 `--device /dev/davinci*` 设备号 |
 | 导入 `mm` 失败 | 确认已执行 `source ${MULTIMODAL_SDK_HOME}/script/set_env.sh` |
 | 更多问题 | [FAQ](../06_references/faq.md)、[附录](../06_references/appendix.md) |

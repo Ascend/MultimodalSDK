@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt  # 仅做图像展示使用
 
 dog_img = mm.Image.open("/home/test.jpg")  # 通过多模态Image类，从实际文件构造Image变量（注意文件权限不能超过640）
 dog_resized_img = dog_img.resize((480, 480), mm.Interpolation.BICUBIC, mm.DeviceMode.CPU)  # 使用双立方插值算法在CPU模式下对图像进行缩放
-dog_cropped_img = dog_img.crop(100, 100, 512, 630, mm.DeviceMode.CPU)  # 使用CPU模式对图像进行裁剪
+dog_cropped_img = dog_resized_img.crop(100, 100, 300, 300, mm.DeviceMode.CPU)  # 基于缩放后的图像使用CPU模式进行裁剪
 
 resized_np = dog_resized_img.numpy()  # 将缩放的图像转化为Numpy数组，方便后续对其进行展示
 cropped_np = dog_cropped_img.numpy()  # 将裁剪的图像转化为Numpy数组，方便后续对其进行展示
@@ -43,7 +43,7 @@ plt.imshow(resized_np)
 plt.axis("off")
 
 plt.subplot(1, 3, 3)
-plt.title("Cropped (630x512)")
+plt.title("Cropped (300x300)")
 plt.imshow(cropped_np)
 plt.axis("off")
 
