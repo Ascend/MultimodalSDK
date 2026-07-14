@@ -23,12 +23,10 @@ if(AUDIO)
             ${PROJECT_SOURCE_DIR}/source/py/module/PyAudio.cpp
     )
 endif()
-add_definitions(-DPy_LIMITED_API=0x03090000)
-find_package(Python3 3.11 EXACT REQUIRED COMPONENTS Interpreter Development)
+find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter Development)
 
 find_package(SWIG REQUIRED)
 include(UseSWIG)
-find_package(Python3 3.11 EXACT REQUIRED COMPONENTS Interpreter Development)
 
 include_directories(${PROJECT_SOURCE_DIR}/source/py/include)
 include_directories(${PROJECT_SOURCE_DIR}/include)
