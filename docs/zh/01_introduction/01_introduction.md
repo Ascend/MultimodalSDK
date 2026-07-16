@@ -7,7 +7,7 @@
 
 ## 软件架构
 
-![](../figures/mmsdk_arch.svg)
+![Multimodal SDK 软件架构图](../figures/mmsdk_arch.svg)
 
 **架构图模块介绍**
 
@@ -22,11 +22,15 @@
 >
 > 在 Linux 系统中，可通过以下两种方式查询设备产品型号：
 >
-> 1. 使用 `dmidecode` 命令：dmidecode -s system-product-name
+> ```bash
+> # 使用 `dmidecode` 命令：
+> dmidecode -s system-product-name
 >
-> 2. 读取 sysfs 文件：cat /sys/class/dmi/id/product_name
+> # 读取 sysfs 文件：
+> cat /sys/class/dmi/id/product_name
+> ```
 >
-> 两种方式均可获取设备的产品型号信息，您可根据实际需求选择使用。
+> 两种方式均可获取设备的产品型号信息，可根据实际需求选择使用。
 
 | 产品系列 | 产品型号 | 操作系统版本 |
 | -- | -- | -- |

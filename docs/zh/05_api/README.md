@@ -3,7 +3,7 @@
 > [!NOTE] 说明
 >
 > - 对于资料中注明的类、接口为公开的，可供用户调用。对于其他类，接口均为内部使用，不建议直接调用。如有特殊需要可以通过源码查看。
-> - 引入多模态 SDK 时会显式设置环境变量 `HF_DATASETS_OFFLINE` 和 `HF_HUB_OFFLINE` 为 1，即显式启用 huggingface 的离线模式，不会联网获取数据。
+> - 引入多模态 SDK 时会显式设置环境变量 `HF_DATASETS_OFFLINE` 和 `HF_HUB_OFFLINE` 为 1，即显式启用 HuggingFace 的离线模式，不会联网获取数据。
 > - 本文档适用于 Multimodal SDK 最新发布版本，建议 Python 版本为 3.10 或 3.11，操作系统为 Ubuntu 22.04 / openEuler 24.03。
 
 **源码查看方式**

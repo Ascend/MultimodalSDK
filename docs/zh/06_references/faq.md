@@ -72,7 +72,7 @@ pip3 install transformers==4.51.3 pillow==11.2.1 numpy==1.26.4
 安装 lzma 模块：
 
 ```shell
-pip install backports.lzma
+pip3 install backports.lzma
 ```
 
 进入 Python 的库目录，以使用的 python3.11.4 为例：
