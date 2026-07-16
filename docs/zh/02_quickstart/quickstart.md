@@ -20,7 +20,12 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
    - 注意当前仅支持 aarch64 CPU 架构
 
 2. **环境预检查**
-   - 使用 `npu-smi info` 命令验证 NPU 驱动状态
+   - 使用命令验证 NPU 驱动状态
+
+   ```bash
+   npu-smi info
+   ```
+
    - 检查驱动版本与镜像 CANN 版本匹配性（参考[《固件与驱动》文档](https://www.hiascend.com/hardware/firmware-drivers/community)）
 
 3. **镜像拉取示例**
@@ -40,7 +45,7 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
        multimodalsdk:${TAG}
    ```
 
-   以 26.0.0 版本、Ubuntu 22.04、Python 3.11为例：
+   以 26.0.0 版本、Ubuntu 22.04、Python 3.11 为例：
 
    ```bash
    docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64
@@ -54,7 +59,14 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 >
 > - `--device /dev/davinci0` 中的设备编号需按宿主机实际 NPU 编号调整（如 `davinci1`）。
 
-执行以下命令启动容器：
+先检查是否已经存在同名容器，若存在则先删除：
+
+```bash
+docker stop multimodal_container
+docker rm multimodal_container
+```
+
+执行以下命令启动容器，并检查容器是否启动成功：
 
 ```bash
 docker run \
@@ -69,22 +81,35 @@ docker run \
     -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
     -v /etc/ascend_install.info:/etc/ascend_install.info \
     -itd multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64 bash
+
+docker ps -a | grep multimodal_container
 ```
 
-## 步骤 3：进入容器并加载环境
-
-> [!NOTE] 说明
->
-> `MULTIMODAL_SDK_HOME` 环境变量表示 Multimodal SDK 安装路径，默认值为 `/usr/local/multimodal_sdk`。可通过 `echo $MULTIMODAL_SDK_HOME` 验证。
+进入容器，后续操作都在容器内进行。
 
 ```bash
 docker exec -it multimodal_container bash
+```
+
+## 步骤 3：加载环境
+
+> [!NOTE] 说明
+>
+> 使用 `MULTIMODAL_SDK_HOME` 环境变量表示 Multimodal SDK 安装路径，默认值为 `/usr/local/multimodal`。根据镜像版本，该路径可能不同。
+
+```bash
+export MULTIMODAL_SDK_HOME="/usr/local/multimodal"
 source ${MULTIMODAL_SDK_HOME}/script/set_env.sh
 ```
 
 ## 步骤 4：运行验证脚本
 
-使用镜像内置图片 `/data/test.jpg`，然后执行：
+如果镜像内未预置图片 `/data/test.jpg`，下载测试图片到容器内，下载命令如下：
+
+```bash
+mkdir /data
+wget --tries=3 --timeout=30 --waitretry=5 -O /data/test.jpg https://raw.gitcode.com/Ascend/MultimodalSDK/blobs/f1f648b7a8b8a67c7509b3425a89f743bbf59563/dog_1920_1080.jpg
+```
 
 > [!NOTE] 说明
 >
@@ -104,15 +129,23 @@ print(f"resize output shape: {img_resize.numpy().shape}")
 EOF
 ```
 
-### 验证成功
-
-若输出以下结果，说明 SDK 已就绪：
+若输出以下结果，说明验证成功：
 
 ```text
 resize output shape: (500, 500, 3)
 ```
 
-## 下一步
+## 步骤 5：清理环境
+
+完成验证后，退出容器，建议清理容器环境，释放资源。
+
+```bash
+exit
+docker stop multimodal_container
+docker rm multimodal_container
+```
+
+## 步骤 6：下一步
 
 | 目标 | 文档 |
 | -- | -- |
@@ -123,7 +156,7 @@ resize output shape: (500, 500, 3)
 | vLLM 推理框架集成 | [patcher](../05_api/patcher.md) |
 | API 完整参考 | [功能函数参考](../05_api/function_reference.md) |
 
-## 常见问题速查
+# 常见问题速查
 
 | 现象 | 处理方式 |
 | -- | -- |

@@ -13,7 +13,7 @@
 
 ## 图片处理
 
-以下是一个简单的参考样例，通过多模态 SDK 的 Image 类读取图像，并进行缩放、裁剪，最后转化为通用的 Numpy 数组展示上述操作的效果。
+以下是一个简单的参考样例，通过多模态 SDK 的 Image 类读取图像，并进行缩放、裁剪，最后转化为通用的 NumPy 数组展示上述操作的效果。
 
 ![图片处理流程](../figures/user_guide_image_flow.svg)
 
@@ -25,9 +25,9 @@ dog_img = mm.Image.open("/home/test.jpg")  # 通过多模态Image类，从实际
 dog_resized_img = dog_img.resize((480, 480), mm.Interpolation.BICUBIC, mm.DeviceMode.CPU)  # 使用双立方插值算法在CPU模式下对图像进行缩放
 dog_cropped_img = dog_resized_img.crop(100, 100, 300, 300, mm.DeviceMode.CPU)  # 基于缩放后的图像使用CPU模式进行裁剪
 
-resized_np = dog_resized_img.numpy()  # 将缩放的图像转化为Numpy数组，方便后续对其进行展示
-cropped_np = dog_cropped_img.numpy()  # 将裁剪的图像转化为Numpy数组，方便后续对其进行展示
-original_dog = dog_img.numpy()  # 将构造的原图像转化为Numpy数组，方便后续对其进行展示
+resized_np = dog_resized_img.numpy()  # 将缩放的图像转化为 NumPy 数组，方便后续对其进行展示
+cropped_np = dog_cropped_img.numpy()  # 将裁剪的图像转化为 NumPy 数组，方便后续对其进行展示
+original_dog = dog_img.numpy()  # 将构造的原图像转化为 NumPy 数组，方便后续对其进行展示
 
 # 以下为展示图像代码
 plt.figure(figsize=(15, 5))
@@ -50,7 +50,7 @@ plt.axis("off")
 plt.show()
 ```
 
-![](../figures/zh-cn_image_0000002433291540.png)
+![图片处理结果](../figures/zh-cn_image_0000002433291540.png)
 
 ## 视频处理
 
