@@ -25,7 +25,7 @@ python3 -c "import mm; print('mm import: OK')"
 **处理（Wheel 安装）**：
 
 ```bash
-source /usr/local/Ascend/cann/set_env.sh   # 默认CANN安装路径，请按实际安装路径修改
+source /usr/local/Ascend/ascend-toolkit/set_env.sh   # 默认CANN安装路径，请按实际安装路径修改
 pip3 install --force-reinstall --no-deps /path/to/mm-*.whl
 python3 -c "import mm; print('mm import: OK')"
 ```
@@ -52,7 +52,7 @@ source /home/work/Mind_SDK/multimodal/script/set_env.sh
 **处理**：
 
 1. 确认已安装 Ascend HDK 26.1.0 及 CANN 9.1.0（或兼容补丁版本）。
-2. 加载 CANN 环境变量：`source /usr/local/Ascend/cann/set_env.sh`（路径以实际安装为准）。
+2. 加载 CANN 环境变量：`source /usr/local/Ascend/ascend-toolkit/set_env.sh`（路径以实际安装为准）。
 3. 重新执行 `npu-smi info`；若仍失败，重启宿主机后重试。
 
 ### Q: torch / transformers 版本冲突？

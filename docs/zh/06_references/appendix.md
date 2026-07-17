@@ -2,9 +2,7 @@
 
 ## 软件中包含的公网地址
 
-Multimodal SDK 安装包中的网址在安装结束后会被清除，并不会被访问，不会造成风险。
-
-Multimodal SDK 本手册中列出的公开网址和邮箱地址，SDK 本身不会访问，不会造成风险。
+Multimodal SDK 安装包中的网址在安装结束后会被清除，本手册中列出的公开网址和邮箱地址，SDK 本身均不会访问，不会造成风险。
 
 更多公网地址请参见 [Multimodal SDK 26.1.0 公网地址.xlsx](../resource/Multimodal%20SDK%2026.1.0%20公网地址.xlsx)（随 Multimodal SDK 发布文档包提供）。
 
