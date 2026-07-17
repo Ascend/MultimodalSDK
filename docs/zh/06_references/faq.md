@@ -51,7 +51,7 @@ source /home/work/Mind_SDK/multimodal/script/set_env.sh
 
 **处理**：
 
-1. 确认已安装 Ascend HDK 26.0.RC1 及 CANN 9.0.0（或兼容补丁版本）。
+1. 确认已安装 Ascend HDK 26.1.0 及 CANN 9.1.0（或兼容补丁版本）。
 2. 加载 CANN 环境变量：`source /usr/local/Ascend/ascend-toolkit/set_env.sh`（路径以实际安装为准）。
 3. 重新执行 `npu-smi info`；若仍失败，重启宿主机后重试。
 
@@ -65,7 +65,7 @@ source /home/work/Mind_SDK/multimodal/script/set_env.sh
 pip3 install transformers==4.51.3 pillow==11.2.1 numpy==1.26.4
 ```
 
-`torch` 与 `torch-npu` 需按 CANN 9.0.0 配套表安装，请参阅 [安装部署 - 其他依赖](../03_installation_guide/installation_guide.md#其他依赖)。
+`torch` 与 `torch-npu` 需按 `vllm-ascend==v0.8.5rc1` 配套表安装，请参阅 [安装部署 - 其他依赖](../03_installation_guide/installation_guide.md#其他依赖)。
 
 ### Q: 已安装 lzma 模块，调用 torchvision 仍提示缺少 lzma？
 

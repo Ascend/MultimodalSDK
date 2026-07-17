@@ -61,9 +61,9 @@ Tensor 数据排布格式枚举类
 
 | 属性名 | 说明 |
 | -- | -- |
-| TensorFormat.ND | ND 格式。表示通用 N 维数组。 |
-| TensorFormat.NHWC | NHWC 格式。表示张量排布为 Batch, Height, Width, Channel。 |
-| TensorFormat.NCHW | NCHW 格式。表示张量排布为 Batch, Channel, Height, Width。 |
+| TensorFormat.ND | ND 格式，表示通用 N 维数组。 |
+| TensorFormat.NHWC | NHWC 格式，表示张量排布为 Batch, Height, Width, Channel。 |
+| TensorFormat.NCHW | NCHW 格式，表示张量排布为 Batch, Channel, Height, Width。 |
 
 ### ImageFormat
 

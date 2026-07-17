@@ -54,7 +54,7 @@
 | Pillow (PIL) | Python 图像处理库，Multimodal SDK 支持与 PIL Image 相互转换 |
 | PyTorch | 深度学习框架，Multimodal SDK 支持与 torch.Tensor 相互转换 |
 | NumPy | Python 科学计算库，Multimodal SDK 支持与 numpy.ndarray 相互转换 |
-| transformers | Hugging Face 的预训练模型库，Multimodal SDK 的依赖之一 |
+| transformers | HuggingFace 的预训练模型库 |
 
 ## 必备知识
 
@@ -65,7 +65,7 @@
 Multimodal SDK 主要处理以下模态数据：
 
 - **图像**：支持 jpg/jpeg 格式，宽高范围 [10, 8192]
-- **视频**：支持 mp4 格式，分辨率范围 480P-4K
+- **视频**：支持 mp4 格式，分辨率范围 [480, 4096]
 - **音频**：支持 wav 格式，采样率范围 [1, 64000]
 
 #### 数据流向

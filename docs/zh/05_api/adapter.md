@@ -18,22 +18,22 @@
 
 ```python
 def __init__(
-        self,
-        do_resize: bool = True,
-        size: Dict[str, int] = None,
-        resample: Resampling = Resampling.BICUBIC,
-        do_rescale: bool = True,
-        rescale_factor: Union[int, float] = 1 / 255,
-        do_normalize: bool = True,
-        image_mean: Optional[Union[float, List[float]]] = None,
-        image_std: Optional[Union[float, List[float]]] = None,
-        do_convert_rgb: bool = True,
-        min_pixels: Optional[int] = 56 * 56,
-        max_pixels: Optional[int] = 28 * 28 * 1280,
-        patch_size: int = 14,
-        temporal_patch_size: int = 2,
-        merge_size: int = 2,
-        **kwargs,
+    self,
+    do_resize: bool = True,
+    size: Dict[str, int] = None,
+    resample: Resampling = Resampling.BICUBIC,
+    do_rescale: bool = True,
+    rescale_factor: Union[int, float] = 1 / 255,
+    do_normalize: bool = True,
+    image_mean: Optional[Union[float, List[float]]] = None,
+    image_std: Optional[Union[float, List[float]]] = None,
+    do_convert_rgb: bool = True,
+    min_pixels: Optional[int] = 56 * 56,
+    max_pixels: Optional[int] = 28 * 28 * 1280,
+    patch_size: int = 14,
+    temporal_patch_size: int = 2,
+    merge_size: int = 2,
+    **kwargs,
 ) -> None:
 ```
 
@@ -77,13 +77,13 @@ def __init__(
 ```python
 from mm import MultimodalQwen2VLImageProcessor
 processor = MultimodalQwen2VLImageProcessor(
-min_pixels=3136,
-max_pixels=518400,
-patch_size=14,
-temporal_patch_size=2,
-merge_size=2,
-image_mean=[0.48145466, 0.4578275, 0.40821073],
-image_std=[0.26862954, 0.26130258, 0.27577711]
+    min_pixels=3136,
+    max_pixels=518400,
+    patch_size=14,
+    temporal_patch_size=2,
+    merge_size=2,
+    image_mean=[0.48145466, 0.4578275, 0.40821073],
+    image_std=[0.26862954, 0.26130258, 0.27577711]
 )
 ```
 
@@ -225,12 +225,12 @@ result = processor.preprocess(images=[], videos=video)
 
 ```python
 def preprocess_image(
-            image: Union[PIL.Image.Image, Image],
-            input_size: int,
-            min_num: int,
-            max_num: int,
-            use_thumbnail: bool,
-    ) -> torch.Tensor:
+    image: Union[PIL.Image.Image, Image],
+    input_size: int,
+    min_num: int,
+    max_num: int,
+    use_thumbnail: bool,
+) -> torch.Tensor:
 ```
 
 **参数说明**
