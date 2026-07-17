@@ -507,4 +507,4 @@ VRS -->> U: VideoRagInferenceResult
 
 附录
 
-- **[《Multimodal SDK 26.0.0 用户指南》](https://gitcode.com/Ascend/MultimodalSDK/blob/master/README.md)**
+- **[《Multimodal SDK 用户指南》](https://gitcode.com/Ascend/MultimodalSDK/blob/master/README.md)**

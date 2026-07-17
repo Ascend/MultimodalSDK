@@ -65,7 +65,7 @@ source /home/work/Mind_SDK/multimodal/script/set_env.sh
 pip3 install transformers==4.51.3 pillow==11.2.1 numpy==1.26.4
 ```
 
-`torch` 与 `torch-npu` 需按 CANN 9.1.0 配套表安装，请参阅 [安装部署 - 其他依赖](../03_installation_guide/installation_guide.md#其他依赖)。
+`torch` 与 `torch-npu` 需按 `vllm-ascend==v0.8.5rc1` 配套表安装，请参阅 [安装部署 - 其他依赖](../03_installation_guide/installation_guide.md#其他依赖)。
 
 ### Q: 已安装 lzma 模块，调用 torchvision 仍提示缺少 lzma？
 
