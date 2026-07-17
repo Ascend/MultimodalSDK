@@ -2,9 +2,7 @@
 
 ## Public Network Addresses Included in the Software
 
-The URLs in the Multimodal SDK installation package are removed after installation. The SDK does not access them. Therefore, they pose no risk.
-
-The public URLs and email addresses in this Multimodal SDK manual are not accessed by the SDK itself. Therefore, they pose no risk.
+The URLs in the Multimodal SDK installation package are removed after installation, and the public URLs and email addresses listed in this manual are not accessed by the SDK itself. Therefore, they pose no risk.
 
 For more public URLs and email addresses, see [Multimodal SDK 26.0.0 public network addresses.xlsx](<./resource/Multimodal SDK 26.0.0 public network addresses.xlsx>).
 
