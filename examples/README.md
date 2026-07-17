@@ -21,7 +21,7 @@ class SimpleQaDemo:
                  model_path: str,
                  device_list: list,
                  similar_threshold: float = 0.06,
-                 similar_threshold_image: float = 0.015,
+                 image_similar_threshold: float = 0.015,
                  vlm_url: str = None,
                  api_key: str = "NONE",
                  vlm_model_name: str = None,
@@ -31,7 +31,7 @@ class SimpleQaDemo:
         :param model_path: 模型路径
         :param device_list: device列表
         :param similar_threshold: 问题，视频帧相似度的最大差值
-        :param similar_threshold_image: 图片相似度的最大差值
+        :param image_similar_threshold: 图片相似度的最大差值
         :param vlm_url: VLLM模型的推理URL
         :param api_key: API密钥
         :param vlm_model_name: 推理服务的模型名称
@@ -77,7 +77,7 @@ class RangeDetectionQaDemo:
                  model_path: str,
                  device_list: list,
                  similar_threshold: float = 0.03,
-                 similar_threshold_image: float = 0.015,
+                 image_similar_threshold: float = 0.015,
                  vlm_url: str = None,
                  api_key: str = "NONE",
                  vlm_model_name: str = None,
@@ -87,7 +87,7 @@ class RangeDetectionQaDemo:
         :param model_path: 模型路径
         :param device_list: device列表
         :param similar_threshold: 问题，视频帧相似度的最大差值(即和最相似的那帧之间的差值的最大范围)
-        :param similar_threshold_image: 图片相似度的最大差值
+        :param image_similar_threshold: 图片相似度的最大差值
         :param vlm_url: VLLM模型的推理URL
         :param api_key: API密钥
         :param vlm_model_name: 推理服务的模型名称
@@ -112,7 +112,7 @@ demo = RangeDetectionQaDemo(
     model_path="/path/to/chinese-clip-vit-large-patch14-336px",
     device_list=[4],
     similar_threshold=0.03,
-    similar_threshold_image=0.015,
+    image_similar_threshold=0.015,
     vlm_url="http://your-vlm-url/v1",
     api_key="None",
     vlm_model_name="Qwen2.5-VL-32B-Instruct",

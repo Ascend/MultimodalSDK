@@ -32,14 +32,14 @@ class SimpleQaDemo:
         model_path: str,
         device_list: list,
         similar_threshold: float = 0.06,
-        similar_threshold_image: float = 0.015,
+        image_similar_threshold: float = 0.015,
         vlm_url: str = None,
         api_key: str = "NONE",
         vlm_model_name: str = None,
         model_type: str = 'cn_clip',
     ):
         self.frame_selector = KFrameSelector(
-            model_path, device_list[0], model_type, similar_threshold, similar_threshold_image
+            model_path, device_list[0], model_type, similar_threshold, image_similar_threshold
         )
         self.vlm_client = OpenAI(base_url=vlm_url, api_key=api_key)
         self.vlm_model_name = vlm_model_name
