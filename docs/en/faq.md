@@ -52,7 +52,7 @@ source /home/work/Mind_SDK/multimodal/script/set_env.sh
 **Solution**:
 
 1. Confirm Ascend HDK 26.0.RC1 and CANN 9.0.0 (or compatible patch version) are installed.
-2. Load CANN environment variables: `source /usr/local/Ascend/cann/set_env.sh` (path depends on actual installation).
+2. Load CANN environment variables: `source /usr/local/Ascend/ascend-toolkit/set_env.sh` (path depends on actual installation).
 3. Re-execute `npu-smi info`; if it still fails, restart the host and retry.
 
 ### Q: torch / transformers version conflict?

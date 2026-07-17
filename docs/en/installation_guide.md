@@ -2,7 +2,7 @@
 
 ## Installation Description
 
-Multimodal SDK supports four installation methods: [offline installation](#offline-installation) (`run` package / `Wheel` package), [image installation](#image-installation), and [source code installation](#source-code-installation).
+Multimodal SDK supports three installation methods: [offline installation](#offline-installation) (`run` package / `Wheel` package), [image installation](#image-installation), and [source code installation](#source-code-installation).
 
 If you use offline installation or source code installation, please first [install related dependencies](#installing-dependencies). If you use image installation, skip this step.
 
@@ -33,7 +33,7 @@ Please refer to the [CANN Installation Guide](https://www.hiascend.com/document/
 
 ## Installation Methods
 
-Multimodal SDK provides four installation methods: offline installation (`run` package / `Wheel` package), source code installation, and image installation. Choose the appropriate method based on your scenario.
+Multimodal SDK provides three installation methods: offline installation (`run` package / `Wheel` package), source code installation, and image installation. Choose the appropriate method based on your scenario.
 
 ### Offline Installation
 
@@ -51,7 +51,7 @@ Download the Multimodal SDK package from the [download link](https://gitcode.com
 Ensure that the CANN environment variable configuration script has been executed in the installation environment:
 
 ```bash
-source /usr/local/Ascend/cann/set_env.sh   # Default path, modify according to actual installation path
+source /usr/local/Ascend/ascend-toolkit/set_env.sh   # Default path, modify according to actual installation path
 ```
 
 **Installation Procedure**
@@ -206,7 +206,7 @@ If you only need to use the `mm` package in the Python environment, you can skip
 > - Before starting Python each time, you must load the CANN environment variables (path depends on actual installation):
 >
 >   ```bash
->   source /usr/local/Ascend/cann/set_env.sh
+>   source /usr/local/Ascend/ascend-toolkit/set_env.sh
 >   ```
 
 **Installation Preparation**
