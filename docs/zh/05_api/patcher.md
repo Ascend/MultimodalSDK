@@ -15,7 +15,7 @@ export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/l
 > [!CAUTION] 注意
 > 使用 qwen2_vl_image_processor_patcher 或 internvl2_image_processor_patcher 时，还需保证 transformers 版本为 **4.51.3**。Multimodal SDK 官方镜像已包含该版本；若在自定义环境中使用，请执行 `python3 -c "import transformers; print(transformers.__version__)"` 确认版本。
 
-本文档仅提供通过社区获取镜像的使用方式。对于其他使用方式，您需要自行找到以下所提到的文件并执行操作。
+本文档仅提供通过社区获取镜像的使用方式。对于其他使用方式，需自行找到以下所提到的文件并执行操作。
 
 ---
 
@@ -27,7 +27,7 @@ export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/l
 
 **使用方式**
 
-您需要在 vllm 包的 `utils.py` 文件中添加如下内容，该文件路径在镜像中的位置为 `/vllm-workspace/vllm/vllm/multimodal/utils.py`：
+在 vllm 包的 `utils.py` 文件中添加如下内容，该文件路径在镜像中的位置为 `/vllm-workspace/vllm/vllm/multimodal/utils.py`：
 
 ```python
 import mm.patcher.vllm.video_patcher
@@ -96,13 +96,13 @@ curl -X POST "http://<host>:<port>/v1/chat/completions" \
 
 ## qwen2_vl_image_processor_patcher
 
-该补丁为 vllm 在使用 Qwen2VL 模型时的图像/视频预处理提供加速能力，对比 transformers 的预处理时延可大幅度缩短。
+该补丁为 vllm 在使用 Qwen2-VL 模型时的图像/视频预处理提供加速能力，对比 transformers 的预处理时延可大幅度缩短。
 
 前置条件请参见 [公共前置条件](#公共前置条件)（含 transformers 4.51.3 要求）。
 
 **使用方式**
 
-您需要在 vllm 包的 `processor.py` 文件中添加如下内容，该文件路径在镜像中的位置为 `/vllm-workspace/vllm/vllm/transformers_utils/processor.py`：
+在 vllm 包的 `processor.py` 文件中添加如下内容，该文件路径在镜像中的位置为 `/vllm-workspace/vllm/vllm/transformers_utils/processor.py`：
 
 ```python
 import mm.patcher.vllm.qwen2_vl_image_processor_patcher
@@ -110,15 +110,15 @@ import mm.patcher.vllm.qwen2_vl_image_processor_patcher
 
 共计需要添加以下两个位置：
 
-- 在函数 `get_processor` 中的 `from transformers import AutoProcessor` 的前一行添加，若使用容器，则为 62-63 行，如下图所示。
+- 在函数 `get_processor` 中的 `from transformers import AutoProcessor` 的前一行添加，若使用容器，则为 62~63 行，如下图所示。
 
   ![](../figures/zh-cn_image_0000002466503549.png)
 
-- 在函数 `get_image_processor` 中的 `from transformers import AutoImageProcessor` 的前一行添加，若使用容器，则为 174-175 行，如下图所示。
+- 在函数 `get_image_processor` 中的 `from transformers import AutoImageProcessor` 的前一行添加，若使用容器，则为 174~175 行，如下图所示。
 
   ![](../figures/zh-cn_image_0000002466423417.png)
 
-添加成功后，当正常运行 vllm 服务时，在正常对话后若可以看到如下提示信息，则表示使用了多模态 Qwen2VL 图像/视频预处理加速功能。
+添加成功后，当正常运行 vllm 服务时，在正常对话后若可以看到如下提示信息，则表示使用了多模态 Qwen2-VL 图像/视频预处理加速功能。
 
 ```text
 get_image_processor_class_from_name: Multimodal SDK Qwen2 VL Image Patcher Enabled!
@@ -214,7 +214,7 @@ curl -X POST "http://<host>:<port>/v1/chat/completions" \
 
 **使用方式**
 
-您需要在 vllm 包的 `utils.py` 文件中添加如下内容，该文件路径在镜像中的位置为 `/vllm-workspace/vllm/vllm/multimodal/utils.py`：
+在 vllm 包的 `utils.py` 文件中添加如下内容，该文件路径在镜像中的位置为 `/vllm-workspace/vllm/vllm/multimodal/utils.py`：
 
 ```python
 import mm.patcher.vllm.image_patcher
@@ -283,10 +283,10 @@ curl -X POST "http://<host>:<port>/v1/chat/completions" \
 
 | 现象 | 处理方式 |
 | -- | -- |
-| 未看到 `Multimodal SDK ... Patcher Enabled!` 提示 | 确认已在文档指定文件和位置添加对应 `import mm.patcher.vllm...` 语句，并重启 vLLM 服务。 |
+| 未看到 `Multimodal SDK ... Patcher Enabled!` 提示 | 确认已在文档指定文件和位置添加对应 `import mm.patcher.vllm...` 语句，并重启 vllm 服务。 |
 | 图像或视频读取失败 | 确认文件路径使用 `file:` 协议前缀，文件格式满足当前 patcher 约束，且文件权限不高于 640。 |
 | transformers 版本不匹配 | 在容器内执行 `python3 -c "import transformers; print(transformers.__version__)"`，确认版本为 4.51.3。 |
-| 仍无法定位问题 | 查看 vLLM 服务日志，并参见[附录 - 错误码](../06_references/appendix.md#错误码)排查文件权限、路径、格式等错误。 |
+| 仍无法定位问题 | 查看 vllm 服务日志，并参见[附录 - 错误码](../06_references/appendix.md#错误码)排查文件权限、路径、格式等错误。 |
 
 ---
 
@@ -298,7 +298,7 @@ curl -X POST "http://<host>:<port>/v1/chat/completions" \
 
 **使用方式**
 
-您需要在 vllm-ascend 包的文件中添加如下内容，该文件路径在镜像中的位置为 `/vllm-workspace/vllm-ascend/vllm_ascend/patch/worker/patch_common/__init__.py`：
+在 vllm-ascend 包的文件中添加如下内容，该文件路径在镜像中的位置为 `/vllm-workspace/vllm-ascend/vllm_ascend/patch/worker/patch_common/__init__.py`：
 
 ```python
 import mm.patcher.vllm.internvl2_image_processor_patcher
