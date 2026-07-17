@@ -64,7 +64,7 @@ docker build -t {your_repo}/multimodal:latest -f Dockerfile.<芯片系列>.<操�
 ```bash
 docker run \
     --name multimodal_container \
-    --device /dev/davinci1 \
+    --device /dev/davinci0 \
     --device /dev/davinci_manager \
     --device /dev/devmm_svm \
     --device /dev/hisi_hdc \

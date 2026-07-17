@@ -30,23 +30,30 @@ cropped_np = dog_cropped_img.numpy()  # 将裁剪的图像转化为 NumPy 数组
 original_dog = dog_img.numpy()  # 将构造的原图像转化为 NumPy 数组，方便后续对其进行展示
 
 # 以下为展示图像代码
-plt.figure(figsize=(15, 5))
+h_orig, w_orig = original_dog.shape[:2]
+h_resize, w_resize = resized_np.shape[:2]
+h_crop, w_crop = cropped_np.shape[:2]
 
-plt.subplot(1, 3, 1)
-plt.title("Original")
-plt.imshow(original_dog)
-plt.axis("off")
+fig, axes = plt.subplots(1, 3, figsize=(15, 5),
+                         gridspec_kw={'width_ratios': [w_orig, w_resize, w_crop]})
 
-plt.subplot(1, 3, 2)
-plt.title("Resized (480x480)")
-plt.imshow(resized_np)
-plt.axis("off")
+# 准备数据
+images = [original_dog, resized_np, cropped_np]
+titles = [
+    f"Original\n{w_orig}×{h_orig}",
+    f"Resized\n{w_resize}×{h_resize}",
+    f"Cropped\n{w_crop}×{h_crop}"
+]
 
-plt.subplot(1, 3, 3)
-plt.title("Cropped (300x300)")
-plt.imshow(cropped_np)
-plt.axis("off")
+# 循环显示
+for ax, img, title in zip(axes, images, titles):
+    ax.imshow(img)
+    ax.set_title(title)
+    ax.axis('off')
+    rect = Rectangle((0, 0), 1, 1, transform=ax.transAxes, linewidth=3, edgecolor='black', facecolor='none', clip_on=False)
+    ax.add_patch(rect)
 
+plt.tight_layout()
 plt.show()
 ```
 

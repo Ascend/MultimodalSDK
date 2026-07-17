@@ -8,7 +8,7 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 
 开始之前，请确认：
 
-- **硬件**：Atlas 800I A2 推理服务器，详见 [简介 - 支持的硬件](../01_introduction/01_introduction.md#支持的硬件和操作系统)
+- **硬件**：Atlas 800I A2 推理服务器，详见 [支持的硬件](../01_introduction/01_introduction.md#支持的硬件和操作系统)
 - **Docker**：已安装 Docker，且当前用户可运行容器
 - **测试图片**：镜像内已提供 `/data/test.jpg`，无需额外挂载测试图片目录。
 
@@ -45,7 +45,7 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
        multimodalsdk:${TAG}
    ```
 
-   以 26.1.0 版本、Ubuntu 22.04、Python 3.11为例：
+   以 26.1.0 版本、Ubuntu 22.04、Python 3.11 为例：
 
    ```bash
    docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-910b-ubuntu22.04-py3.11-aarch64
@@ -81,6 +81,8 @@ docker run \
     -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
     -v /etc/ascend_install.info:/etc/ascend_install.info \
     -itd multimodalsdk:26.1.0-910b-ubuntu22.04-py3.11-aarch64 bash
+
+docker ps -a | grep multimodal_container
 ```
 
 进入容器，后续操作都在容器内进行。
@@ -93,7 +95,7 @@ docker exec -it multimodal_container bash
 
 > [!NOTE] 说明
 >
-> 使用 `MULTIMODAL_SDK_HOME` 环境变量表示 Multimodal SDK 安装路径，默认值为 `/usr/local/multimodal`。根据镜像版本，该路径可能不同。
+> 使用 `MULTIMODAL_SDK_HOME` 环境变量表示 Multimodal SDK 安装路径，默认值为 `/usr/local/multimodal`。
 
 ```bash
 export MULTIMODAL_SDK_HOME="/usr/local/multimodal"
@@ -105,7 +107,7 @@ source ${MULTIMODAL_SDK_HOME}/script/set_env.sh
 如果镜像内未预置图片 `/data/test.jpg`，下载测试图片到容器内，下载命令如下：
 
 ```bash
-mkdir /data
+mkdir -p /data
 wget --tries=3 --timeout=30 --waitretry=5 -O /data/test.jpg https://raw.gitcode.com/Ascend/MultimodalSDK/blobs/f1f648b7a8b8a67c7509b3425a89f743bbf59563/dog_1920_1080.jpg
 ```
 
