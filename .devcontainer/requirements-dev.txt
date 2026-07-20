@@ -1,0 +1,4 @@
+pre-commit==4.6.0
+einops==0.8.2
+pytest>=8.0.0
+virtualenv>=20.10.0
