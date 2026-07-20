@@ -1,0 +1,48 @@
+{
+    "name": "MultimodalSDK Dev (Ubuntu 22.04)",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "network": "host",
+        "args": {
+            "PYTHON_VERSION": "3.11.4"
+        }
+    },
+    "workspaceFolder": "/workspace/MultimodalSDK",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/MultimodalSDK,type=bind,consistency=consistent",
+    "remoteUser": "root",
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "runArgs": [
+        "--ipc=host",
+        "--device=/dev/davinci0",
+        "--device=/dev/davinci_manager",
+        "--device=/dev/devmm_svm",
+        "--device=/dev/hisi_hdc"
+    ],
+    "mounts": [
+        "source=/usr/local/dcmi,target=/usr/local/dcmi,type=bind,readonly",
+        "source=/usr/local/bin/npu-smi,target=/usr/local/bin/npu-smi,type=bind,readonly",
+        "source=/usr/local/Ascend/driver,target=/usr/local/Ascend/driver,type=bind,readonly",
+        "source=/etc/ascend_install.info,target=/etc/ascend_install.info,type=bind,readonly"
+    ],
+    "remoteEnv": {
+        "PATH": "/usr/local/bin:${containerEnv:PYTHON_PREFIX}/bin:/usr/local/python3.10.17/bin:${containerEnv:PATH}",
+        "SDK_VERSION": "dev",
+        "Python3_EXECUTABLE": "${containerEnv:Python3_EXECUTABLE}",
+        "LD_LIBRARY_PATH": "${containerEnv:PYTHON_PREFIX}/lib:${containerEnv:LD_LIBRARY_PATH}:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.debugpy",
+                "ms-vscode.cpptools",
+                "ms-vscode.cmake-tools"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "${containerEnv:Python3_EXECUTABLE}",
+                "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
+        }
+    }
+}
