@@ -20,6 +20,7 @@
 ```python
 import mm  # 引入多模态SDK包
 import matplotlib.pyplot as plt  # 仅做图像展示使用
+from matplotlib.patches import Rectangle  # 仅做图像展示使用，用于绘制矩形框
 
 dog_img = mm.Image.open("/home/test.jpg")  # 通过多模态Image类，从实际文件构造Image变量（注意文件权限不能超过640）
 dog_resized_img = dog_img.resize((480, 480), mm.Interpolation.BICUBIC, mm.DeviceMode.CPU)  # 使用双立方插值算法在CPU模式下对图像进行缩放
@@ -85,7 +86,7 @@ plt.show()
     mm_images count: 12
     ```
 
-2. 传入目标解码的帧 ID 列表为空，传入期望解码后获取的总帧数，得到的返回值列表大小为传入的期望解码后获取的总帧数大小。
+2. 传入目标解码的帧 ID 集合为空，传入期望解码后获取的总帧数，得到的返回值列表大小为传入的期望解码后获取的总帧数大小。
 
     ```python
     from mm import video_decode

@@ -4,7 +4,7 @@
 
 Multimodal SDK 安装包中的网址在安装结束后会被清除，本手册中列出的公开网址和邮箱地址，SDK 本身均不会访问，不会造成风险。
 
-更多公网地址请参见 [Multimodal SDK 26.0.0 公网地址.xlsx](../resource/Multimodal%20SDK%2026.0.0%20公网地址.xlsx)（随 Multimodal SDK 发布文档包提供）。
+更多公网地址请参见 [Multimodal SDK公网地址.xlsx](../resource/Multimodal%20SDK公网地址.xlsx)（随 Multimodal SDK 发布文档包提供）。
 
 ## 软件通信矩阵
 
