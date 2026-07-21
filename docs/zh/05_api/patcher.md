@@ -35,7 +35,7 @@ import mm.patcher.vllm.video_patcher
 
 共计需要添加一个位置，在文件头添加以上内容即可，如下图所示。
 
-![](../figures/zh-cn_image_0000002466503489.png)
+![在 vllm/multimodal/utils.py 文件头部添加 import 语句](../figures/zh-cn_image_0000002466503489.png)
 
 添加成功后，当使用 vllm 服务并传入视频文件数据时，若可以看到如下提示信息，则表示使用成功。
 
@@ -112,11 +112,11 @@ import mm.patcher.vllm.qwen2_vl_image_processor_patcher
 
 - 在函数 `get_processor` 中的 `from transformers import AutoProcessor` 的前一行添加，若使用容器，则为 62~63 行，如下图所示。
 
-  ![](../figures/zh-cn_image_0000002466503549.png)
+  ![在 get_processor 函数中添加 patcher import 语句](../figures/zh-cn_image_0000002466503549.png)
 
 - 在函数 `get_image_processor` 中的 `from transformers import AutoImageProcessor` 的前一行添加，若使用容器，则为 174~175 行，如下图所示。
 
-  ![](../figures/zh-cn_image_0000002466423417.png)
+  ![在 get_image_processor 函数中添加 patcher import 语句](../figures/zh-cn_image_0000002466423417.png)
 
 添加成功后，当正常运行 vllm 服务时，在正常对话后若可以看到如下提示信息，则表示使用了多模态 Qwen2-VL 图像/视频预处理加速功能。
 
@@ -222,7 +222,7 @@ import mm.patcher.vllm.image_patcher
 
 在文件头位置添加以上内容即可，如下图所示。
 
-![](../figures/zh-cn_image_0000002469675597.png)
+![在 vllm/multimodal/utils.py 文件头部添加 image_patcher import 语句](../figures/zh-cn_image_0000002469675597.png)
 
 添加成功后，当使用 vllm 服务并传入图像文件数据时，若可以看到如下提示信息，表示使用成功。
 
@@ -306,7 +306,7 @@ import mm.patcher.vllm.internvl2_image_processor_patcher
 
 添加位置如下图所示：
 
-![](../figures/zh-cn_image_0000002436163564.png)
+![在 patch_common/__init__.py 中添加 internvl2_patcher import 语句](../figures/zh-cn_image_0000002436163564.png)
 
 添加成功后，当正常运行 vllm 服务时，在正常对话后若可以看到如下提示信息，表示使用了多模态 InternVL2 图像预处理加速功能。
 
