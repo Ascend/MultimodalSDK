@@ -180,7 +180,7 @@ def preprocess(self,
 >   - 输入 min_pixels 范围为 [10 \* 10, max_pixels)。
 >   - 输入 max_pixels 范围为 (min_pixels, 4096 \* 4096]。
 >   - 输入 Image 的宽和高均大于 patch_size * merge_size。
->   - 对于传入的每一张图像，或者每一个视频帧，若其宽高分别为 w, h，则需满足 `min_pixels < max_pixels`，`max_pixels >= w/h * (patch_size * merge_size)^2`，`patch_size * merge_size <= h, w`。
+>   - 对于传入的每一张图像，或者每一个视频帧，若其宽高分别为 w, h，则需满足 `min_pixels < max_pixels`，`max_pixels >= (patch_size * merge_size)^2 * w / h`，`patch_size * merge_size <= h, w`。
 >   - 对于传入的视频，每一个视频帧的宽、高及数据排布格式需一致。
 
 **示例**

@@ -308,7 +308,7 @@ img = Image.open("/home/test.jpg", "cpu")
 
 **功能描述**
 
-从 Numpy 数组转化为 Image 实例。
+将 Numpy 数组转化为 Image 实例。
 
 **函数原型**
 
@@ -730,7 +730,7 @@ def video_decode(video_path: str | bytes, device: str | bytes, frame_indices: se
 
 >[!NOTE] 说明
 >
->- 期望解码的视频帧 ID 取值范围为\[0, 视频总帧数-1），默认为空集合，参数优先级高于期望解码后获取的总帧数。该参数意为目标解码的帧 ID 集合。
+>- 期望解码的视频帧 ID 取值范围为\[0, 视频总帧数-1\)，默认为空集合，参数优先级高于期望解码后获取的总帧数。该参数意为目标解码的帧 ID 集合。
 >- 期望解码后获取的总帧数取值范围为\(0, 视频总帧数\]，默认值为 -1，最终解码 ID 集合为通过视频帧总数计算等间隔抽取。
 >- 若 frame_indices 和 sample_num 均未指定，会返回失败。
 >- 分辨率支持说明：目前支持的视频帧宽高为\[480, 480\] - \[4096, 4096\]。
@@ -751,7 +751,7 @@ mm_images = video_decode(file_path, "cpu", set(), 32)
 
 **功能描述**
 
-使用均值和标准差对 Tensor 对象进行归一化。给定 n 个通道的均值：\(mean\[1\],...,mean\[n\]\)和标准差：\(std\[1\],..,std\[n\]\)，此变换将对输入 Tensor 对象的每个通道进行归一化，即 output\[channel\] = \(src\[channel\] - mean\[channel\]\) / std\[channel\]。
+使用均值和标准差对 Tensor 对象进行归一化。给定 n 个通道的均值：\(mean\[1\],...,mean\[n\]\)和标准差：\(std\[1\],...,std\[n\]\)，此变换将对输入 Tensor 对象的每个通道进行归一化，即 output\[channel\] = \(src\[channel\] - mean\[channel\]\) / std\[channel\]。
 
 **函数原型**
 
