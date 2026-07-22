@@ -2,14 +2,14 @@
 
 Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resize/crop、视频帧解码与音频加载等。本文将帮助你通过 Docker 启动环境并跑通第一个 Python 示例。
 
-如需在宿主机原生安装，请参阅 [安装部署](../03_installation_guide/installation_guide.md)。
+如需在宿主机原生安装，请参见[安装部署](../03_installation_guide/installation_guide.md)。
 
 ## 前置条件
 
 开始之前，请确认：
 
-- **硬件**：Atlas 800I A2 推理服务器，详见 [支持的硬件](../01_introduction/01_introduction.md#支持的硬件和操作系统)
-- **Docker**：已安装 Docker，且当前用户可运行容器
+- **硬件**：Atlas 800I A2 推理服务器，请参见[支持的硬件和操作系统](../01_introduction/01_introduction.md#支持的硬件和操作系统)。
+- **Docker**：已安装 Docker，且当前用户可运行容器。
 - **测试图片**：镜像内已提供 `/data/test.jpg`，无需额外挂载测试图片目录。
 
 ## 步骤 1：拉取镜像
@@ -26,7 +26,7 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
    npu-smi info
    ```
 
-   - 检查驱动版本与镜像 CANN 版本匹配性（参考[《固件与驱动》文档](https://www.hiascend.com/hardware/firmware-drivers/community)）
+   - 检查驱动版本与镜像 CANN 版本匹配性（参考《[固件与驱动](https://www.hiascend.com/hardware/firmware-drivers/community)》）
 
 3. **镜像拉取示例**
 
@@ -55,7 +55,7 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 
 ## 步骤 2：启动容器
 
-> [!NOTE] 说明
+> [!NOTE]
 >
 > - `--device /dev/davinci0` 中的设备编号需按宿主机实际 NPU 编号调整（如 `davinci1`）。
 
@@ -93,7 +93,7 @@ docker exec -it multimodal_container bash
 
 ## 步骤 3：加载环境
 
-> [!NOTE] 说明
+> [!NOTE]
 >
 > 使用 `MULTIMODAL_SDK_HOME` 环境变量表示 Multimodal SDK 安装路径，默认值为 `/usr/local/multimodal`。
 
@@ -111,7 +111,7 @@ mkdir -p /data
 wget --tries=3 --timeout=30 --waitretry=5 -O /data/test.jpg https://raw.gitcode.com/Ascend/MultimodalSDK/blobs/f1f648b7a8b8a67c7509b3425a89f743bbf59563/dog_1920_1080.jpg
 ```
 
-> [!NOTE] 说明
+> [!NOTE]
 >
 > `Image.open` 的第二个参数为解码设备字符串，当前仅支持 `"cpu"`；`resize` 等算子接口的运行模式使用 `DeviceMode.CPU` 枚举。
 
@@ -149,9 +149,9 @@ docker rm multimodal_container
 
 | 目标 | 文档 |
 | -- | -- |
-| 图像 resize/crop 可视化样例 | [样例和指导 - 图片处理](../04_user_guide/user_guide.md#图片处理) |
-| 视频帧解码 | [样例和指导 - 视频处理](../04_user_guide/user_guide.md#视频处理) |
-| 音频加载 | [样例和指导 - 音频处理](../04_user_guide/user_guide.md#音频处理) |
+| 图像 resize/crop 可视化样例 | [样例和指导 > 图片处理](../04_user_guide/user_guide.md#图片处理) |
+| 视频帧解码 | [样例和指导 > 视频处理](../04_user_guide/user_guide.md#视频处理) |
+| 音频加载 | [样例和指导 > 音频处理](../04_user_guide/user_guide.md#音频处理) |
 | Qwen2VL / InternVL2 预处理加速 | [Adapter](../05_api/adapter.md) |
 | vLLM 推理框架集成 | [patcher](../05_api/patcher.md) |
 | API 完整参考 | [功能函数参考](../05_api/function_reference.md) |
