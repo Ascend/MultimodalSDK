@@ -16,6 +16,6 @@ Multimodal SDK通过提供一系列高性能的昇腾设备亲和性接口，加
 |04_user_guide|样例和指导|user_guide.md|提供图像、视频、音频处理参考样例。|[样例和指导](./04_user_guide/user_guide.md)|
 |05_api|接口说明|-|介绍Multimodal SDK的API目录与数据类型枚举。|[接口说明](./05_api/README.md)|
 |06_references|参考|-|介绍Multimodal SDK的常见问题、支持的错误码、环境变量、安全加固等内容。|[参考](./06_references/_menu_references.md)|
-|-|版本说明书|release_notes.md|对该版本的更新点做简要说明。|[版本说明书](./release_notes.md)|
+|-|版本说明书|release_notes.md|对该版本的更新点做简要说明。|[版本说明书](./release_notes_mm.md)|
 |资源（resource）|-|-|提供Multimodal SDK公网地址等资源。|[资源](./resource/)|
 |图片（figures）|-|-|提供docs内各文档使用到的图片文件。|[图片](./figures/)|
