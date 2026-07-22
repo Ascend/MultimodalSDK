@@ -1,13 +1,12 @@
 # Multimodal  SDK用户指南
 
 - [简介](./01_introduction/_menu_introduction.md)
-  - [前置知识](./01_introduction/00_background.md)
   - [软件概述](./01_introduction/01_introduction.md)
   - [免责声明](./01_introduction/02_disclaimer.md)
+- [软件安装](./03_installation_guide/installation_guide.md)
 - [快速入门](./02_quickstart/quickstart.md)
-- [安装部署](./03_installation_guide/installation_guide.md)
 - [样例和指导](./04_user_guide/user_guide.md)
-- [Python接口说明](./05_api)
+- [Python接口说明](./05_api/README.md)
   - [数据类型](./05_api/README.md)
   - [功能函数参考](./05_api/function_reference.md)
   - [Adapter](./05_api/adapter.md)

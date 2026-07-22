@@ -92,7 +92,7 @@ def from_numpy(nd_array: numpy.ndarray) -> Tensor:
 |--|--|
 |Tensor|通过 numpy.ndarray 创建的 Tensor 实例。|
 
->[!NOTE] 说明
+>[!NOTE]
 >构造后的 Tensor 对象与 numpy.ndarray 共享数据，数据的生命周期由 numpy.ndarray 对象维护。
 
 **示例**
@@ -123,7 +123,7 @@ numpy()-> np.ndarray
 |--|--|
 |numpy.ndarray|转换后的 Numpy 数组。|
 
->[!NOTE] 说明
+>[!NOTE]
 >
 >- Tensor 对象转换为 numpy.ndarray 对象，转换后的 numpy.ndarray 与 Tensor 共享数据，数据的生命周期由 Tensor 对象维护。
 >- Tensor 所处的 device 必须为 CPU。
@@ -163,7 +163,7 @@ def from_torch(torch_tensor: torch.Tensor) -> Tensor:
 |--|--|
 |Tensor|通过 torch.Tensor 创建的 Tensor 对象。|
 
->[!NOTE] 说明
+>[!NOTE]
 >构造后的 Tensor 对象与 torch.Tensor 共享数据，数据的生命周期由 torch.Tensor 对象维护。
 
 **示例**
@@ -194,7 +194,7 @@ torch()-> torch.Tensor
 |--|--|
 |torch.Tensor|转换后的 torch.Tensor 张量。|
 
->[!NOTE] 说明
+>[!NOTE]
 >
 >- Tensor 对象转换为 torch.Tensor 对象，转换后的 torch.Tensor 与 Tensor 共享数据，数据的生命周期由 Tensor 对象维护。
 >- Tensor 所处的 device 必须为 CPU。
@@ -236,7 +236,7 @@ def normalize(mean: list[float], std: list[float], device_mode: DeviceMode = Dev
 |--|--|
 |Tensor|转换后的 Tensor 对象。|
 
->[!NOTE] 说明
+>[!NOTE]
 >
 >- Tensor 对象的 format 仅支持 NCHW 或 NHWC，N 仅支持 1，C 仅支持 3。
 >- Tensor 对象的数据类型仅支持 Float32。
@@ -334,7 +334,7 @@ from_numpy(
 |--|--|
 |Image|通过 numpy.ndarray 创建的 Image 实例。|
 
->[!NOTE] 说明
+>[!NOTE]
 >构造后的 Image 对象与 numpy.ndarray 共享数据，数据的生命周期由 numpy.ndarray 对象维护。
 
 **示例**
@@ -365,7 +365,7 @@ numpy()-> numpy.ndarray
 |--|--|
 |numpy.ndarray|转换后的 Numpy 数组。|
 
->[!NOTE] 说明
+>[!NOTE]
 >
 >- 输出 ndarray 形状根据图像格式决定：
 > 当 Image 实例对象格式为 RGB 和 BGR 时为\[H, W, 3\]；当 format 为 RGB_PLANAR 和 BGR_PLANAR 时为\[3, H, W\]。
@@ -405,7 +405,7 @@ from_torch(
 |image_format|ImageFormat|必选|支持 RGB、BGR、BGR_PLANAR 和 RGB_PLANAR，需与 torch.Tensor 的数据维度对应。|
 |device|str \| bytes|可选|设备类型，目前只支持 cpu 且默认为 cpu。|
 
->[!NOTE] 说明
+>[!NOTE]
 >构造后的 Image 对象与 torch.Tensor 共享数据，数据的生命周期由 torch.Tensor 对象维护。
 
 **返回值说明**
@@ -442,7 +442,7 @@ torch()-> torch.Tensor
 |--|--|
 |torch.Tensor|转换后的 torch 张量。|
 
->[!NOTE] 说明
+>[!NOTE]
 >
 >- 输出 Tensor 形状根据图像格式决定：
 > 当 Image 实例对象 format 为 RGB 和 BGR 时为\[H, W, 3\]，当 format 为 BGR_PLANAR 和 RGB_PLANAR 时为\[3, H, W\]。
@@ -512,7 +512,7 @@ pillow()-> PIL.Image.Image
 |--|--|
 |PIL.Image.Image|转换后的 Pillow 图像实例。|
 
->[!NOTE] 说明
+>[!NOTE]
 >
 >- 输出 PIL.Image.Image dtype 需与 Image 实例对象保持一致，当前仅支持 uint8。
 >- 输出 PIL 的 Image 实例对象 mode 为"RGB"。
@@ -581,7 +581,7 @@ resize(size: Tuple[int, int], interpolation: Interpolation, device_mode: DeviceM
 |--|--|
 |Image|resize 操作后获得的新 Image 实例。|
 
->[!NOTE] 说明
+>[!NOTE]
 >当前仅支持图像格式为 RGB 或 BGR，数据格式为 UINT8，各元素值范围在\[0,255\]。
 
 **示例**
@@ -620,7 +620,7 @@ crop(top: int, left: int, height: int, width: int, device_mode: DeviceMode = Dev
 |--|--|
 |Image|crop 操作后获得的新 Image 实例。|
 
->[!NOTE] 说明
+>[!NOTE]
 >当前仅支持图像格式为 RGB 或 BGR，数据格式为 UINT8，各元素值范围在\[0,255\]。
 
 **示例**
@@ -637,7 +637,7 @@ img_crop = img.crop(10, 10, 10, 10, DeviceMode.CPU)
 
 对 Image 实例对象进行\[0,255\]至\[0.0, 1.0\]缩放，以及格式转换能力（HWC-\>CHW）。
 
->[!NOTE] 说明
+>[!NOTE]
 >当前仅支持图像格式为 RGB 或 BGR，数据格式为 UINT8，各元素值范围在\[0,255\]。
 >输出的 Tensor 实例数据类型默认为 DataType.FLOAT32。
 
@@ -689,7 +689,7 @@ register_log_conf(min_level: LogLevel, callback: Callable[[LogLevel, str, str, i
 |min_level|LogLevel|必选|最小日志级别，只有大于等于该级别的日志才会输出。不允许传入 None。|
 |callback|Callable[[LogLevel, str, str, int, str], None]|必选|日志回调函数，传入 None 时使用内部默认的日志输出函数。|
 
->[!CAUTION] 注意
+>[!NOTE]
 >在日志回调函数中抛异常会触发 C++侧抛出异常，引起程序 coredump，建议在回调中捕获异常并处理。
 
 **示例**
@@ -728,7 +728,7 @@ def video_decode(video_path: str | bytes, device: str | bytes, frame_indices: se
 |--|--|
 |list[Image]|解码后的 Image 对象列表。格式为 RGB，数据类型为 uint8。|
 
->[!NOTE] 说明
+>[!NOTE]
 >
 >- 期望解码的视频帧 ID 取值范围为\[0, 视频总帧数-1\)，默认为空集合，参数优先级高于期望解码后获取的总帧数。该参数意为目标解码的帧 ID 集合。
 >- 期望解码后获取的总帧数取值范围为\(0, 视频总帧数\]，默认值为 -1，最终解码 ID 集合为通过视频帧总数计算等间隔抽取。
@@ -774,7 +774,7 @@ def normalize(src: Tensor, mean: list[float], std: list[float], device_mode: Dev
 |--|--|
 |Tensor|转换后的 Tensor 对象。|
 
->[!NOTE] 说明
+>[!NOTE]
 >
 >- 输入 Tensor 对象的 format 仅支持 NCHW 或 NHWC，N 仅支持 1，C 仅支持 3。
 >- 输入 Tensor 对象的数据类型仅支持 Float32。
@@ -822,7 +822,7 @@ def load_audio(audio_inputs: Union[str, List[str]], sr: Optional[int] = None)
 |--|--|
 |Union[Tuple[Tensor, int], List[Tuple[Tensor, int]]]|单音频返回(音频 tensor 数据, 采样率)，多音频返回(音频 tensor 数据，采样率)列表。|
 
->[!NOTE] 说明
+>[!NOTE]
 >
 >- 输入音频仅支持 wav 文件。
 >- 可加载音频文件的数量范围为[1,128]。
@@ -883,7 +883,7 @@ __init__(model_path: str, device_id: int, model_type: str = "clip", similar_thre
 |image_similar_threshold|float|可选|图像相似度梯度阈值，用于场景边界检测，取值范围为[0, 1]，默认为 0.015。|
 |image_size|tuple|可选|输入图像缩放尺寸，形如(width, height)，宽高取值范围为[10, 8192]，默认为(672, 672)。|
 
->[!NOTE] 说明
+>[!NOTE]
 >
 >- BaseFrameSelector 为抽象类，不可直接实例化，需通过子类 KRangFrameSelector 或 KFrameSelector 创建实例。
 >- model_path 所指向的目录必须存在，且目录权限不能高于 750，目录属主必须与当前用户一致。

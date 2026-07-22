@@ -139,6 +139,6 @@ print(f"directory batch count: {len(batch_from_directory)}")
 | 目标 | 文档 |
 | -- | -- |
 | 查看完整 API 参数和约束 | [功能函数参考](../05_api/function_reference.md) |
-| 排查常见错误码 | [附录 - 错误码](../06_references/appendix.md#错误码) |
+| 排查常见错误码 | [附录 > 错误码](../06_references/appendix.md#错误码) |
 | Qwen2VL / InternVL2 预处理加速 | [Adapter](../05_api/adapter.md) |
 | vLLM 推理框架集成 | [patcher](../05_api/patcher.md) |

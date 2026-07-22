@@ -12,7 +12,7 @@
 export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver:$LD_LIBRARY_PATH
 ```
 
-> [!CAUTION] 注意
+> [!NOTE]
 > 使用 qwen2_vl_image_processor_patcher 或 internvl2_image_processor_patcher 时，还需保证 transformers 版本为 **4.51.3**。Multimodal SDK 官方镜像已包含该版本；若在自定义环境中使用，请执行 `python3 -c "import transformers; print(transformers.__version__)"` 确认版本。
 
 本文档仅提供通过社区获取镜像的使用方式。对于其他使用方式，需自行找到以下所提到的文件并执行操作。
@@ -43,7 +43,7 @@ import mm.patcher.vllm.video_patcher
 load_file: Multimodal SDK Video Patcher Enabled!
 ```
 
-> [!CAUTION] 注意
+> [!NOTE]
 > 当前加速能力仅针对视频文件，且格式应为 mp4，文件权限不应高于 640。
 
 **示例请求**
@@ -230,7 +230,7 @@ import mm.patcher.vllm.image_patcher
 load_file: Multimodal SDK Image Patcher Enabled!
 ```
 
-> [!CAUTION] 注意
+> [!NOTE]
 > 当前加速能力仅针对 jpeg 图像，且文件后缀应为 jpg 或 jpeg，文件权限不应高于 640。
 
 **示例请求**
@@ -286,7 +286,7 @@ curl -X POST "http://<host>:<port>/v1/chat/completions" \
 | 未看到 `Multimodal SDK ... Patcher Enabled!` 提示 | 确认已在文档指定文件和位置添加对应 `import mm.patcher.vllm...` 语句，并重启 vllm 服务。 |
 | 图像或视频读取失败 | 确认文件路径使用 `file:` 协议前缀，文件格式满足当前 patcher 约束，且文件权限不高于 640。 |
 | transformers 版本不匹配 | 在容器内执行 `python3 -c "import transformers; print(transformers.__version__)"`，确认版本为 4.51.3。 |
-| 仍无法定位问题 | 查看 vllm 服务日志，并参见[附录 - 错误码](../06_references/appendix.md#错误码)排查文件权限、路径、格式等错误。 |
+| 仍无法定位问题 | 查看 vllm 服务日志，并参见[附录 > 错误码](../06_references/appendix.md#错误码)排查文件权限、路径、格式等错误。 |
 
 ---
 
