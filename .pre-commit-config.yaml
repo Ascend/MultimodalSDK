@@ -84,6 +84,17 @@ repos:
           - "--verbose"
           - "-i"
         exclude: ^build/|tests/third_party/
+
+  - repo: local
+    hooks:
+      - id: clang-tidy
+        name: clang-tidy
+        entry: bash pre-commit/clang-tidy-run.sh
+        language: system
+        files: \.(h|hpp|cpp|cc|cxx|c)$
+        pass_filenames: true
+        exclude: (^|/)(build|test|tests|third_party|3rdparty)(/|$)
+
   # -------------------------- Gitleaks 本地离线二进制扫描 --------------------------
   - repo: local
     hooks:
