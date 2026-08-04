@@ -24,22 +24,24 @@
 Tag 遵循以下格式：
 
 ```bash
-<MultimodalSDK版本>-<芯片系列>-<操作系统>-<python版本>
+<MultimodalSDK版本>-<vllm-ascend版本>-<torch-npu版本>-<芯片系列>-<操作系统>-<python版本>-aarch64
 ```
 
 | 字段         | 示例值                          | 说明             |
 | ------------ | ------------------------------- | ---------------- |
 | `MultimodalSDK版本`   | `26.1.0`              | MultimodalSDK 版本号      |
-| `芯片系列`   | `910`          | 目标芯片系列 |
+| `vllm-ascend版本`   | `0.8.5rc1`              | vllm-ascend 版本号      |
+| `torch-npu版本`   | `2.5.1`              | torch-npu 版本号      |
+| `芯片系列`   | `910b`          | 目标芯片系列 |
 | `操作系统`   | `ubuntu22.04`、`openeuler24.03` | 基础操作系统     |
-| `python版本` | `py3.11`    | Python 版本      |
+| `python版本` | `py3.10`    | Python 版本      |
 
 ### 支持的tags及Dockerfile
 
 | Tag                                | Dockerfile                                                   |
 | ---------------------------------- | ------------------------------------------------------------ |
-| `26.1.0-910b-openeuler24.03-py3.11`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
-| `26.1.0-910b-ubuntu22.04-py3.11`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
+| `26.1.0-vllm_ascend0.8.5rc1-torch_npu2.5.1-910b-openeuler24.03-py3.10-aarch64`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
+| `26.1.0-vllm_ascend0.8.5rc1-torch_npu2.5.1-910b-ubuntu22.04-py3.10-aarch64`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
 
 ---
 
@@ -85,7 +87,7 @@ docker exec -it multimodal_container bash
 ### 如何二次开发
 
 ```bash
-FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-910b-ubuntu22.04-py3.11-aarch64
+FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-vllm_ascend0.8.5rc1-torch_npu2.5.1-910b-ubuntu22.04-py3.10-aarch64
 
 RUN apt update -y && \
     apt install gcc ...
