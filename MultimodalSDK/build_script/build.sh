@@ -29,7 +29,7 @@ B_BUILD_SCRIPT="${B_REPO_DIR}/build_script/build.sh"
 PACKAGE_DIR="${A_ROOT_DIR}/source/mm/acc/_impl"
 source /usr/local/Ascend/ascend-toolkit/set_env.sh
 export PATH="/opt/buildtools/python-3.11.4/bin:$PATH"
-VERSION="dev"
+VERSION="0.0.0.dev"
 PARSED_BUILD_ARGS=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -104,6 +104,8 @@ for _lib_component in FFmpeg libjpeg-turbo soxr; do
     exit 1
   fi
 done
+
+export MULTIMODAL_SDK_WHEEL_VERSION=$VERSION
 
 # build whl
 cd "${A_ROOT_DIR}"
