@@ -16,10 +16,11 @@
 # See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
 from setuptools import setup, find_packages
+import os
 
 setup(
     name='mm',
-    version='1.0.0',
+    version=os.getenv("MULTIMODAL_SDK_WHEEL_VERSION", '1.0.0'),
     packages=find_packages(where='source'),
     package_dir={'': 'source'},
     package_data={
