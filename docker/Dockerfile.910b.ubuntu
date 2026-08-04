@@ -45,9 +45,9 @@ ENV ASCEND_AICPU_PATH=$TOOLKIT_PATH
 ENV PYTHONPATH=$TBE_IMPL_PATH:$PYTHONPATH
 ENV ASCEND_HOME=${ASCEND_BASE}
 
-RUN wget https://gitcode.com/Ascend/MultimodalSDK/releases/download/v26.0.0/Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run && \
-    chmod +x Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run && \
-    bash Ascend-mindxsdk-multimodal_26.0.0_linux-aarch64.run --install --install-path=/usr/local
+RUN wget https://gitcode.com/Ascend/MultimodalSDK/releases/download/v26.1.0/Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run && \
+    chmod +x Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run && \
+    bash Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run --install --install-path=/usr/local
 
 # Download the MultimodalSDK test image into the container.
 RUN mkdir -p /data && \

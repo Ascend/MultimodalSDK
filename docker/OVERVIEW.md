@@ -24,22 +24,24 @@ In the inference pipeline of multimodal large models, massive and complex data n
 Tags follow this pattern:
 
 ```bash
-<multimodalsdk_version>-<chip_series>-<os>-<python_version>
+<multimodalsdk_version>-<vllm-ascend_version>-<torch-npu_version>-<chip_series>-<os>-<python_version>-aarch64
 ```
 
 | Field            | Example Values                  | Description               |
 | ---------------- | ------------------------------- | ------------------------- |
-| `multimodalsdk_version` | `26.0.0`   | MultimodalSDK version              |
-| `chip_series`    | `910`         | Target Atlas chip family |
+| `multimodalsdk_version` | `26.1.0`   | MultimodalSDK version              |
+| `vllm-ascend_version`   | `0.8.5rc1`              | vllm-ascend version      |
+| `torch-npu_version`   | `2.5.1`              | torch-npu version      |
+| `chip_series`    | `910b`         | Target Atlas chip family |
 | `os`             | `ubuntu22.04`, `openeuler24.03` | Base operating system     |
-| `python_version` | `py3.11`    | Python version            |
+| `python_version` | `py3.10`    | Python version            |
 
 ### Tags and Dockerfile
 
 | Tag                                | Dockerfile                                                   |
 | ---------------------------------- | ------------------------------------------------------------ |
-| `26.0.0-910b-openeuler24.03-py3.11`   | [Dockerfile.910b.openEuler](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/Dockerfile.910b.openEuler) |
-| `26.0.0-910b-ubuntu22.04-py3.11`    | [Dockerfile.910b.ubuntu](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/Dockerfile.910b.ubuntu)      |
+| `26.1.0-vllm_ascend0.8.5rc1-torch_npu2.5.1-910b-openeuler24.03-py3.10-aarch64`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
+| `26.1.0-vllm_ascend0.8.5rc1-torch_npu2.5.1-910b-ubuntu22.04-py3.10-aarch64`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
 
 ---
 
@@ -92,7 +94,7 @@ MultimodalSDK provides sample code to help developers get started quickly. You c
 
 ```bash
 # Add required software by developer
-FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64
+FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-vllm_ascend0.8.5rc1-torch_npu2.5.1-910b-ubuntu22.04-py3.10-aarch64
 
 RUN apt update -y && \
     apt install gcc ...
