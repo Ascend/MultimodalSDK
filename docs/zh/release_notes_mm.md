@@ -94,8 +94,8 @@
 | 特性名称 | 特性描述 | 配套产品型号 |
 | -- | -- | -- |
 | 关键帧筛选 | 新增KFrameSelector/KRangFrameSelector类，支持基于文本-图像相似度从视频中筛选与查询相关的离散关键帧；支持识别连续场景区间并在区间内进行自适应重采样，适用于通用视频问答、目标出现时间定位等场景。 | Atlas 800I A2 推理服务器 |
-| AutoOptimizeAndSample | 新增自动寻优与多尺度重采样示例，提供基于 Video RAG 的视频理解与问答参考设计，支持视频帧提取、音频提取、ASR、OCR、目标检测、语义检索、检索重排序和 Prompt 组装，支持自适应关键帧选择、均匀采样回退和音频重采样，提升长视频问答的上下文召回与生成效果。 | Atlas 800I A2 推理服务器 |
-| Token 压缩 | 新增 SCC（Semantic Connected Components）视觉 token 压缩参考设计，提供 vllm-ascend 中 Qwen2.5-VL 的服务端视觉 token 压缩补丁和验证流程示例，支持按语义相似度聚合视觉 embedding 并同步调整 image/video placeholder 数量，在尽量保持模型效果的前提下降低视觉 token 数量、提升多模态推理吞吐。 | Atlas 800I A2 推理服务器 |
+| 自动寻优与多尺度重采样 | 新增自动寻优与多尺度重采样示例，提供基于 Video RAG 的视频理解与问答参考设计，支持视频帧提取、音频提取、ASR、OCR、目标检测、语义检索、检索重排序和 Prompt 组装，支持自适应关键帧选择、均匀采样回退和音频重采样，提升长视频问答的上下文召回与生成效果。 | Atlas 800I A2 推理服务器 |
+| 基于 vllm-ascend 和 Qwen2.5-VL 模型的 Token 压缩 | 新增 SCC（Semantic Connected Components）视觉 token 压缩参考设计，提供 vllm-ascend 中 Qwen2.5-VL 的服务端视觉 token 压缩补丁和验证流程示例，支持按语义相似度聚合视觉 embedding 并同步调整 image/video placeholder 数量，在尽量保持模型效果的前提下降低视觉 token 数量、提升多模态推理吞吐。 | Atlas 800I A2 推理服务器 |
 
 ### 业务接口变更
 
