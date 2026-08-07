@@ -6,6 +6,14 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ACC_SDK="${ROOT}/AccSDK"
 ACC_DATA_CPP="${ACC_SDK}/acc_data/src/cpp"
 
+COMPILE_JSON_PATH=$ROOT/AccSDK/build/compile_commands.json
+if [ ! -f "$COMPILE_JSON_PATH" ]; then
+    echo "Error: File $COMPILE_JSON_PATH does not exist, please check if compile run success."
+    exit 1
+fi
+# Move compile_commands.json to root path.
+cp $COMPILE_JSON_PATH .
+
 CLANG_TIDY="${CLANG_TIDY:-clang-tidy}"
 if ! command -v "${CLANG_TIDY}" >/dev/null 2>&1 && [ -x /opt/llvm/bin/clang-tidy ]; then
     CLANG_TIDY=/opt/llvm/bin/clang-tidy
@@ -127,7 +135,7 @@ if [ "${#TARGETS[@]}" -eq 0 ]; then
 fi
 
 TIDY_STATUS=0
-OUTPUT="$("${CLANG_TIDY}" "${EXTRA_ARGS[@]}" -- "${TARGETS[@]}" 2>&1)" || TIDY_STATUS=$?
+OUTPUT="$("${CLANG_TIDY}" "${EXTRA_ARGS[@]}" "${TARGETS[@]}" 2>&1)" || TIDY_STATUS=$?
 FILTERED="$(printf '%s\n' "${OUTPUT}" | filter_3rdparty_diagnostics)"
 
 if [ -n "${FILTERED}" ]; then
