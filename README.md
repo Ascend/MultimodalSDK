@@ -1,7 +1,6 @@
 <h1 align="center">Multimodal SDK</h1>
 
 <div align="center">
-<h2>昇腾多模态开发套件</h2>
 
 [![Ascend](https://img.shields.io/badge/Community-MindSDK-blue.svg)](https://www.hiascend.com/cn/developer/software/mindsdk)
 [![License](https://badgen.net/badge/License/MulanPSL-2.0/blue)](./LICENSE.md)
@@ -12,45 +11,73 @@
 
 ## ✨ 最新消息
 
-- **[2026.04.25]**：[Multimodal SDK 26.0.0](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.0.0) 发布
-- **[2025.12.30]**：Multimodal SDK 开源发布
+<span style="font-size:14px;">
+
+🔹 **[2026.08.01]**：🚀 [Multimodal SDK 26.1.0 Release 版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.1.0)<br>
+🔹 **[2025.12.30]**：🚀 Multimodal SDK 开源发布<br>
+
+</span>
 
 ## ℹ️ 简介
 
-多模态大模型推理流程中需要处理大量复杂的数据。Multimodal SDK 通过提供一系列高性能的昇腾设备亲和性接口，加速大模型推理预处理流程，包括图像视频加载和解码、resize、crop 等预处理常用操作，并支持多种开源数据结构与加速库数据结构的相互转换，方便快速使用和移植。
+Multimodal SDK 是面向昇腾设备优化的多模态大模型推理预处理加速套件。它提供图像、视频和音频处理常用接口，覆盖图像/视频加载与解码、resize、crop、音频加载等预处理流程，并支持多种开源数据结构与加速库数据结构的相互转换，帮助开发者快速接入和迁移多模态推理应用。
 
-![](./docs/zh/figures/mmsdk_arch.svg)
+<img src="./docs/zh/figures/mmsdk_arch.svg" width="1200"/>
 
 ## ⚙️ 功能介绍
 
-| 类别 | 模块 | 功能简介 | 文档 |
-|:--:|:--|:--|:--|
-| 加速库 | 功能函数 | Tensor / Image / video_decode / load_audio 等预处理接口 | [功能函数参考](docs/zh/05_api/function_reference.md) |
-| 适配器 | Adapter | Qwen2VL、InternVL2 模型预处理适配 | [Adapter](docs/zh/05_api/adapter.md) |
-| 补丁 | Patcher | vLLM 框架预处理加速补丁 | [patcher](docs/zh/05_api/patcher.md) |
-| API | Python 接口 | 数据类型枚举与接口目录 | [Python 接口说明](docs/zh/05_api/README.md) |
+| 功能 | 描述 | 接口 |
+| --- | --- | --- |
+| [图像处理](./docs/zh/04_user_guide/user_guide.md#图片处理) | 支持图像读取、resize、crop 及 NumPy 数据转换，适用于多模态模型图片预处理场景 | [链接](./docs/zh/05_api/function_reference.md) |
+| [视频处理](./docs/zh/04_user_guide/user_guide.md#视频处理) | 支持按指定帧 ID 解码或按目标帧数均匀采样，返回可继续处理的 Image 对象列表 | [链接](./docs/zh/05_api/function_reference.md) |
+| [音频处理](./docs/zh/04_user_guide/user_guide.md#音频处理) | 支持单文件、文件列表和目录批量音频加载，并可指定重采样率 | [链接](./docs/zh/05_api/function_reference.md) |
+| [模型预处理适配](./docs/zh/05_api/adapter.md) | 提供 Qwen2VL、InternVL2 等模型预处理适配接口 | [链接](./docs/zh/05_api/adapter.md) |
+| [推理框架补丁](./docs/zh/05_api/patcher.md) | 提供 vLLM 框架预处理加速补丁，便于在现有推理流程中集成加速能力 | [链接](./docs/zh/05_api/patcher.md) |
 
 ## 🚀 快速入门
 
-Multimodal SDK提供了一个简单的样例，帮助用户通过 Docker 快速启动环境并完成首次体验，详见[快速入门](docs/zh/02_quickstart/quickstart.md)。
+Multimodal SDK 提供 Docker 快速体验流程，帮助用户完成环境启动、变量加载和首个 Python 示例验证。详情可参考《[快速入门](./docs/zh/02_quickstart/quickstart.md)》。
 
 ## 📦 安装指南
 
-详细的安装部署说明请参见[安装指南](docs/zh/03_installation_guide/installation_guide.md)。
+Multimodal SDK 支持离线安装、镜像安装、源码安装三种方式，详情可查看《[安装指南](./docs/zh/03_installation_guide/installation_guide.md)》。
 
 ## 📘 使用指南
 
-详细的开发者文档请参见[Multimodal SDK 开发者文档](docs/zh/README.md)。
+Multimodal SDK 以图片、视频和音频三个典型场景提供基础预处理接口使用样例与操作指导，具体操作请参考《[样例和指导](./docs/zh/04_user_guide/user_guide.md)》。
+
+API 说明请参考：
+
+| 文档 | 说明 |
+| --- | --- |
+| [功能函数参考](./docs/zh/05_api/function_reference.md) | Tensor、Image、video_decode、load_audio 等接口说明 |
+| [Adapter](./docs/zh/05_api/adapter.md) | 模型预处理适配接口说明 |
+| [patcher](./docs/zh/05_api/patcher.md) | vLLM 框架预处理加速补丁说明 |
+| [Python 接口说明](./docs/zh/05_api/README.md) | 数据类型枚举与 API 文档入口 |
+
+## 🗺️ Roadmap
+
+[Roadmap（2026Q3）](https://gitcode.com/Ascend/MultimodalSDK/issues/40)
+
+## 🔀 版本维护策略
+
+| 版本 | 维护策略 | 当前状态 | 发布日期 | 后续状态 | EOL 日期 |
+| --- | --- | --- | --- | --- | --- |
+| master | 长期支持 | 开发 | 在研分支，不发布 | - | - |
+| v26.1.0 | 常规分支 | 维护 | 2026-08-01 | - | - |
+| v26.0.0 | 常规分支 | 维护 | 2026-04-25 | - | - |
 
 ## 🛠️ 贡献指南
 
-欢迎参与项目贡献，请参见[贡献指南](CONTRIBUTING.md)。
+欢迎参与项目贡献，贡献流程和规范请参见《[贡献指南](./CONTRIBUTING.md)》。
 
 ## ⚖️ 相关说明
 
-- [许可证声明](LICENSE.md)（docs 文档适用 CC-BY 4.0，见 [LICENSE](docs/LICENSE)）
-- [第三方开源软件声明](Third_Party_Open_Source_Software_Notice)
-- [免责声明](docs/zh/01_introduction/02_disclaimer.md)
+🔹 《[版本说明](./docs/zh/release_notes_mm.md)》<br>
+🔹 《[许可证声明](./LICENSE.md)》<br>
+🔹 《[文档许可证声明](./docs/LICENSE)》<br>
+🔹 《[免责声明](./docs/zh/01_introduction/02_disclaimer.md)》<br>
+🔹 《[第三方开源软件声明](./Third_Party_Open_Source_Software_Notice)》
 
 ## 🤝 建议与交流
 
