@@ -13,7 +13,8 @@
 
 <span style="font-size:14px;">
 
-🔹 **[2026.08.01]**：🚀 [Multimodal SDK 26.1.0 Release 版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.1.0)<br>
+🔹 **[2026.07.31]**：🚀 [Multimodal SDK 26.1.0 Release 版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.1.0)<br>
+🔹 **[2026.04.25]**：🚀 [Multimodal SDK 26.0.0 Release 版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.0.0)<br>
 🔹 **[2025.12.30]**：🚀 Multimodal SDK 开源发布<br>
 
 </span>
@@ -36,7 +37,7 @@ Multimodal SDK 是面向昇腾设备优化的多模态大模型推理预处理�
 
 ## 🚀 快速入门
 
-Multimodal SDK 提供 Docker 快速体验流程，帮助用户完成环境启动、变量加载和首个 Python 示例验证。详情可参考《[快速入门](./docs/zh/02_quickstart/quickstart.md)》。
+Multimodal SDK 提供 Docker 快速体验流程，帮助用户完成环境启动、变量加载和首个 Python 示例验证，详情可参考《[快速入门](./docs/zh/02_quickstart/quickstart.md)》。
 
 ## 📦 安装指南
 
@@ -57,15 +58,15 @@ API 说明请参考：
 
 ## 🗺️ Roadmap
 
-[Roadmap（2026Q3）](https://gitcode.com/Ascend/MultimodalSDK/issues/40)
+[Roadmap(2026Q3)](https://gitcode.com/Ascend/MultimodalSDK/issues/40)
 
 ## 🔀 版本维护策略
 
 | 版本 | 维护策略 | 当前状态 | 发布日期 | 后续状态 | EOL 日期 |
 | --- | --- | --- | --- | --- | --- |
-| master | 长期支持 | 开发 | 在研分支，不发布 | - | - |
-| v26.1.0 | 常规分支 | 维护 | 2026-08-01 | - | - |
-| v26.0.0 | 常规分支 | 维护 | 2026-04-25 | - | - |
+| master | 长期支持 | 开发 | 在研分支，不发布 | 持续开发 | - |
+| v26.1.0 | 常规分支 | 维护 | 2026-07-31 | 预计2027-01-31起进入无维护状态 | 2027-01-31 |
+| v26.0.0 | 常规分支 | 维护 | 2026-04-25 | 预计2026-10-25起进入无维护状态 | 2026-10-25 |
 
 ## 🛠️ 贡献指南
 
@@ -74,6 +75,7 @@ API 说明请参考：
 ## ⚖️ 相关说明
 
 🔹 《[版本说明](./docs/zh/release_notes_mm.md)》<br>
+🔹 《[安全加固](./docs/zh/06_references/security_hardening.md)》<br>
 🔹 《[许可证声明](./LICENSE.md)》<br>
 🔹 《[文档许可证声明](./docs/LICENSE)》<br>
 🔹 《[免责声明](./docs/zh/01_introduction/02_disclaimer.md)》<br>
@@ -84,7 +86,7 @@ API 说明请参考：
 欢迎大家通过以下方式提出问题、交流讨论。
 
 | 资源 | 说明 |
-|:--|:--|
+| :-- | :-- |
 | [FAQ](./docs/zh/06_references/faq.md) | 常见问题解答与使用答疑 |
 | [创建Issue](https://gitcode.com/Ascend/MultimodalSDK/issues/create/choose) | 提交 Bug、需求或建议 |
 | [社区任务](https://gitcode.com/Ascend/MultimodalSDK/issues) | 查看和认领社区任务 |
