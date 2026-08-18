@@ -19,7 +19,7 @@
 
 多模态大模型推理流程中需要处理大量复杂的数据。Multimodal SDK 通过提供一系列高性能的昇腾设备亲和性接口，加速大模型推理预处理流程，包括图像视频加载和解码、resize、crop 等预处理常用操作，并支持多种开源数据结构与加速库数据结构的相互转换，方便快速使用和移植。
 
-![](./docs/zh/figures/mmsdk_arch.svg)
+<img src="./docs/zh/figures/mmsdk_arch.svg" alt="Multimodal SDK 能力全景图" width="1200"/>
 
 ## ⚙️ 功能介绍
 
