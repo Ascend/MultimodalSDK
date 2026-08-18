@@ -7,7 +7,7 @@
 
 ## 软件架构
 
-![Multimodal SDK 软件架构图](../figures/mmsdk_arch.svg)
+<img src="../figures/mmsdk_arch.svg" alt="Multimodal SDK 软件架构图" width="1200"/>
 
 **架构图模块介绍**
 
