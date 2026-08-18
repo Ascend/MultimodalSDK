@@ -2,7 +2,7 @@
 
 本文通过图片、视频和音频三个典型场景，说明 Multimodal SDK 的基础预处理接口使用方式。整体流程如下：
 
-![样例和指导整体流程](../figures/user_guide_overview_flow.svg)
+<img src="../figures/user_guide_overview_flow.svg" alt="样例和指导整体流程" width="1200"/>
 
 ## 使用前准备
 
@@ -15,7 +15,7 @@
 
 以下是一个简单的参考样例，通过多模态 SDK 的 Image 类读取图像，并进行缩放、裁剪，最后转化为通用的 NumPy 数组展示上述操作的效果。
 
-![图片处理流程](../figures/user_guide_image_flow.svg)
+<img src="../figures/user_guide_image_flow.svg" alt="图片处理流程" width="1200"/>
 
 ```python
 import mm  # 引入多模态SDK包
@@ -67,7 +67,7 @@ plt.show()
 - 如果传入了**期望解码的视频帧 ID**集合且其内容合法，SDK 会根据这些帧 ID 进行解码，返回的 image 对象列表长度与帧 ID 集合大小一致。
 - 如果帧 ID 集合为空，则可以通过**期望解码后获取的总帧数**参数进行设置，此时接口会从视频中均匀采样指定数量的帧，最终返回的 image 对象列表长度等于设定的帧数。
 
-![视频处理流程](../figures/user_guide_video_flow.svg)
+<img src="../figures/user_guide_video_flow.svg" alt="视频处理流程" width="1200"/>
 
 1. 传入目标解码的帧 ID 集合，得到的返回值列表大小为传入的帧 ID 集合大小。
 
@@ -106,7 +106,7 @@ plt.show()
 
 以下示例演示单音频文件加载与批量加载（请将路径替换为实际 wav 文件，并确保文件权限不高于 640）：
 
-![音频处理流程](../figures/user_guide_audio_flow.svg)
+<img src="../figures/user_guide_audio_flow.svg" alt="音频处理流程" width="1200"/>
 
 ```python
 from mm import load_audio
