@@ -39,6 +39,8 @@ Multimodal SDK 是面向昇腾设备优化的多模态大模型推理预处理�
 
 Multimodal SDK 提供 Docker 快速体验流程，帮助用户完成环境启动、变量加载和首个 Python 示例验证，详情可参考《[快速入门](./docs/zh/02_quickstart/quickstart.md)》。
 
+如果需要修改源码并重新编译，请直接参考《[贡献指南](./CONTRIBUTING.md)》。
+
 ## 📦 安装指南
 
 Multimodal SDK 支持离线安装、镜像安装、源码安装三种方式，详情可查看《[安装指南](./docs/zh/03_installation_guide/installation_guide.md)》。

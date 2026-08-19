@@ -6,7 +6,7 @@
 
 ## 使用前准备
 
-- 本文档适用于 Multimodal SDK 最新发布版本，建议使用 Python 3.10 或 3.11。
+- 本文档适用于 Multimodal SDK 最新发布版本，建议使用 Python 3.10 或 3.12。
 - 请先完成[快速入门](../02_quickstart/quickstart.md)或[安装部署](../03_installation_guide/installation_guide.md)，确认 `import mm` 成功。
 - 图片示例需要安装 `matplotlib`，仅用于展示处理结果：`pip3 install matplotlib`。
 - 示例文件权限不应高于 640。图片当前支持 jpg/jpeg，视频当前支持 mp4，音频当前支持 wav。

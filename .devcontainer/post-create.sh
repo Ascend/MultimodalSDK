@@ -5,7 +5,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "${REPO_ROOT}"
 
-PYTHON_PREFIX="${PYTHON_PREFIX:-/opt/buildtools/python-3.11.4}"
+PYTHON_PREFIX="${PYTHON_PREFIX:-/usr/local/python3.12.13}"
 
 verify_sha256() {
     local file="$1" expected="$2"

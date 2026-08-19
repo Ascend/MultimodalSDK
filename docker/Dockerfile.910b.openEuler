@@ -1,4 +1,7 @@
-FROM quay.io/ascend/vllm-ascend:v0.8.5rc1-openeuler
+FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:9.1.0-910b-openeuler24.03-py3.12
+
+USER root
+
 WORKDIR /tmp
 
 RUN cp -a /etc/yum.repos.d/openEuler.repo /etc/yum.repos.d/openEuler.repo.bak && \
@@ -25,40 +28,63 @@ RUN cp -a /etc/yum.repos.d/openEuler.repo /etc/yum.repos.d/openEuler.repo.bak &&
 RUN export TZ=Asia/Shanghai && \
     yum clean all && \
     yum makecache && \
-    yum install ca-certificates -y && \
-    yum install wget dos2unix net-tools openssh openssh-server openssh-clients lsof sshpass -y && \
-    yum install curl gcc g++ make pkgconfig unzip autoconf git patch -y && \
-    yum install zlib-devel xz-devel bzip2-libs -y && \
-    yum install python3-pip -y && \
+    yum install -y pcre2-devel perl-Capture-Tiny perl-DateTime && \
     yum clean all
 
-RUN mkdir ~/.pip && touch ~/.pip/pip.conf && \
-    echo "[global]" > ~/.pip/pip.conf && \
-    echo "trusted-host=mirrors.aliyun.com" >> ~/.pip/pip.conf && \
-    echo "index-url=https://mirrors.aliyun.com/pypi/simple" >> ~/.pip/pip.conf && \
-    echo "timeout=200" >> ~/.pip/pip.conf
+# 安装git-lfs
+RUN git clone https://gitee.com/src-openeuler/git-lfs && \
+    cd git-lfs && \
+    git checkout origin/openEuler-24.03-LTS && \
+    mkdir -p ~/rpmbuild/SPECS && \
+    mkdir -p ~/rpmbuild/RPMS && \
+    mkdir -p ~/rpmbuild/SOURCES && \
+    mkdir -p ~/rpmbuild/BUILD && \
+    cp ./git-lfs.spec ~/rpmbuild/SPECS/ && \
+    cp ./git-lfs-*.tar.gz ~/rpmbuild/SOURCES && \
+    cp ./*.patch ~/rpmbuild/SOURCES && \
+    yum install -y rpm-build golang && \
+    cd ~/rpmbuild/SPECS && \
+    rpmbuild -bb git-lfs.spec && \
+    dnf install -y ../RPMS/$(arch)/git-lfs-*.rpm
 
-RUN pip3 install -U pip && \
-    pip3 install transformers==4.51.3 && \
+ARG SWIG_VERSION=4.3.0
+ARG SWIG_SHA256=f7203ef796f61af986c70c05816236cbd0d31b7aa9631e5ab53020ab7804aa9e
+RUN curl -fsSL "https://downloads.sourceforge.net/project/swig/swig/swig-${SWIG_VERSION}/swig-${SWIG_VERSION}.tar.gz" -o swig.tgz && \
+    echo "${SWIG_SHA256}  swig.tgz" | sha256sum -c - && \
+    tar -xzf swig.tgz && \
+    cd "swig-${SWIG_VERSION}" && \
+    ./configure --prefix=/usr/local && make -j"$(nproc)" && make install && \
+    cd .. && rm -rf swig.tgz "swig-${SWIG_VERSION}"
+
+RUN pip3 config set global.trusted-host repo.huaweicloud.com && \
+    pip3 config set global.index-url https://repo.huaweicloud.com/repository/pypi/simple && \
+    pip3 config set global.timeout 200
+
+RUN mkdir /vllm-workspace/ && cd /vllm-workspace/ && \
+    git clone --branch v0.8.5 https://atomgit.com/GitHub_Trending/vl/vllm.git && \
+    git clone --branch v0.8.5rc1 https://gitcode.com/gh_mirrors/vl/vllm-ascend.git
+
+RUN cd /vllm-workspace/vllm-ascend && \
+    sed -i '/inner_kernel_operator_intf.h/d' csrc/kernels/pos_encoding_kernels.cpp && \
+    sed -i 's/torch-npu==2.5.1/torch-npu==2.6.0.post5/g' pyproject.toml && \
+    sed -i 's/torch>=2.5.1/torch>=2.6.0/g' pyproject.toml && \
+    sed -i 's/torchvision<0.21.0/torchvision==0.21.0/g' pyproject.toml && \
+    sed -i 's/torch-npu==2.5.1/torch-npu==2.6.0.post5/g' requirements.txt && \
+    sed -i 's/torch>=2.5.1/torch>=2.6.0/g' requirements.txt && \
+    sed -i 's/torchvision<0.21.0/torchvision==0.21.0/g' requirements.txt && \
+    sed -i 's/--cmake/--cmakedir/' setup.py
+
+RUN cd /vllm-workspace/vllm && VLLM_TARGET_DEVICE=empty pip3 install -e  .
+
+RUN cd /vllm-workspace/vllm-ascend && source /usr/local/Ascend/ascend-toolkit/set_env.sh && pip3 install --extra-index -e .
+
+# delete cmake from pip3, useless after compile of vllm-ascend
+RUN pip3 uninstall -y cmake triton
+
+RUN pip3 install transformers==4.51.3 && \
     pip3 install pillow==11.2.1 && \
     pip3 install numpy==1.26.4 && \
-    pip3 install torch==2.5.1 && \
-    rm -rf /root/.cache/pip
-
-WORKDIR /tmp
-ARG ASCEND_BASE=/usr/local/Ascend
-
-ARG TOOLKIT_PATH=$ASCEND_BASE/ascend-toolkit/latest
-
-USER root
-
-ENV LD_LIBRARY_PATH=$TOOLKIT_PATH/runtime/lib64:$LD_LIBRARY_PATH
-ENV TBE_IMPL_PATH=$TOOLKIT_PATH/opp/op_impl/built-in/ai_core/tbe
-ENV PATH=$TOOLKIT_PATH/atc/ccec_compiler/bin:$TOOLKIT_PATH/atc/bin:$PATH
-ENV ASCEND_OPP_PATH=$TOOLKIT_PATH/opp
-ENV ASCEND_AICPU_PATH=$TOOLKIT_PATH
-ENV PYTHONPATH=$TBE_IMPL_PATH:$PYTHONPATH
-ENV ASCEND_HOME=${ASCEND_BASE}
+    pip3 install "setuptools<82"
 
 RUN wget https://gitcode.com/Ascend/MultimodalSDK/releases/download/v26.1.0/Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run && \
     chmod +x Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run && \
@@ -70,9 +96,12 @@ RUN mkdir -p /data && \
     wget --tries=3 --timeout=30 --waitretry=5 -O /data/test.jpg https://raw.gitcode.com/Ascend/MultimodalSDK/blobs/f1f648b7a8b8a67c7509b3425a89f743bbf59563/dog_1920_1080.jpg && \
     chmod 640 /data/test.jpg
 
-RUN sed -i '$a\source /usr/local/Ascend/ascend-toolkit/set_env.sh' ~/.bashrc && \
-    sed -i '$a\source /usr/local/multimodal/script/set_env.sh' ~/.bashrc && \
-    sed -i '$a\export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64/driver:$LD_LIBRARY_PATH' ~/.bashrc
-
 RUN rm -rf ./*
+
+RUN sed -i '$a\source /usr/local/multimodal/script/set_env.sh' ~/.bashrc
+
+RUN groupadd -r -g 1000 HwHiAiUser && \
+    useradd -r -g HwHiAiUser -u 1000 -m -s /bin/bash HwHiAiUser && \
+    echo "HwHiAiUser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 WORKDIR /root

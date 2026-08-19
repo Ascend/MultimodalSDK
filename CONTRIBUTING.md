@@ -27,9 +27,21 @@
 
 ## PR 最佳实践
 
-1. **Fork 仓库**：在 GitCode 平台代码仓库右上角点击 "Fork" 按钮，Fork 一份源代码到个人仓。
+1. **启动环境**: 请参考[安装指南](./docs/zh/03_installation_guide/installation_guide.md)部署 Multimodal SDK 开发环境。
 
-2. **克隆到本地**：
+2. **构建依赖**: 确保在构建 Multimodal SDK 之前安装了以下依赖：
+
+   | 依赖名称       | 版本建议                     | 获取建议                                                                 |
+   | ------------ | ------------------------- | ---------------------------------------------------------------------- |
+   | CMake        | 3.14 及以上                  | 建议通过包管理器安装：<br>Ubuntu：`sudo apt-get install -y cmake`<br>openEuler：`sudo yum install -y cmake`<br>若版本不符合最低要求，可通过源码编译安装 |
+   | Make         | 4.1 及以上                   | 建议通过包管理器安装：<br>Ubuntu：`sudo apt-get install -y make`<br>openEuler：`sudo yum install -y make`<br>若版本不符合最低要求，可通过源码编译安装 |
+   | GCC          | 9.4 及以上                   | 建议通过包管理器安装：<br>Ubuntu：`sudo apt-get install -y build-essential`<br>openEuler：`sudo yum install -y gcc gcc-c++` |
+   | SWIG         | 4.3 及以上                  | 建议通过源码安装 |
+   | Python       | 最低 3.10；**推荐 3.12** | 建议通过包管理器安装：<br>Ubuntu：`sudo apt-get install -y python3 python3-pip python3-dev`<br>openEuler：`sudo yum install -y python3 python3-pip python3-devel`<br>若系统自带版本过低，可从源码编译或安装更高版本 |
+
+3. **Fork 仓库**：在 GitCode 平台代码仓库右上角点击 "Fork" 按钮，Fork 一份源代码到个人仓。
+
+4. **克隆到本地**：
 
    将 Fork 到个人仓的代码克隆到本地进行代码开发。
 
@@ -38,21 +50,19 @@
    cd MultimodalSDK
    ```
 
-3. **创建开发分支**：
+5. **创建开发分支**：
 
    ```bash
    git checkout -b {new_branch_name} origin/master
    ```
 
-4. **代码开发**：
+6. **代码开发**：
 
    质量符合[开发规范](#dev-rule)和[安全编程指导](#sec-guide)。涉及用户可感知行为的变更，请同步更新文档、样例或 FAQ。
 
-5. **开发构建验证**：
+7. **开发构建验证**：
 
-   1. 请参考[安装指南](./docs/zh/03_installation_guide/installation_guide.md)部署 Multimodal SDK 开发环境。
-
-   2. 下载代码后，执行统一构建脚本。脚本会自动下载并准备编译依赖：
+   a. 构建脚本执行，脚本会自动下载并准备编译依赖：
 
       ```bash
       source /usr/local/Ascend/ascend-toolkit/set_env.sh
@@ -61,29 +71,32 @@
 
       构建成功后会在 `output` 目录下生成 `Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run`，可安装此包进行功能验证。
 
-   3. 在提交代码前，请补充测试用例并确保所有测试通过：
+   b. 在提交代码前，请补充测试用例并确保所有测试通过
+
+      测试用例包含大文件（LFS 文件），需要先拉取。
 
       ```bash
+      git lfs pull
       bash build_script/build_merge.sh test
       ```
 
-   4. 如需清理三方依赖、构建中间产物与输出产物，可执行：
+   c. 如需清理三方依赖、构建中间产物与输出产物，可执行：
 
       ```bash
       bash build_script/build_merge.sh clean
       ```
 
-6. **执行 pre-commit 检查**
+8. **执行 pre-commit 检查**
 
    本地提交代码前请先执行 pre-commit 检查，检查指导参见[pre-commit 本地运行指南](https://gitcode.com/Ascend/community/blob/master/docs/contributor/pre-commit-guide.md)。
 
-7. **提交 Pull Request**
+9. **提交 Pull Request**
 
    - 保持 PR 小规模，一次 PR 只解决一个问题，单个 PR 不超过 1000 行（含测试）代码变更。
    - 及时更新，定期同步上游主分支，及时响应评审意见。
    - 描述清晰，详细描述变更原因和方式，提供测试方法，必要时添加截图或示例。
 
-8. **社区评审**
+10. **社区评审**
 
    如果涉及 patch、头文件宏、API 接口等更新，需提交社区在 SIG 例会进行评审，社区定期例会与活动参见[会议日历](https://meeting.ascend.osinfra.cn/?sig=sig-MindSeriesSDK)。
 

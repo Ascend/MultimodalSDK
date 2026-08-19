@@ -22,17 +22,13 @@ Multimodal SDK 支持[离线安装](#离线安装)（`run` 包 / `Wheel` 包）�
 
 | 依赖名称       | 版本建议                     | 获取建议                                                                 |
 | ------------ | ------------------------- | ---------------------------------------------------------------------- |
-| CMake        | 3.14 及以上                  | 建议通过包管理器安装：<br>Ubuntu：`sudo apt-get install -y cmake`<br>openEuler：`sudo yum install -y cmake`<br>若版本不符合最低要求，可通过源码编译安装 |
-| Make         | 4.1 及以上                   | 建议通过包管理器安装：<br>Ubuntu：`sudo apt-get install -y make`<br>openEuler：`sudo yum install -y make`<br>若版本不符合最低要求，可通过源码编译安装 |
-| GCC          | 9.4 及以上                   | 建议通过包管理器安装：<br>Ubuntu：`sudo apt-get install -y build-essential`<br>openEuler：`sudo yum install -y gcc gcc-c++` |
-| Python       | 最低 3.10；**推荐 3.11** | 建议通过包管理器安装：<br>Ubuntu：`sudo apt-get install -y python3 python3-pip python3-dev`<br>openEuler：`sudo yum install -y python3 python3-pip python3-devel`<br>若系统自带版本过低，可从源码编译或安装更高版本 |
-| SWIG         | 4.3 及以上                  | 建议通过源码安装 |
+| Python       | 最低 3.10；**推荐 3.12** | 建议通过包管理器安装：<br>Ubuntu：`sudo apt-get install -y python3 python3-pip python3-dev`<br>openEuler：`sudo yum install -y python3 python3-pip python3-devel`<br>若系统自带版本过低，可从源码编译或安装更高版本 |
 | transformers | 4.51.3                    | 通过 pip 安装：<br>`pip3 install transformers==4.51.3`                       |
 | einops       | 0.8.2                     | 通过 pip 安装：<br>`pip3 install einops==0.8.2`                            |
 | pillow       | 11.2.1 及以上               | 通过 pip 安装：<br>`pip3 install pillow==11.2.1`                           |
 | numpy        | 1.26.4                    | 通过 pip 安装：<br>`pip3 install numpy==1.26.4`                            |
-| torch        | 2.5.1                     | 通过 pip 安装：<br>`pip3 install torch==2.5.1` |
-| TorchNPU    | 2.5.1.post1               | 通过 pip 安装：<br>`pip3 install torch-npu==2.5.1.post1`<br>需与 `vllm-ascend==v0.8.5rc1` 配套 |
+| torch        | 2.6.0                     | 通过 pip 安装：<br>`pip3 install torch==2.6.0` |
+| TorchNPU     | 2.6.0.post5               | 通过 pip 安装：<br>`pip3 install torch-npu==2.6.0.post5`<br> |
 
 ## 安装方式
 
@@ -53,7 +49,7 @@ Multimodal SDK 提供三种安装方式：离线安装（`run` 包 / `Wheel` 包
 
 **安装准备**
 
-请从 [Multimodal SDK Releases](https://gitcode.com/Ascend/MultimodalSDK/releases) 下载 Multimodal SDK 软件包（Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run）。其中 `{version}` 为 SDK 版本号（例如 `26.1.0`），`{arch}` 为 CPU 架构（`x86_64` 或 `aarch64`）。
+请从 [Multimodal SDK Releases](https://gitcode.com/Ascend/MultimodalSDK/releases) 下载 Multimodal SDK 软件包（Ascend-mindxsdk-multimodal_{version}_linux-aarch64.run）。其中 `{version}` 为 SDK 版本号（例如 `26.1.0`）。
 
 以下命令统一使用 `${MMSDK_PACKAGE}` 表示已下载的 `.run` 包文件名。请按实际文件名设置，例如：
 

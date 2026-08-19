@@ -24,11 +24,8 @@ if ! command -v "${CLANG_TIDY}" >/dev/null 2>&1; then
     exit 1
 fi
 
-is_3rdparty_path() {
-    case "$1" in
-        */3rdparty/* | */third_party/*) return 0 ;;
-        *) return 1 ;;
-    esac
+is_excluded_path() {
+    [[ "$1" =~ (^|/)(build|test|tests|third_party|3rdparty)(/|$) ]]
 }
 
 # Drop diagnostics (and their trailing notes) from vendor trees under 3rdparty/ or third_party/.
@@ -124,7 +121,7 @@ fi
 
 TARGETS=()
 for file in "$@"; do
-    if is_3rdparty_path "${file}"; then
+    if is_excluded_path "${file}"; then
         continue
     fi
     TARGETS+=("${file}")
