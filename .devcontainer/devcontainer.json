@@ -4,7 +4,6 @@
         "dockerfile": "Dockerfile",
         "network": "host",
         "args": {
-            "PYTHON_VERSION": "3.11.4"
         }
     },
     "workspaceFolder": "/workspace/MultimodalSDK",
@@ -25,10 +24,8 @@
         "source=/etc/ascend_install.info,target=/etc/ascend_install.info,type=bind,readonly"
     ],
     "remoteEnv": {
-        "PATH": "/usr/local/bin:${containerEnv:PYTHON_PREFIX}/bin:/usr/local/python3.10.17/bin:${containerEnv:PATH}",
         "SDK_VERSION": "dev",
-        "Python3_EXECUTABLE": "${containerEnv:Python3_EXECUTABLE}",
-        "LD_LIBRARY_PATH": "${containerEnv:PYTHON_PREFIX}/lib:${containerEnv:LD_LIBRARY_PATH}:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver"
+        "Python3_EXECUTABLE": "${containerEnv:Python3_EXECUTABLE}"
     },
     "customizations": {
         "vscode": {
