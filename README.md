@@ -34,6 +34,8 @@
 
 Multimodal SDK提供了一个简单的样例，帮助用户通过 Docker 快速启动环境并完成首次体验，详见[快速入门](docs/zh/02_quickstart/quickstart.md)。
 
+如果需要修改源码并重新编译，请直接参考《[贡献指南](./CONTRIBUTING.md)》。
+
 ## 📦 安装指南
 
 详细的安装部署说明请参见[安装指南](docs/zh/03_installation_guide/installation_guide.md)。

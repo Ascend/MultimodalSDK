@@ -30,29 +30,29 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 
 3. **镜像拉取示例**
 
-   镜像 Tag 格式为 `{version}-{vllm-ascend}-{torch_npu}-910b-{os}-{python}-aarch64`，各变量含义如下：
+   镜像 Tag 格式为 `{version}-{cann}-{torch_npu}-910b-{os}-{python}-aarch64`，各变量含义如下：
 
    | 变量 | 含义 | 示例值 |
    |------|------|--------|
    | `{version}` | Multimodal SDK 版本 | `26.1.0` |
-   | `{vllm-ascend}` | vllm-ascend 版本 | `0.8.5rc1` |
-   | `{torch_npu}` | torch_npu 版本 | `2.5.1` |
+   | `{cann}` | cann 版本 | `9.1.0` |
+   | `{torch_npu}` | torch_npu 版本 | `2.6.0.rc1` |
    | `{os}` | 基础操作系统 | `ubuntu22.04` / `openeuler24.03` |
-   | `{python}` | Python 版本 | `py3.10` |
+   | `{python}` | Python 版本 | `py3.12` |
 
    ```bash
-   TAG={version}-910b-{os}-{python}-aarch64
+   TAG={version}-{cann}-{torch_npu}-910b-{os}-{python}-aarch64
    docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:${TAG}
    docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:${TAG} \
        multimodalsdk:${TAG}
    ```
 
-   以 26.1.0 版本、Ubuntu 22.04、Python 3.10 为例：
+   以 26.1.0 版本、Ubuntu 22.04、Python 3.12 为例：
 
    ```bash
-   docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-vllm_ascend0.8.5rc1-torch_npu2.5.1-910b-ubuntu22.04-py3.10-aarch64
-   docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-vllm_ascend0.8.5rc1-torch_npu2.5.1-910b-ubuntu22.04-py3.10-aarch64 \
-       multimodalsdk:26.1.0-vllm_ascend0.8.5rc1-torch_npu2.5.1-910b-ubuntu22.04-py3.10-aarch64
+   docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64
+   docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64 \
+       multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64
    ```
 
 ## 步骤 2：启动容器
@@ -82,7 +82,7 @@ docker run \
     -v /usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64 \
     -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
     -v /etc/ascend_install.info:/etc/ascend_install.info \
-    -itd multimodalsdk:26.1.0-vllm_ascend0.8.5rc1-torch_npu2.5.1-910b-ubuntu22.04-py3.10-aarch64 bash
+    -itd multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64 bash
 
 docker ps -a | grep multimodal_container
 ```
