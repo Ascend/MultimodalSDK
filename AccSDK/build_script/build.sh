@@ -27,7 +27,6 @@ rm -rf ../build/*
 SCRIPT_DIR_ACC_SDK=$(cd "$(dirname "$0")"; pwd)
 ACC_SDK_ROOT_DIR=$(cd "${SCRIPT_DIR_ACC_SDK}/.."; pwd)
 source /usr/local/Ascend/ascend-toolkit/set_env.sh
-export PATH="/opt/buildtools/python-3.11.4/bin:$PATH"
 rm -rf "${ACC_SDK_ROOT_DIR}/build/*"
 
 ACC_SDK_DIR="$SCRIPT_DIR_ACC_SDK"

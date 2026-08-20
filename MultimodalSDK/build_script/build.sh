@@ -28,7 +28,6 @@ B_REPO_DIR="${A_ROOT_DIR}/../AccSDK"
 B_BUILD_SCRIPT="${B_REPO_DIR}/build_script/build.sh"
 PACKAGE_DIR="${A_ROOT_DIR}/source/mm/acc/_impl"
 source /usr/local/Ascend/ascend-toolkit/set_env.sh
-export PATH="/opt/buildtools/python-3.11.4/bin:$PATH"
 VERSION="0.0.0.dev"
 PARSED_BUILD_ARGS=()
 while [[ $# -gt 0 ]]; do
@@ -45,7 +44,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 pip3 install "pillow>=11.2.1"
-pip3 install torch-npu==2.9.1
+pip3 install torch-npu==2.6.0.post5
 pip3 install transformers==4.51.3
 pip3 install einops
 
@@ -157,8 +156,8 @@ chmod +x "${OUTPUT_DIR}/script/install.sh"
 if [[ "${BUILD_ARGS[*]}" == *"test"* ]]; then
     echo "[INFO] Building test: install whl first..."
     # torchvision is only used by UTs as a reference implementation for tensor conversion and normalization.
-    # Keep it aligned with torch-npu 2.9.1.
-    pip3 install torchvision==0.24.1
+    # Keep it aligned with torch-npu 2.6.0.post5.
+    pip3 install torchvision==0.21.0 coverage pytest pytest-cov pytest-html
     WHL_FILE=$(find "${A_ROOT_DIR}/dist" -name "*.whl" | head -n 1)
     if [ -z "$WHL_FILE" ]; then
         echo "[ERROR] whl package not found!"
@@ -177,7 +176,6 @@ if [[ "${BUILD_ARGS[*]}" == *"test"* ]]; then
     export LD_LIBRARY_PATH="${OUTPUT_DIR}/opensource/soxr/lib:$LD_LIBRARY_PATH"
     # clean coverage first
     coverage erase
-    LD_PRELOAD=/opt/buildtools/python-3.11.4/lib/python3.11/site-packages/torch.libs/libgomp-98df74fd.so.1.0.0 \
     PYTHONPATH=source \
     pytest \
     --cov=source/mm \
@@ -187,6 +185,7 @@ if [[ "${BUILD_ARGS[*]}" == *"test"* ]]; then
     --html=build_script/coverage/final.html \
     --self-contained-html \
     --cov-branch \
+    --cov-report=term \
     -vs test/
 
     echo "[INFO] Coverage report generated:"

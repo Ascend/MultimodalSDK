@@ -31,7 +31,7 @@ if [[ "${1:-}" == "clean" ]]; then
 fi
 
 SDK_VERSION="${SDK_VERSION:-$(sed -n 's/^version:[[:space:]]*//p' "${MERGE_BUILD_DIR}/../ci/config/config.ini" 2>/dev/null || true)}"
-SDK_VERSION="${SDK_VERSION:-dev}"
+SDK_VERSION="${SDK_VERSION:-0.0.0.dev}"
 
 ASCEND_SET_ENV="/usr/local/Ascend/ascend-toolkit/set_env.sh"
 if [ ! -f "${ASCEND_SET_ENV}" ]; then
@@ -115,7 +115,6 @@ MULTI_BUILD_DIR="${MULTI_SDK_ROOT_DIR}/build_script"
 cd "${MULTI_BUILD_DIR}" || { echo "[ERROR] Cannot enter directory ${MULTI_BUILD_DIR}"; exit 1; }
 
 export PYTHONPATH=${MULTI_SDK_ROOT_DIR}/source/:${PYTHONPATH:-}
-export LD_LIBRARY_PATH=/opt/python3.11.4/lib/python3.11/site-packages/torch/lib/:$LD_LIBRARY_PATH
 
 chmod +x build.sh
 if [[ "${1:-}" == "test" ]]; then
