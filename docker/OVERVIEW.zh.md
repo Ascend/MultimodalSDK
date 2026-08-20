@@ -40,8 +40,8 @@ Tag 遵循以下格式：
 
 | Tag                                | Dockerfile                                                   |
 | ---------------------------------- | ------------------------------------------------------------ |
-| `26.1.0-vllm_cann9.1.0-torch_npu2.6.0.post5-910b-openeuler24.03-py3.12-aarch64`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
-| `26.1.0-vllm_cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
+| `26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-openeuler24.03-py3.12-aarch64`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
+| `26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
 
 ---
 
@@ -87,7 +87,7 @@ docker exec -it multimodal_container bash
 ### 如何二次开发
 
 ```bash
-FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-vllm_cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64
+FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64
 
 RUN apt update -y && \
     ...
