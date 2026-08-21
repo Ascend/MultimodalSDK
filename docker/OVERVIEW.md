@@ -104,14 +104,6 @@ RUN apt update -y && \
 
 ---
 
-## Supported Hardware
-
-| Product Examples                | Architecture   |
-| ------------------------------- | -------------- |
-| Atlas 800I A2                   | ARM64|
-
----
-
 ## License
 
 View the [license information](https://github.com/Ascend/cann-container-image/blob/main/LICENSE) for CANN and MindSeries software included in these images.

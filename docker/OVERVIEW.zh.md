@@ -103,12 +103,6 @@ MultimodalSDK 提供丰富的示例代码，帮助开发者快速上手。您可
 
 - [MultimodalSDK 示例代码](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docs/zh/02_quickstart/quickstart.md)
 
-## 支持的硬件
-
-| 产品型号                       | 架构           |
-| ------------------------------- | -------------- |
-| Atlas 800I A2                   | ARM64 |
-
 ---
 
 ## 许可证
