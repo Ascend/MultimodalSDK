@@ -1,19 +1,19 @@
 /*
-* -------------------------------------------------------------------------
-*  This file is part of the MultimodalSDK project.
-* Copyright (c) 2025 Huawei Technologies Co.,Ltd.
-*
-* MultimodalSDK is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*
-*           http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-* See the Mulan PSL v2 for more details.
-* -------------------------------------------------------------------------
+ * -------------------------------------------------------------------------
+ *  This file is part of the MultimodalSDK project.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * MultimodalSDK is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *           http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ * -------------------------------------------------------------------------
  * Description: Image header file.
  * Author: ACC SDK
  * Create: 2025
@@ -23,19 +23,23 @@
 #define IMAGE_H
 
 #include <vector>
-#include "acc/tensor/Tensor.h"
+
 #include "acc/ErrorCode.h"
 #include "acc/image/ImageFormat.h"
+#include "acc/tensor/Tensor.h"
 
-namespace Acc {
+namespace Acc
+{
 
-class Image {
-public:
+class Image
+{
+   public:
     /**
      * @brief Construct a new Image object
      *
      */
     Image() = default;
+
     /**
      * @brief Destroy a new Image object
      *
@@ -56,6 +60,16 @@ public:
      * @return Image& self Image
      */
     Image& operator=(const Image& other) = default;
+
+    /**
+     * @brief Move constructor: enables efficient transfer of image resources
+     */
+    Image(Image&&) = default;
+
+    /**
+     * @brief Move assignment operator: enables efficient transfer from another image
+     */
+    Image& operator=(Image&&) = default;
 
     /**
      * @brief Construct a new Image object from raw ptr
@@ -151,11 +165,11 @@ public:
      */
     Tensor& GetTensor() const;
 
-private:
+   private:
     // mutable to modify tensor in const function
     mutable Tensor tensor_;
     ImageFormat format_ = ImageFormat::UNDEFINED;
     std::vector<size_t> size_ = {};
 };
-} // namespace Acc
-#endif // IMAGE_H
+}  // namespace Acc
+#endif  // IMAGE_H
