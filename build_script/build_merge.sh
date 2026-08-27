@@ -99,13 +99,44 @@ if [[ "${1:-}" == "test" ]]; then
     ./build.sh test || exit 1
     export GTEST_HOME="${ACC_SDK_ROOT_DIR}/acc_data/3rdparty/gtest/googletest/build/googletest"
     export LD_LIBRARY_PATH="${ACC_SDK_ROOT_DIR}/acc_data/3rdparty/gtest/googletest/build/lib/:${LD_LIBRARY_PATH}"
-    cd ../build
-    make test || TEST_RC=$?
-    cat ./Testing/Temporary/LastTest.log
+    BUILD_DIR="${ACC_SDK_ROOT_DIR}/build"
+    cd "$BUILD_DIR"
+    # Determine parallel level for tests: use PARALLEL_LEVEL if set, else auto-detect
+    TEST_RC=""
+    if [ -z "${PARALLEL_LEVEL:-}" ]; then
+        # Auto-detect number of CPUs
+        if command -v nproc >/dev/null 2>&1; then
+            total_cpus=$(nproc) || total_cpus=""
+            # Use half of available CPUs to avoid resource contention and OOM
+            # Use expr for maximum shell compatibility, || fallback if expr fails
+            PARALLEL_LEVEL=$(expr \( $total_cpus + 1 \) / 2) || PARALLEL_LEVEL=8
+        else
+            PARALLEL_LEVEL=8
+        fi
+    fi
+    # Ensure minimum 1, reasonable maximum 16 (extra safety)
+    if ! echo "$PARALLEL_LEVEL" | grep -qE '^[0-9]+$'; then
+        PARALLEL_LEVEL=8
+    fi
+    if [ "$PARALLEL_LEVEL" -lt 1 ]; then
+        PARALLEL_LEVEL=1
+    fi
+    if [ "$PARALLEL_LEVEL" -gt 16 ]; then
+        PARALLEL_LEVEL=16
+    fi
+    echo ">>> Running tests with PARALLEL_LEVEL=$PARALLEL_LEVEL (half of total CPUs for resource safety)"
+    # Use ctest directly for better parallel control
+    # Let ctest generate unified JUnit report to avoid concurrent write to same xml by individual tests
+    ctest -j "$PARALLEL_LEVEL" --output-on-failure --output-junit test_detail.xml || TEST_RC=$?
+    if [ -f "$BUILD_DIR/Testing/Temporary/LastTest.log" ]; then
+        cat "$BUILD_DIR/Testing/Temporary/LastTest.log"
+    else
+        echo "Warning: LastTest.log not found at $BUILD_DIR/Testing/Temporary/LastTest.log"
+    fi
     if [ -n "${TEST_RC:-}" ]; then
         exit $TEST_RC
     fi
-    cd ../build_script && bash gen_report.sh && python3 testcases_xml_report.py ../test coverage-report
+    cd "${SCRIPT_DIR}" && bash gen_report.sh && python3 testcases_xml_report.py ../test coverage-report
 else
     ./build.sh || exit 1
 fi
