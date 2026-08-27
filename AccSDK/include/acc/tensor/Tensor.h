@@ -1,19 +1,19 @@
 /*
-* -------------------------------------------------------------------------
-*  This file is part of the MultimodalSDK project.
-* Copyright (c) 2025 Huawei Technologies Co.,Ltd.
-*
-* MultimodalSDK is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*
-*           http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-* See the Mulan PSL v2 for more details.
-* -------------------------------------------------------------------------
+ * -------------------------------------------------------------------------
+ *  This file is part of the MultimodalSDK project.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * MultimodalSDK is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *           http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ * -------------------------------------------------------------------------
  * Description: Tensor.
  * Author: ACC SDK
  * Create: 2025
@@ -25,13 +25,15 @@
 #include <memory>
 #include <stdexcept>
 #include <vector>
+
 #include "acc/ErrorCode.h"
 #include "acc/tensor/TensorDataType.h"
 
 constexpr size_t ONE_BYTE = 1;
 constexpr size_t FOUR_BYTE = 4;
 
-namespace Acc {
+namespace Acc
+{
 /**
  * @brief Get the Byte Size object
  *
@@ -40,16 +42,20 @@ namespace Acc {
  */
 constexpr size_t GetByteSize(DataType type)
 {
-    if (type == DataType::INT8 || type == DataType::UINT8) {
+    if (type == DataType::INT8 || type == DataType::UINT8)
+    {
         return ONE_BYTE;
-    } else if (type == DataType::FLOAT32) {
+    }
+    else if (type == DataType::FLOAT32)
+    {
         return FOUR_BYTE;
     }
     throw std::runtime_error("Unsupported DataType.");
 }
 
-class Tensor {
-public:
+class Tensor
+{
+   public:
     /**
      * @brief Construct a new Tensor object
      *
@@ -73,6 +79,20 @@ public:
      * @return Tensor& self tensor
      */
     Tensor& operator=(const Tensor& other) = default;
+
+    /**
+     * @brief Move constructor: enables efficient transfer of tensor resources
+     *
+     * @param other Input tensor to move from
+     */
+    Tensor(Tensor&& other) = default;
+    /**
+     * @brief Move assignment operation
+     *
+     * @param other Input tensor
+     * @return Tensor& self tensor
+     */
+    Tensor& operator=(Tensor&& other) = default;
     /**
      * @brief Construct a new Tensor object
      *
@@ -158,7 +178,7 @@ public:
      */
     TensorAuxInfo AuxInfo() const;
 
-private:
+   private:
     /**
      * @brief Fill in auxiliary information in tensor constructor
      *
@@ -170,7 +190,7 @@ private:
      */
     void CheckTensorParams();
 
-private:
+   private:
     int32_t deviceId_ = -1;
     std::vector<size_t> shape_ = {};
     DataType dataType_ = DataType::FLOAT32;
@@ -179,5 +199,5 @@ private:
     std::string device_ = "cpu";
     TensorAuxInfo auxInfo_ = {};
 };
-} // namespace Acc
-#endif // TENSOR_H
+}  // namespace Acc
+#endif  // TENSOR_H

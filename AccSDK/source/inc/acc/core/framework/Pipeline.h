@@ -1,39 +1,42 @@
 /*
-* -------------------------------------------------------------------------
-*  This file is part of the MultimodalSDK project.
-* Copyright (c) 2025 Huawei Technologies Co.,Ltd.
-*
-* MultimodalSDK is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*
-*           http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-* See the Mulan PSL v2 for more details.
-* -------------------------------------------------------------------------
-* Description: Definition of Pipeline API.
-* Author: ACC SDK
-* Create: 2025
-* History: NA
-*/
+ * -------------------------------------------------------------------------
+ *  This file is part of the MultimodalSDK project.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * MultimodalSDK is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *           http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ * -------------------------------------------------------------------------
+ * Description: Definition of Pipeline API.
+ * Author: ACC SDK
+ * Create: 2025
+ * History: NA
+ */
 
 #ifndef PIPELINE_H
 #define PIPELINE_H
 
-#include <string>
-#include <vector>
 #include <memory>
+#include <string>
 #include <unordered_map>
-#include "accdata_pipeline.h"
-#include "accdata_op_spec.h"
-#include "acc/tensor/Tensor.h"
+#include <vector>
 
-namespace Acc {
-class Pipeline {
-public:
+#include "acc/tensor/Tensor.h"
+#include "accdata_op_spec.h"
+#include "accdata_pipeline.h"
+
+namespace Acc
+{
+class Pipeline
+{
+   public:
     /**
      * @brief Construct a new Pipeline object
      *
@@ -41,12 +44,6 @@ public:
      * @param enableFusion Whether to enable cpu operator fusion
      */
     explicit Pipeline(int numThreads = 1, bool enableFusion = true);
-
-    /**
-     * @brief Destroy a Pipeline object
-     *
-     */
-    ~Pipeline() = default;
 
     /**
      * @brief Build the pipeline based on operator specification and output
@@ -66,8 +63,8 @@ public:
      */
     ErrorCode Run(const std::unordered_map<std::string, std::vector<Tensor>> &inputs, Tensor &output, bool copy);
 
-private:
+   private:
     std::shared_ptr<acclib::accdata::AccDataPipeline> pipeline_;
 };
-} // namespace Acc
-#endif // PIPELINE_H
+}  // namespace Acc
+#endif  // PIPELINE_H

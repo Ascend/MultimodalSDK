@@ -1,36 +1,38 @@
 /*
-* -------------------------------------------------------------------------
-*  This file is part of the MultimodalSDK project.
-* Copyright (c) 2025 Huawei Technologies Co.,Ltd.
-*
-* MultimodalSDK is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*
-*           http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-* See the Mulan PSL v2 for more details.
-* -------------------------------------------------------------------------
+ * -------------------------------------------------------------------------
+ *  This file is part of the MultimodalSDK project.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * MultimodalSDK is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *           http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ * -------------------------------------------------------------------------
  * Description: Resize op on cpu.
  * Author: ACC SDK
  * Create: 2025
  * History: NA
  */
 
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <thread>
-#include "acc/core/framework/CPUAccelerator.h"
+
 #include "acc/ErrorCode.h"
+#include "acc/core/framework/CPUAccelerator.h"
+#include "acc/utils/ErrorCodeUtils.h"
 #include "acc/utils/LogImpl.h"
 #include "acc/utils/ThreadPool.h"
-#include "acc/utils/ErrorCodeUtils.h"
 using namespace Acc;
 
-namespace {
+namespace
+{
 constexpr size_t INDEX_ZERO = 0;
 constexpr size_t INDEX_ONE = 1;
 constexpr size_t INDEX_TWO = 2;
@@ -111,21 +113,21 @@ uint8_t g_clampLookups[1280] = {
 uint8_t* g_clampLookupsHalf = &g_clampLookups[640];
 
 // Limit the given value to the specified range
-inline uint8_t ClampToUint8(int in)
-{
-    return g_clampLookupsHalf[in >> PRECISION_BITS];
-}
+inline uint8_t ClampToUint8(int in) { return g_clampLookupsHalf[in >> PRECISION_BITS]; }
 
 // Calculate weights based on distance
 inline double BicubicFilter(double x)
 {
-    if (x < 0.0) {
+    if (x < 0.0)
+    {
         x = -x;
     }
-    if (x < 1.0) {
+    if (x < 1.0)
+    {
         return ((BICUBICPARAM_A + DOUBLE_TWO) * x - (BICUBICPARAM_A + DOUBLE_THREE)) * x * x + 1;
     }
-    if (x < DOUBLE_TWO) {
+    if (x < DOUBLE_TWO)
+    {
         return (((x - DOUBLE_FIVE) * x + DOUBLE_EIGHT) * x - DOUBLE_FOUR) * BICUBICPARAM_A;
     }
     return 0.0;
@@ -145,33 +147,40 @@ void PreComputeCoefficient(size_t srcSize, size_t dstSize, size_t& kernelSize, s
     bounds.resize(dstSize * SIZE_T_TWO);
     // each dst pixel needs kernelSize interpolation coefficients.
     kernelCoefficient.resize(dstSize * kernelSize, 0.0);
-    for (size_t xx = 0; xx < dstSize; ++xx) {
+    for (size_t xx = 0; xx < dstSize; ++xx)
+    {
         double center = (xx + DOUBLE_HALF) * resizeRatio;
         double inverseScale = 1.0 / filterScale;
         int xmin = static_cast<int>(center - radius + DOUBLE_HALF);
-        if (xmin < 0) {
+        if (xmin < 0)
+        {
             xmin = 0;
         }
         int xmax = static_cast<int>(center + radius + DOUBLE_HALF);
-        if (xmax > static_cast<int>(srcSize)) {
+        if (xmax > static_cast<int>(srcSize))
+        {
             xmax = static_cast<int>(srcSize);
         }
         int validWidth = xmax - xmin;
         double* k = &kernelCoefficient[xx * kernelSize];
         double ww = 0.0;
-        for (int x = 0; x < validWidth; ++x) {
+        for (int x = 0; x < validWidth; ++x)
+        {
             double weight = BicubicFilter((x + xmin - center + DOUBLE_HALF) * inverseScale);
             k[x] = weight;
             ww += weight;
         }
-        if (std::abs(ww) > DOUBLE_EPS) {
+        if (std::abs(ww) > DOUBLE_EPS)
+        {
             // normalize
-            for (int x = 0; x < validWidth; ++x) {
+            for (int x = 0; x < validWidth; ++x)
+            {
                 k[x] /= ww;
             }
         }
         // in case validWidth smaller than kernelSize
-        for (int x = validWidth; x < static_cast<int>(kernelSize); ++x) {
+        for (int x = validWidth; x < static_cast<int>(kernelSize); ++x)
+        {
             k[x] = 0.0;
         }
         bounds[xx * INT_TWO + 0] = xmin;
@@ -184,11 +193,15 @@ void NormalizeCoefficientVector(const std::vector<double>& kernelCoeIn, std::vec
 {
     kernelCoeOut.resize(kernelCoeIn.size());
 
-    for (size_t x = 0; x < kernelCoeIn.size(); x++) {
+    for (size_t x = 0; x < kernelCoeIn.size(); x++)
+    {
         // Add or subtract 0.5 to round off
-        if (kernelCoeIn[x] < 0.0) {
+        if (kernelCoeIn[x] < 0.0)
+        {
             kernelCoeOut[x] = static_cast<long>(DOUBLE_HALF_NEGATIVE + kernelCoeIn[x] * (DOUBLE_SCALE));
-        } else {
+        }
+        else
+        {
             kernelCoeOut[x] = static_cast<long>(DOUBLE_HALF + kernelCoeIn[x] * (DOUBLE_SCALE));
         }
     }
@@ -197,7 +210,8 @@ void NormalizeCoefficientVector(const std::vector<double>& kernelCoeIn, std::vec
 void ComputeHorizontalSum(int widthBoundsEnd, const std::vector<long>& kernelCoeHorizNormalized, int& coeIndexHorizBase,
                           int& srcIndexBase, uint8_t* srcPtr, int& ss0, int& ss1, int& ss2)
 {
-    for (int x = 0; x < widthBoundsEnd; x++) {
+    for (int x = 0; x < widthBoundsEnd; x++)
+    {
         const long coeHoriz = kernelCoeHorizNormalized[coeIndexHorizBase];
         ss0 += srcPtr[srcIndexBase + INDEX_ZERO] * coeHoriz;
         ss1 += srcPtr[srcIndexBase + INDEX_ONE] * coeHoriz;
@@ -215,10 +229,12 @@ void Process(const std::vector<int>& boundsVert, const std::vector<int>& boundsH
     const int initialBias = 1 << (PRECISION_BITS - 1);
     const int srcWidthStride = static_cast<int>(srcWidth) * INT_THREE;
     const int dstWidthStride = static_cast<int>(dstWidth) * INT_THREE;
-    for (int yy = startRow; yy < endRow; yy++) {
+    for (int yy = startRow; yy < endRow; yy++)
+    {
         int heightBoundsStart = boundsVert[yy * INT_TWO + 0];
         int heightBoundsEnd = boundsVert[yy * INT_TWO + 1];
-        for (int xx = 0; xx < static_cast<int>(dstWidth); xx++) {
+        for (int xx = 0; xx < static_cast<int>(dstWidth); xx++)
+        {
             int widthBoundsStart = boundsHoriz[xx * INT_TWO + 0];
             int widthBoundsEnd = boundsHoriz[xx * INT_TWO + 1];
             int widthBoundsStride = widthBoundsStart * INT_THREE;
@@ -226,7 +242,8 @@ void Process(const std::vector<int>& boundsVert, const std::vector<int>& boundsH
             int t1 = initialBias;
             int t2 = initialBias;
             int coeIndexVertBase = yy * kernelSizeH;
-            for (int y = 0; y < heightBoundsEnd; y++) {
+            for (int y = 0; y < heightBoundsEnd; y++)
+            {
                 int ss0 = initialBias;
                 int ss1 = initialBias;
                 int ss2 = initialBias;
@@ -267,7 +284,8 @@ void ResizeCalculate(const Tensor& src, Tensor& dst, int kernelSizeH, int kernel
     int rowsPerThread = static_cast<int>(dstHeight) / static_cast<int>(threadNum);
     int extraRows = static_cast<int>(dstHeight) % static_cast<int>(threadNum);
     auto& instance = ThreadPool::GetInstance();
-    for (size_t t = 0; t < threadNum; ++t) {
+    for (size_t t = 0; t < threadNum; ++t)
+    {
         int startRow = static_cast<int>(t) * rowsPerThread;
         int endRow = (t == threadNum - 1) ? (startRow + rowsPerThread + extraRows) : (startRow + rowsPerThread);
         futures.push_back(instance.Submit(Process, boundsVert, boundsHoriz, dstPtr, srcPtr, kernelCoeHorizNormalized,
@@ -276,9 +294,10 @@ void ResizeCalculate(const Tensor& src, Tensor& dst, int kernelSizeH, int kernel
     }
     instance.WaitAll(futures);
 }
-} // namespace
+}  // namespace
 
-namespace Acc {
+namespace Acc
+{
 ErrorCode CPUAccelerator::Resize(ResizeContext& opCtx)
 {
     std::vector<int> boundsHoriz;
@@ -292,12 +311,15 @@ ErrorCode CPUAccelerator::Resize(ResizeContext& opCtx)
     auto srcShape = src.Shape();
 
     ErrorCode ret = SUCCESS;
-    try {
+    try
+    {
         PreComputeCoefficient(srcShape[INDEX_ONE], opCtx.resizedH, kernelSizeH, boundsVert, kernelCoefficientVert);
         PreComputeCoefficient(srcShape[INDEX_TWO], opCtx.resizedW, kernelSizeW, boundsHoriz, kernelCoefficientHoriz);
         ResizeCalculate(src, dst, kernelSizeH, kernelSizeW, boundsHoriz, kernelCoefficientHoriz, boundsVert,
                         kernelCoefficientVert);
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e)
+    {
         LogDebug << "There is a problem with the thread pool used in ResizeOnCpu."
                  << GetErrorInfo(ERR_INVALID_THREAD_POOL_STATUST);
         ret = ERR_INVALID_THREAD_POOL_STATUST;
@@ -305,4 +327,4 @@ ErrorCode CPUAccelerator::Resize(ResizeContext& opCtx)
 
     return ret;
 }
-} // namespace Acc
+}  // namespace Acc

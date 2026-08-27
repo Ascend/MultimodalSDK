@@ -1,19 +1,19 @@
 /*
-* -------------------------------------------------------------------------
-*  This file is part of the MultimodalSDK project.
-* Copyright (c) 2025 Huawei Technologies Co.,Ltd.
-*
-* MultimodalSDK is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*
-*           http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-* See the Mulan PSL v2 for more details.
-* -------------------------------------------------------------------------
+ * -------------------------------------------------------------------------
+ *  This file is part of the MultimodalSDK project.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * MultimodalSDK is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *           http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ * -------------------------------------------------------------------------
  * Description: Head file for operator base check.
  * Author: ACC SDK
  * Create: 2025
@@ -23,23 +23,27 @@
 #ifndef OPS_BASE_CHECK_H
 #define OPS_BASE_CHECK_H
 
-#include <variant>
 #include <unordered_map>
+#include <variant>
+
+#include "acc/ErrorCode.h"
+#include "acc/core/framework/OperatorContext.h"
+#include "acc/core/framework/OperatorIndex.h"
 #include "acc/tensor/Tensor.h"
 #include "acc/tensor/TensorOps.h"
-#include "acc/core/framework/OperatorIndex.h"
-#include "acc/core/framework/OperatorContext.h"
-#include "acc/ErrorCode.h"
 
-namespace Acc {
+namespace Acc
+{
 // Range constraint type
-struct RangeConstraint {
+struct RangeConstraint
+{
     int minVal = -1;
     int maxVal = -1;
 };
 
 // Enumerated constraint type
-struct EnumeratedConstraint {
+struct EnumeratedConstraint
+{
     std::vector<int> values = {};
 };
 
@@ -47,7 +51,8 @@ struct EnumeratedConstraint {
 using DimensionConstraint = std::variant<RangeConstraint, EnumeratedConstraint>;
 
 // Constraint type for a single tensor
-struct TensorConstraint {
+struct TensorConstraint
+{
     std::string device;
     std::vector<DataType> dataTypes;
     std::vector<TensorFormat> formats;
@@ -55,13 +60,15 @@ struct TensorConstraint {
 };
 
 // Tensor constraints for a single operator
-struct OperatorTensorConstraints {
+struct OperatorTensorConstraints
+{
     std::vector<TensorConstraint> inputConstraints;
     std::vector<TensorConstraint> outputConstraints;
 };
 
-class OpsBaseChecker {
-public:
+class OpsBaseChecker
+{
+   public:
     /**
      * @brief Construct a new Ops Base Checker object
      *
@@ -73,6 +80,28 @@ public:
      *
      */
     virtual ~OpsBaseChecker() = default;
+
+    /**
+     * @brief Default constructor: creates an empty OpsBaseChecker
+     */
+    OpsBaseChecker() = default;
+    /**
+     * @brief Copy constructor: performs member-wise copy
+     */
+    OpsBaseChecker(const OpsBaseChecker&) = default;
+    /**
+     * @brief Copy assignment operator: assigns from another OpsBaseChecker
+     */
+    OpsBaseChecker& operator=(const OpsBaseChecker&) = default;
+    /**
+     * @brief Move constructor: enables efficient transfer of resources
+     */
+    OpsBaseChecker(OpsBaseChecker&&) = default;
+    /**
+     * @brief Move assignment operator: enables efficient transfer from another checker
+     */
+    OpsBaseChecker& operator=(OpsBaseChecker&&) = default;
+
     /**
      * @brief Initiates validation and implicit memory allocation
      *
@@ -81,7 +110,7 @@ public:
      */
     ErrorCode CheckAndImplicitMalloc(const OperatorContext& ctx);
 
-protected:
+   protected:
     /**
      * @brief Iterate over each tensor to verify that individual tensors meet the constraints
      *
@@ -132,10 +161,10 @@ protected:
      */
     ErrorCode CheckTensorAttributes(const Tensor& tensor, const TensorConstraint& tensorConstraint) const;
 
-protected:
+   protected:
     OperatorId opId_;
     // Identifies whether the output is pre-assigned
     std::vector<bool> outputMallocFlags_;
 };
-} // namespace Acc
-#endif // OPS_BASE_CHECK_H
+}  // namespace Acc
+#endif  // OPS_BASE_CHECK_H
