@@ -36,6 +36,7 @@ namespace
 constexpr size_t INDEX_ZERO = 0;
 constexpr size_t INDEX_ONE = 1;
 constexpr size_t INDEX_TWO = 2;
+constexpr size_t INDEX_THREE = 3;
 constexpr double BICUBICPARAM_A = -0.5;
 constexpr int PRECISION_BITS = 22;
 constexpr int INT_TWO = 2;
@@ -221,14 +222,109 @@ void ComputeHorizontalSum(int widthBoundsEnd, const std::vector<long>& kernelCoe
     }
 }
 
-void Process(const std::vector<int>& boundsVert, const std::vector<int>& boundsHoriz, uint8_t* dstPtr, uint8_t* srcPtr,
-             const std::vector<long>& kernelCoeHorizNormalized, const std::vector<long>& kernelCoeVertNormalized,
-             size_t srcWidth, size_t dstWidth, int kernelSizeH, int kernelSizeW, int startRow, int endRow)
+/**
+ * @brief NHWC 格式的 Bicubic 插值核心计算
+ * @param boundsVert 纵向边界信息，boundsVert[yy*2] = ymin, boundsVert[yy*2+1] = validHeight
+ * @param boundsHoriz 横向边界信息，boundsHoriz[xx*2] = xmin, boundsHoriz[xx*2+1] = validWidth
+ * @param dstPtr 输出图像指针
+ * @param srcPtr 输入图像指针
+ * @param kernelCoeHorizNormalized 横向插值系数 (long, 已归一化)
+ * @param kernelCoeVertNormalized 纵向插值系数 (long, 已归一化)
+ * @param srcWidth 输入图像宽度
+ * @param dstWidth 输出图像宽度
+ * @param kernelSizeH 纵向核大小
+ * @param kernelSizeW 横向核大小
+ * @param startRow 当前线程处理的起始行
+ * @param endRow 当前线程处理的结束行（不包含）
+ *
+ * NHWC 内存布局: [R,G,B,R,G,B,...] 每 3 字节为一个像素
+ */
+void ProcessNHWC(const std::vector<int>& boundsVert, const std::vector<int>& boundsHoriz, uint8_t* dstPtr,
+                 uint8_t* srcPtr, const std::vector<long>& kernelCoeHorizNormalized,
+                 const std::vector<long>& kernelCoeVertNormalized, size_t srcWidth, size_t dstWidth, int kernelSizeH,
+                 int kernelSizeW, int startRow, int endRow)
 {
-    // Iterate through each target point and calculate the pixel value
+    // initialBias 用于四舍五入，等于 2^(PRECISION_BITS-1)
     const int initialBias = 1 << (PRECISION_BITS - 1);
+    // NHWC stride: 每行 = width * 3 (RGB 三个通道)
     const int srcWidthStride = static_cast<int>(srcWidth) * INT_THREE;
     const int dstWidthStride = static_cast<int>(dstWidth) * INT_THREE;
+
+    // 遍历输出图像的每个像素 (yy: 行, xx: 列)
+    for (int yy = startRow; yy < endRow; yy++)
+    {
+        int heightBoundsStart = boundsVert[yy * INT_TWO + 0];  // 源图像纵向起始位置
+        int heightBoundsEnd = boundsVert[yy * INT_TWO + 1];    // 有效高度
+        for (int xx = 0; xx < static_cast<int>(dstWidth); xx++)
+        {
+            int widthBoundsStart = boundsHoriz[xx * INT_TWO + 0];  // 源图像横向起始位置
+            int widthBoundsEnd = boundsHoriz[xx * INT_TWO + 1];    // 有效宽度
+
+            // 三个通道的累加器，初始值为 bias
+            int t0 = initialBias;
+            int t1 = initialBias;
+            int t2 = initialBias;
+            int coeIndexVertBase = yy * kernelSizeH;
+
+            // 纵向循环：遍历 kernel 覆盖的源图像行
+            for (int y = 0; y < heightBoundsEnd; y++)
+            {
+                int ss0 = initialBias;
+                int ss1 = initialBias;
+                int ss2 = initialBias;
+                int srcIndexBase = ((y + heightBoundsStart) * srcWidthStride + widthBoundsStart * INT_THREE);
+                int coeIndexHorizBase = xx * kernelSizeW;
+                // 横向求和：一次性处理 RGB 三个通道
+                ComputeHorizontalSum(widthBoundsEnd, kernelCoeHorizNormalized, coeIndexHorizBase, srcIndexBase, srcPtr,
+                                     ss0, ss1, ss2);
+                // 乘以纵向权重并累加
+                const long coeVert = kernelCoeVertNormalized[coeIndexVertBase + y];
+                t0 += ClampToUint8(ss0) * coeVert;
+                t1 += ClampToUint8(ss1) * coeVert;
+                t2 += ClampToUint8(ss2) * coeVert;
+            }
+            // 写回输出像素的 RGB 值
+            int dstIndex = (yy * dstWidthStride + xx * INT_THREE);
+            dstPtr[dstIndex + INDEX_ZERO] = ClampToUint8(t0);  // R
+            dstPtr[dstIndex + INDEX_ONE] = ClampToUint8(t1);   // G
+            dstPtr[dstIndex + INDEX_TWO] = ClampToUint8(t2);   // B
+        }
+    }
+}
+
+/**
+ * @brief NCHW 格式的 Bicubic 插值核心计算
+ * @param boundsVert 纵向边界信息
+ * @param boundsHoriz 横向边界信息
+ * @param dstPtr 输出图像指针 (指向当前 batch 的起始位置)
+ * @param srcPtr 输入图像指针 (指向当前 batch 的起始位置)
+ * @param kernelCoeHorizNormalized 横向插值系数 (long)
+ * @param kernelCoeVertNormalized 纵向插值系数 (long)
+ * @param srcWidth 输入图像宽度
+ * @param srcHeight 输入图像高度
+ * @param channelNum 通道数 (通常为 3)
+ * @param dstWidth 输出图像宽度
+ * @param dstHeight 输出图像高度
+ * @param kernelSizeH 纵向核大小
+ * @param kernelSizeW 横向核大小
+ * @param startRow 当前线程处理的起始行
+ * @param endRow 当前线程处理的结束行
+ *
+ * NCHW 内存布局: [R,R,R,..., G,G,G,..., B,B,B,...] 同通道像素连续
+ */
+void ProcessNCHW(const std::vector<int>& boundsVert, const std::vector<int>& boundsHoriz, uint8_t* dstPtr,
+                 uint8_t* srcPtr, const std::vector<long>& kernelCoeHorizNormalized,
+                 const std::vector<long>& kernelCoeVertNormalized, size_t srcWidth, size_t srcHeight, size_t channelNum,
+                 size_t dstWidth, size_t dstHeight, int kernelSizeH, int kernelSizeW, int startRow, int endRow)
+{
+    const int initialBias = 1 << (PRECISION_BITS - 1);
+    // NCHW stride: 每行 = width, 每个通道 = width * height
+    const int srcWidthStride = static_cast<int>(srcWidth);
+    const int srcChannelStride = static_cast<int>(srcWidth) * static_cast<int>(srcHeight);
+    const int dstWidthStride = static_cast<int>(dstWidth);
+    const int dstChannelStride = static_cast<int>(dstWidth) * static_cast<int>(dstHeight);
+
+    // 遍历输出图像的每个像素
     for (int yy = startRow; yy < endRow; yy++)
     {
         int heightBoundsStart = boundsVert[yy * INT_TWO + 0];
@@ -237,86 +333,246 @@ void Process(const std::vector<int>& boundsVert, const std::vector<int>& boundsH
         {
             int widthBoundsStart = boundsHoriz[xx * INT_TWO + 0];
             int widthBoundsEnd = boundsHoriz[xx * INT_TWO + 1];
-            int widthBoundsStride = widthBoundsStart * INT_THREE;
-            int t0 = initialBias;
-            int t1 = initialBias;
-            int t2 = initialBias;
-            int coeIndexVertBase = yy * kernelSizeH;
-            for (int y = 0; y < heightBoundsEnd; y++)
+
+            // 遍历每个通道 (R, G, B 分别处理)
+            for (size_t c = 0; c < channelNum; c++)
             {
-                int ss0 = initialBias;
-                int ss1 = initialBias;
-                int ss2 = initialBias;
-                int srcIndexBase = ((y + heightBoundsStart) * srcWidthStride + widthBoundsStride);
+                int tc = initialBias;
+                int coeIndexVertBase = yy * kernelSizeH;
+
+                // 横向系数起始索引（放在纵向循环外）
                 int coeIndexHorizBase = xx * kernelSizeW;
-                ComputeHorizontalSum(widthBoundsEnd, kernelCoeHorizNormalized, coeIndexHorizBase, srcIndexBase, srcPtr,
-                                     ss0, ss1, ss2);
-                const long coeVert = kernelCoeVertNormalized[coeIndexVertBase + y];
-                t0 += ClampToUint8(ss0) * coeVert;
-                t1 += ClampToUint8(ss1) * coeVert;
-                t2 += ClampToUint8(ss2) * coeVert;
+
+                // 纵向循环
+                for (int y = 0; y < heightBoundsEnd; y++)
+                {
+                    int sc = initialBias;
+                    // 当前通道的起始位置 = 通道号 * 通道大小 + 行偏移 + 列偏移
+                    int srcIndexBase =
+                        c * srcChannelStride + (y + heightBoundsStart) * srcWidthStride + widthBoundsStart;
+
+                    // 横向循环：同通道内相邻像素连续
+                    for (int x = 0; x < widthBoundsEnd; x++)
+                    {
+                        const long coeHoriz = kernelCoeHorizNormalized[coeIndexHorizBase + x];
+                        sc += srcPtr[srcIndexBase + x] * coeHoriz;
+                    }
+                    const long coeVert = kernelCoeVertNormalized[coeIndexVertBase + y];
+                    tc += ClampToUint8(sc) * coeVert;
+                }
+                // 写入当前通道的像素值
+                int dstIndex = c * dstChannelStride + yy * dstWidthStride + xx;
+                dstPtr[dstIndex] = ClampToUint8(tc);
             }
-            int dstIndex = (yy * dstWidthStride + xx * INT_THREE);
-            dstPtr[dstIndex + INDEX_ZERO] = ClampToUint8(t0);
-            dstPtr[dstIndex + INDEX_ONE] = ClampToUint8(t1);
-            dstPtr[dstIndex + INDEX_TWO] = ClampToUint8(t2);
         }
     }
-};
+}
 
-void ResizeCalculate(const Tensor& src, Tensor& dst, int kernelSizeH, int kernelSizeW,
-                     const std::vector<int>& boundsHoriz, const std::vector<double>& kernelCoefficientHoriz,
-                     const std::vector<int>& boundsVert, const std::vector<double>& kernelCoefficientVert)
+/**
+ * @brief NHWC 格式的 Resize 计算入口
+ * @param src 输入张量，shape: [N, H, W, C]
+ * @param dst 输出张量，shape: [N, resizedH, resizedW, C]
+ * @param kernelSizeH 纵向插值核大小
+ * @param kernelSizeW 横向插值核大小
+ * @param boundsHoriz 横向边界信息，每个输出像素对应 {xmin, validWidth}
+ * @param kernelCoefficientHoriz 横向插值系数 (double)
+ * @param boundsVert 纵向边界信息，每个输出像素对应 {ymin, validHeight}
+ * @param kernelCoefficientVert 纵向插值系数 (double)
+ */
+void ResizeCalculateNHWC(const Tensor& src, Tensor& dst, int kernelSizeH, int kernelSizeW,
+                         const std::vector<int>& boundsHoriz, const std::vector<double>& kernelCoefficientHoriz,
+                         const std::vector<int>& boundsVert, const std::vector<double>& kernelCoefficientVert)
 {
+    // 从 Tensor 获取 shape 信息
+    // NHWC: [N, H, W, C] -> indices: [0, 1, 2, 3]
     auto srcShape = src.Shape();
-    auto srcWidth = srcShape[INDEX_TWO];
+    auto batchNum = srcShape[INDEX_ZERO];  // N
+    auto srcWidth = srcShape[INDEX_TWO];   // W
+    auto srcHeight = srcShape[INDEX_ONE];  // H
     auto dstShape = dst.Shape();
-    auto dstWidth = dstShape[INDEX_TWO];
-    auto dstHeight = dstShape[INDEX_ONE];
+    auto dstWidth = dstShape[INDEX_TWO];   // W
+    auto dstHeight = dstShape[INDEX_ONE];  // H
+
+    // 将 double 系数转换为 long，提升计算性能
     std::vector<long> kernelCoeHorizNormalized;
     NormalizeCoefficientVector(kernelCoefficientHoriz, kernelCoeHorizNormalized);
     std::vector<long> kernelCoeVertNormalized;
     NormalizeCoefficientVector(kernelCoefficientVert, kernelCoeVertNormalized);
-    auto* dstPtr = static_cast<uint8_t*>(dst.Ptr());
-    auto* srcPtr = static_cast<uint8_t*>(src.Ptr());
+
+    // 获取数据指针
+    auto* dstBasePtr = static_cast<uint8_t*>(dst.Ptr());
+    auto* srcBasePtr = static_cast<uint8_t*>(src.Ptr());
+
+    // 计算每个 batch 的数据大小
+    // NHWC: 每个 batch = H * W * 3 (通道数固定为 3)
+    size_t srcBatchStride = srcHeight * srcWidth * INT_THREE;
+    size_t dstBatchStride = dstHeight * dstWidth * INT_THREE;
+
+    // 线程池并行
     auto threadNum = RESIZE_DEFAULT_THREAD_NUMS;
-    std::vector<std::future<void>> futures;
-    int rowsPerThread = static_cast<int>(dstHeight) / static_cast<int>(threadNum);
-    int extraRows = static_cast<int>(dstHeight) % static_cast<int>(threadNum);
     auto& instance = ThreadPool::GetInstance();
-    for (size_t t = 0; t < threadNum; ++t)
+
+    // 遍历每个 batch
+    for (size_t n = 0; n < batchNum; ++n)
     {
-        int startRow = static_cast<int>(t) * rowsPerThread;
-        int endRow = (t == threadNum - 1) ? (startRow + rowsPerThread + extraRows) : (startRow + rowsPerThread);
-        futures.push_back(instance.Submit(Process, boundsVert, boundsHoriz, dstPtr, srcPtr, kernelCoeHorizNormalized,
-                                          kernelCoeVertNormalized, srcWidth, dstWidth, kernelSizeH, kernelSizeW,
-                                          startRow, endRow));
+        // 计算当前 batch 的起始偏移
+        uint8_t* srcPtr = srcBasePtr + n * srcBatchStride;
+        uint8_t* dstPtr = dstBasePtr + n * dstBatchStride;
+
+        // 将输出图像按行分割给多个线程处理
+        std::vector<std::future<void>> futures;
+        int rowsPerThread = static_cast<int>(dstHeight) / static_cast<int>(threadNum);
+        int extraRows = static_cast<int>(dstHeight) % static_cast<int>(threadNum);
+
+        for (size_t t = 0; t < threadNum; ++t)
+        {
+            // 计算每个线程处理的行范围
+            int startRow = static_cast<int>(t) * rowsPerThread;
+            int endRow = (t == threadNum - 1) ? (startRow + rowsPerThread + extraRows) : (startRow + rowsPerThread);
+            // 提交任务到线程池
+            futures.push_back(instance.Submit(ProcessNHWC, boundsVert, boundsHoriz, dstPtr, srcPtr,
+                                              kernelCoeHorizNormalized, kernelCoeVertNormalized, srcWidth, dstWidth,
+                                              kernelSizeH, kernelSizeW, startRow, endRow));
+        }
+        instance.WaitAll(futures);
     }
-    instance.WaitAll(futures);
 }
+
+/**
+ * @brief NCHW 格式的 Resize 计算入口
+ * @param src 输入张量，shape: [N, C, H, W]
+ * @param dst 输出张量，shape: [N, C, resizedH, resizedW]
+ * @param kernelSizeH 纵向插值核大小
+ * @param kernelSizeW 横向插值核大小
+ * @param boundsHoriz 横向边界信息，每个输出像素对应 {xmin, validWidth}
+ * @param kernelCoefficientHoriz 横向插值系数 (double)
+ * @param boundsVert 纵向边界信息，每个输出像素对应 {ymin, validHeight}
+ * @param kernelCoefficientVert 纵向插值系数 (double)
+ */
+void ResizeCalculateNCHW(const Tensor& src, Tensor& dst, int kernelSizeH, int kernelSizeW,
+                         const std::vector<int>& boundsHoriz, const std::vector<double>& kernelCoefficientHoriz,
+                         const std::vector<int>& boundsVert, const std::vector<double>& kernelCoefficientVert)
+{
+    // 从 Tensor 获取 shape 信息
+    // NCHW: [N, C, H, W] -> indices: [0, 1, 2, 3]
+    auto srcShape = src.Shape();
+    auto batchNum = srcShape[INDEX_ZERO];   // N
+    auto srcWidth = srcShape[INDEX_THREE];  // W
+    auto srcHeight = srcShape[INDEX_TWO];   // H
+    auto channelNum = srcShape[INDEX_ONE];  // C
+    auto dstShape = dst.Shape();
+    auto dstWidth = dstShape[INDEX_THREE];  // W
+    auto dstHeight = dstShape[INDEX_TWO];   // H
+
+    // 将 double 系数转换为 long，提升计算性能
+    std::vector<long> kernelCoeHorizNormalized;
+    NormalizeCoefficientVector(kernelCoefficientHoriz, kernelCoeHorizNormalized);
+    std::vector<long> kernelCoeVertNormalized;
+    NormalizeCoefficientVector(kernelCoefficientVert, kernelCoeVertNormalized);
+
+    // 获取数据指针
+    auto* dstBasePtr = static_cast<uint8_t*>(dst.Ptr());
+    auto* srcBasePtr = static_cast<uint8_t*>(src.Ptr());
+
+    // 计算每个 batch 的数据大小
+    size_t srcBatchStride = channelNum * srcHeight * srcWidth;
+    size_t dstBatchStride = channelNum * dstHeight * dstWidth;
+
+    // 线程池并行
+    auto threadNum = RESIZE_DEFAULT_THREAD_NUMS;
+    auto& instance = ThreadPool::GetInstance();
+
+    // 遍历每个 batch
+    for (size_t n = 0; n < batchNum; ++n)
+    {
+        // 计算当前 batch 的起始偏移
+        uint8_t* srcPtr = srcBasePtr + n * srcBatchStride;
+        uint8_t* dstPtr = dstBasePtr + n * dstBatchStride;
+
+        // 将输出图像按行分割给多个线程处理
+        std::vector<std::future<void>> futures;
+        int rowsPerThread = static_cast<int>(dstHeight) / static_cast<int>(threadNum);
+        int extraRows = static_cast<int>(dstHeight) % static_cast<int>(threadNum);
+
+        for (size_t t = 0; t < threadNum; ++t)
+        {
+            // 计算每个线程处理的行范围
+            int startRow = static_cast<int>(t) * rowsPerThread;
+            int endRow = (t == threadNum - 1) ? (startRow + rowsPerThread + extraRows) : (startRow + rowsPerThread);
+            // 提交任务到线程池
+            futures.push_back(instance.Submit(
+                ProcessNCHW, boundsVert, boundsHoriz, dstPtr, srcPtr, kernelCoeHorizNormalized, kernelCoeVertNormalized,
+                srcWidth, srcHeight, channelNum, dstWidth, dstHeight, kernelSizeH, kernelSizeW, startRow, endRow));
+        }
+        instance.WaitAll(futures);
+    }
+}
+
 }  // namespace
 
 namespace Acc
 {
+/**
+ * @brief Resize 算子入口
+ * @param opCtx 算子上下文，包含输入输出张量及目标尺寸
+ *
+ * 流程:
+ * 1. 检查输入输出张量维度 (必须为 4D)
+ * 2. 根据 Tensor.Format() 判断是 NCHW 还是 NHWC 格式
+ * 3. 计算 Bicubic 插值系数 (PreComputeCoefficient)
+ * 4. 调用对应的 ResizeCalculate 函数执行并行计算
+ */
 ErrorCode CPUAccelerator::Resize(ResizeContext& opCtx)
 {
-    std::vector<int> boundsHoriz;
-    std::vector<double> kernelCoefficientHoriz;
-    std::vector<int> boundsVert;
-    std::vector<double> kernelCoefficientVert;
-    size_t kernelSizeH = 0;
-    size_t kernelSizeW = 0;
+    std::vector<int> boundsHoriz;                // 横向边界: {xmin, validWidth} * dstWidth
+    std::vector<double> kernelCoefficientHoriz;  // 横向插值系数 (double)
+    std::vector<int> boundsVert;                 // 纵向边界: {ymin, validHeight} * dstHeight
+    std::vector<double> kernelCoefficientVert;   // 纵向插值系数 (double)
+    size_t kernelSizeH = 0;                      // 纵向 kernel 大小
+    size_t kernelSizeW = 0;                      // 横向 kernel 大小
+
+    // 获取输入输出张量
     const Tensor& src = opCtx.inputTensorRefs[0].get();
     Tensor& dst = opCtx.outputTensorRefs[0].get();
     auto srcShape = src.Shape();
+    auto dstShape = dst.Shape();
+
+    // 检查张量维度: Resize 只支持 4D 张量
+    if (srcShape.size() != 4 || dstShape.size() != 4)
+    {
+        LogDebug << "Resize only supports 4D tensors, src shape size: " << srcShape.size()
+                 << ", dst shape size: " << dstShape.size();
+        return ERR_INVALID_PARAM;
+    }
 
     ErrorCode ret = SUCCESS;
+    // 根据 Tensor 的 Format 属性判断数据布局
+    bool isNCHW = (src.Format() == TensorFormat::NCHW);
+
     try
     {
-        PreComputeCoefficient(srcShape[INDEX_ONE], opCtx.resizedH, kernelSizeH, boundsVert, kernelCoefficientVert);
-        PreComputeCoefficient(srcShape[INDEX_TWO], opCtx.resizedW, kernelSizeW, boundsHoriz, kernelCoefficientHoriz);
-        ResizeCalculate(src, dst, kernelSizeH, kernelSizeW, boundsHoriz, kernelCoefficientHoriz, boundsVert,
-                        kernelCoefficientVert);
+        if (isNCHW)
+        {
+            // NCHW 格式: shape[N, C, H, W]
+            // srcShape[1] = C (通道), srcShape[2] = H (高), srcShape[3] = W (宽)
+            size_t srcHeight = srcShape[INDEX_TWO];
+            size_t srcWidth = srcShape[INDEX_THREE];
+            PreComputeCoefficient(srcHeight, opCtx.resizedH, kernelSizeH, boundsVert, kernelCoefficientVert);
+            PreComputeCoefficient(srcWidth, opCtx.resizedW, kernelSizeW, boundsHoriz, kernelCoefficientHoriz);
+            ResizeCalculateNCHW(src, dst, kernelSizeH, kernelSizeW, boundsHoriz, kernelCoefficientHoriz, boundsVert,
+                                kernelCoefficientVert);
+        }
+        else
+        {
+            // NHWC 格式: shape[N, H, W, C]
+            // srcShape[1] = H (高), srcShape[2] = W (宽), srcShape[3] = C (通道)
+            size_t srcHeight = srcShape[INDEX_ONE];
+            size_t srcWidth = srcShape[INDEX_TWO];
+            PreComputeCoefficient(srcHeight, opCtx.resizedH, kernelSizeH, boundsVert, kernelCoefficientVert);
+            PreComputeCoefficient(srcWidth, opCtx.resizedW, kernelSizeW, boundsHoriz, kernelCoefficientHoriz);
+            ResizeCalculateNHWC(src, dst, kernelSizeH, kernelSizeW, boundsHoriz, kernelCoefficientHoriz, boundsVert,
+                                kernelCoefficientVert);
+        }
     }
     catch (const std::exception& e)
     {

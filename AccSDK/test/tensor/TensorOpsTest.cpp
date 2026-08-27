@@ -1,29 +1,31 @@
 /*
-* -------------------------------------------------------------------------
-*  This file is part of the MultimodalSDK project.
-* Copyright (c) 2025 Huawei Technologies Co.,Ltd.
-*
-* MultimodalSDK is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*
-*           http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-* See the Mulan PSL v2 for more details.
-* -------------------------------------------------------------------------
+ * -------------------------------------------------------------------------
+ *  This file is part of the MultimodalSDK project.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * MultimodalSDK is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *           http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ * -------------------------------------------------------------------------
  * Description: Test file of the Tensor Ops.
  * Author: ACC SDK
  * Create: 2025
  * History: NA
  */
 #include <gtest/gtest.h>
+
 #include "acc/tensor/Tensor.h"
 #include "acc/tensor/TensorOps.h"
 using namespace Acc;
-namespace {
+namespace
+{
 constexpr size_t BATCH_SIZE_ONE = 1;
 constexpr size_t BATCH_SIZE_TWO = 2;
 constexpr size_t SHAPE_1920 = 1920;
@@ -41,10 +43,15 @@ constexpr float VALID_VALUE_FLOAT_NEW = 99.0f;
 constexpr char* CPU = "cpu";
 std::vector<uint8_t> g_vector1080PUint8Value100(SHAPE_1920* SHAPE_1080* CHANNEL_THREE, VALID_VALUE);
 std::vector<uint8_t> g_vector1080PHalfUint8Value100(SHAPE_960* SHAPE_540* CHANNEL_THREE, VALID_VALUE);
+
+std::vector<uint8_t> g_vector1080PUint8Value200(BATCH_SIZE_TWO* SHAPE_1920* SHAPE_1080* CHANNEL_THREE, VALID_VALUE);
+std::vector<uint8_t> g_vector1080PHalfUint8Value200(BATCH_SIZE_TWO* SHAPE_960* SHAPE_540* CHANNEL_THREE, VALID_VALUE);
+
 std::vector<float> g_vector1080PFloatValue100(SHAPE_1920* SHAPE_1080* CHANNEL_THREE, VALID_VALUE_FLOAT);
 std::vector<float> g_vector1080PFloatValue100New(SHAPE_1920* SHAPE_1080* CHANNEL_THREE, VALID_VALUE_FLOAT_NEW);
 
-class TensorOpsTest : public testing::Test {
+class TensorOpsTest : public testing::Test
+{
 };
 
 TEST_F(TensorOpsTest, Test_TensorCrop_Success_With_ImplicitMalloc)
@@ -112,6 +119,27 @@ TEST_F(TensorOpsTest, Test_TensorResize_Success_Use_Cpu)
                DataType::UINT8, TensorFormat::NHWC, CPU);
     auto ret = TensorResize(src, dst, SHAPE_540, SHAPE_960, Interpolation::BICUBIC, DeviceMode::CPU);
     EXPECT_EQ(ret, SUCCESS);
+
+    Tensor src1(g_vector1080PUint8Value200.data(), {BATCH_SIZE_TWO, SHAPE_1080, SHAPE_1920, CHANNEL_THREE},
+                DataType::UINT8, TensorFormat::NHWC, CPU);
+    Tensor dst1(g_vector1080PHalfUint8Value200.data(), {BATCH_SIZE_TWO, SHAPE_540, SHAPE_960, CHANNEL_THREE},
+                DataType::UINT8, TensorFormat::NHWC, CPU);
+    ret = TensorResize(src1, dst1, SHAPE_540, SHAPE_960, Interpolation::BICUBIC, DeviceMode::CPU);
+    EXPECT_EQ(ret, SUCCESS);
+
+    Tensor src2(g_vector1080PUint8Value100.data(), {BATCH_SIZE_ONE, CHANNEL_THREE, SHAPE_1080, SHAPE_1920},
+                DataType::UINT8, TensorFormat::NCHW, CPU);
+    Tensor dst2(g_vector1080PHalfUint8Value100.data(), {BATCH_SIZE_ONE, CHANNEL_THREE, SHAPE_540, SHAPE_960},
+                DataType::UINT8, TensorFormat::NCHW, CPU);
+    ret = TensorResize(src2, dst2, SHAPE_540, SHAPE_960, Interpolation::BICUBIC, DeviceMode::CPU);
+    EXPECT_EQ(ret, SUCCESS);
+
+    Tensor src3(g_vector1080PUint8Value200.data(), {BATCH_SIZE_TWO, CHANNEL_THREE, SHAPE_1080, SHAPE_1920},
+                DataType::UINT8, TensorFormat::NCHW, CPU);
+    Tensor dst3(g_vector1080PHalfUint8Value200.data(), {BATCH_SIZE_TWO, CHANNEL_THREE, SHAPE_540, SHAPE_960},
+                DataType::UINT8, TensorFormat::NCHW, CPU);
+    ret = TensorResize(src3, dst3, SHAPE_540, SHAPE_960, Interpolation::BICUBIC, DeviceMode::CPU);
+    EXPECT_EQ(ret, SUCCESS);
 }
 
 TEST_F(TensorOpsTest, Test_TensorResize_Success_Use_Cpu_With_ImplicitMalloc)
@@ -120,6 +148,12 @@ TEST_F(TensorOpsTest, Test_TensorResize_Success_Use_Cpu_With_ImplicitMalloc)
                DataType::UINT8, TensorFormat::NHWC, CPU);
     Tensor dst;
     auto ret = TensorResize(src, dst, SHAPE_540, SHAPE_960, Interpolation::BICUBIC, DeviceMode::CPU);
+    EXPECT_EQ(ret, SUCCESS);
+
+    Tensor src1(g_vector1080PUint8Value200.data(), {BATCH_SIZE_ONE, CHANNEL_THREE, SHAPE_1080, SHAPE_1920},
+                DataType::UINT8, TensorFormat::NCHW, CPU);
+    Tensor dst1;
+    ret = TensorResize(src1, dst1, SHAPE_540, SHAPE_960, Interpolation::BICUBIC, DeviceMode::CPU);
     EXPECT_EQ(ret, SUCCESS);
 }
 
@@ -132,27 +166,33 @@ TEST_F(TensorOpsTest, Test_TensorResize_Should_Return_Failed_Use_Cpu_With_Invali
     // interpolation invalid
     auto ret = TensorResize(src, dst, SHAPE_540, SHAPE_960, static_cast<Interpolation>(1), DeviceMode::CPU);
     EXPECT_EQ(ret, ERR_UNSUPPORTED_TYPE);
+
     // device mode invalid
     ret = TensorResize(src, dst, SHAPE_540, SHAPE_960, Interpolation::BICUBIC, static_cast<DeviceMode>(1));
     EXPECT_EQ(ret, ERR_UNSUPPORTED_TYPE);
+
     // invalid input tensor format
     src.SetFormat(TensorFormat::NCHW);
     ret = TensorResize(src, dst, SHAPE_540, SHAPE_960, Interpolation::BICUBIC, DeviceMode::CPU);
     EXPECT_EQ(ret, ERR_INVALID_PARAM);
+
     // invalid input tensor shape
     Tensor src1(g_vector1080PUint8Value100.data(), {BATCH_SIZE_ONE, BATCH_SIZE_ONE, SHAPE_1920, CHANNEL_THREE},
                 DataType::UINT8, TensorFormat::NHWC, CPU);
     ret = TensorResize(src1, dst, SHAPE_540, SHAPE_960, Interpolation::BICUBIC, DeviceMode::CPU);
     EXPECT_EQ(ret, ERR_INVALID_PARAM);
+
     // invalid input tensor dtype
     Tensor src2(g_vector1080PUint8Value100.data(), {BATCH_SIZE_ONE, SHAPE_1080, SHAPE_1920, CHANNEL_THREE},
                 DataType::INT8, TensorFormat::NHWC, CPU);
     ret = TensorResize(src2, dst, SHAPE_540, SHAPE_960, Interpolation::BICUBIC, DeviceMode::CPU);
     EXPECT_EQ(ret, ERR_INVALID_PARAM);
+
     // resize shape mismatch
     src.SetFormat(TensorFormat::NHWC);
     ret = TensorResize(src, dst, SHAPE_540, SHAPE_540, Interpolation::BICUBIC, DeviceMode::CPU);
     EXPECT_EQ(ret, ERR_INVALID_PARAM);
+
     // dst format invalid
     dst.SetFormat(TensorFormat::NCHW);
     ret = TensorResize(src, dst, SHAPE_540, SHAPE_960, Interpolation::BICUBIC, DeviceMode::CPU);
@@ -202,16 +242,10 @@ TEST_F(TensorOpsTest, Test_TensorNormalize_Should_Return_Failed_With_Invalid_Par
     Tensor src(g_vector1080PFloatValue100.data(), {BATCH_SIZE_ONE, SHAPE_1080, SHAPE_1920, CHANNEL_THREE},
                DataType::FLOAT32, TensorFormat::NCHW, CPU);
 
-    // invalid batch
-    Tensor invalid_batch(g_vector1080PFloatValue100.data(), {BATCH_SIZE_TWO, SHAPE_1080, SHAPE_1920, CHANNEL_THREE},
-                         DataType::FLOAT32, TensorFormat::NHWC, CPU);
-    auto ret = TensorNormalize(invalid_batch, dst, mean, std, DeviceMode::CPU);
-    EXPECT_EQ(ret, ERR_INVALID_PARAM);
-
     // invalid channel
     Tensor invalid_channel(g_vector1080PFloatValue100.data(), {BATCH_SIZE_TWO, SHAPE_1080, SHAPE_1920, CHANNEL_ONE},
                            DataType::FLOAT32, TensorFormat::NHWC, CPU);
-    ret = TensorNormalize(invalid_channel, dst, mean, std, DeviceMode::CPU);
+    auto ret = TensorNormalize(invalid_channel, dst, mean, std, DeviceMode::CPU);
     EXPECT_EQ(ret, ERR_INVALID_PARAM);
 
     // invalid mean and std
@@ -280,7 +314,7 @@ TEST_F(TensorOpsTest, Test_TensorToTensor_Should_Return_Failed_With_Invalid_Inpu
     EXPECT_EQ(ret, ERR_INVALID_PARAM);
 
     Tensor src1(g_vector1080PFloatValue100.data(), {BATCH_SIZE_ONE, SHAPE_1080, SHAPE_1920, CHANNEL_THREE},
-               DataType::FLOAT32, TensorFormat::NHWC, CPU);
+                DataType::FLOAT32, TensorFormat::NHWC, CPU);
     ret = TensorToTensor(src1, dst, TensorFormat::NHWC, DeviceMode::CPU);
     EXPECT_EQ(ret, ERR_INVALID_PARAM);
 }
@@ -294,7 +328,7 @@ TEST_F(TensorOpsTest, Test_TensorToTensor_Should_Return_Failed_With_Invalid_Outp
     auto ret = TensorToTensor(src, dst, TensorFormat::NHWC, DeviceMode::CPU);
     EXPECT_EQ(ret, ERR_INVALID_PARAM);
 }
-} // namespace
+}  // namespace
 
 int main(int argc, char* argv[])
 {

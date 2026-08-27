@@ -114,7 +114,15 @@ ErrorCode ResizeChecker::CheckCustomRules(const OperatorContext& ctx)
     }
     auto& dst = resizeCtx->outputTensorRefs[0].get();
     auto& src = resizeCtx->inputTensorRefs[0].get();
-    auto heightIndex = HEIGHT_INDEX_NHWC;
+    // 根据 Tensor format 选择 height/width 索引
+    // NHWC: [N, H, W, C] -> height=1, width=2
+    // NCHW: [N, C, H, W] -> height=2, width=3
+    if (dst.Shape()[0] != src.Shape()[0])
+    {
+        LogError << "The N of dst should be equal to N of src." << GetErrorInfo(ERR_INVALID_PARAM);
+        return ERR_INVALID_PARAM;
+    }
+    auto heightIndex = (dst.Format() == TensorFormat::NCHW) ? HEIGHT_INDEX_NCHW : HEIGHT_INDEX_NHWC;
     if (dst.Shape()[heightIndex] != resizeCtx->resizedH)
     {
         LogError << "The height of dst should be equal to resizedH." << GetErrorInfo(ERR_INVALID_PARAM);
@@ -151,7 +159,10 @@ ErrorCode ResizeChecker::ImplicitMalloc(const OperatorContext& ctx)
         return ERR_INVALID_POINTER;
     }
     auto src = resizeCtx->inputTensorRefs[0].get();
-    auto heightIndex = HEIGHT_INDEX_NHWC;
+    // 根据 Tensor format 选择 height/width 索引
+    // NHWC: [N, H, W, C] -> height=1, width=2
+    // NCHW: [N, C, H, W] -> height=2, width=3
+    auto heightIndex = (src.Format() == TensorFormat::NCHW) ? HEIGHT_INDEX_NCHW : HEIGHT_INDEX_NHWC;
     std::vector<size_t> dstShape = src.Shape();
     dstShape[heightIndex] = resizeCtx->resizedH;
     dstShape[heightIndex + 1] = resizeCtx->resizedW;
