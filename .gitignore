@@ -2,7 +2,6 @@
 .vscode/
 .coverage
 __pycache__/
-site/
 # CMake/Bear generated compile DB for clang-tidy (local only; do not commit)
 /compile_commands.json
 
