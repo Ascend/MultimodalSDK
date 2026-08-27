@@ -74,8 +74,16 @@ const TensorConstraint TO_TENSOR_OUTPUT_TENSOR_CONSTRAINT_CPU = {
     {TensorFormat::NHWC, TensorFormat::NCHW},
     {{"batch", EnumeratedConstraint{{1}}}, {"channel", EnumeratedConstraint{{3}}}}};
 
+// resize constraint: 支持 NHWC 和 NCHW 两种格式
+const TensorConstraint RESIZE_TENSOR_CONSTRAINT = {"cpu",
+                                                   {DataType::UINT8},
+                                                   {TensorFormat::NHWC, TensorFormat::NCHW},
+                                                   {{"height", RangeConstraint{MIN_HEIGHT, MAX_HEIGHT}},
+                                                    {"width", RangeConstraint{MIN_WIDTH, MAX_WIDTH}},
+                                                    {"channel", EnumeratedConstraint{{3}}}}};
+
 // resize constraint
-const OperatorTensorConstraints CPU_RESIZE_CONSTRAINT{{BASIC_TENSOR_CONSTRAINT}, {BASIC_TENSOR_CONSTRAINT}};
+const OperatorTensorConstraints CPU_RESIZE_CONSTRAINT{{RESIZE_TENSOR_CONSTRAINT}, {RESIZE_TENSOR_CONSTRAINT}};
 
 // crop constraint
 const OperatorTensorConstraints CPU_CROP_CONSTRAINT{{BASIC_TENSOR_CONSTRAINT}, {BASIC_TENSOR_CONSTRAINT}};
