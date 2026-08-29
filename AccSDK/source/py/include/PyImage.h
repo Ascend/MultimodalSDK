@@ -1,19 +1,19 @@
 /*
-* -------------------------------------------------------------------------
-*  This file is part of the MultimodalSDK project.
-* Copyright (c) 2025 Huawei Technologies Co.,Ltd.
-*
-* MultimodalSDK is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*
-*           http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-* See the Mulan PSL v2 for more details.
-* -------------------------------------------------------------------------
+ * -------------------------------------------------------------------------
+ *  This file is part of the MultimodalSDK project.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * MultimodalSDK is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *           http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ * -------------------------------------------------------------------------
  * Description: tensor file for python.
  * Author: ACC SDK
  * Create: 2025
@@ -21,17 +21,19 @@
  */
 #ifndef PYIMAGE_H
 #define PYIMAGE_H
-#include <vector>
 #include <memory>
-#include "Python.h"
+#include <vector>
 
 #include "PyTensor.h"
-#include "acc/tensor/Tensor.h"
+#include "Python.h"
 #include "acc/image/Image.h"
 #include "acc/image/ImageFormat.h"
-namespace PyAcc {
-class Image {
-public:
+#include "acc/tensor/Tensor.h"
+namespace PyAcc
+{
+class Image
+{
+   public:
     /**
      * @brief Destroy a new Image object
      *
@@ -50,6 +52,19 @@ public:
      * @return Image& self Image
      */
     Image& operator=(const Image& other) = default;
+    /**
+     * @brief move constructor
+     *
+     * @param other Input Image
+     */
+    Image(Image&& other) = default;
+    /**
+     * @brief move assignment
+     *
+     * @param other Input Image
+     * @return Image& self Image
+     */
+    Image& operator=(Image&& other) = default;
     /**
      * @brief Construct a new Image object from given path
      *
@@ -182,11 +197,11 @@ public:
      */
     Tensor to_tensor(Acc::TensorFormat format, Acc::DeviceMode device_mode = Acc::DeviceMode::CPU);
 
-private:
+   private:
     std::shared_ptr<Acc::Image> image_ = nullptr;
     std::string deviceStr_ = "cpu";
 };
 
-} // namespace PyAcc
+}  // namespace PyAcc
 
-#endif // PYIMAGE_H
+#endif  // PYIMAGE_H

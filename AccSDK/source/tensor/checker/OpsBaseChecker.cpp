@@ -57,7 +57,7 @@ const TensorConstraint NORMALIZE_TENSOR_CONSTRAINT_CPU = {
 
 const TensorConstraint BASIC_QWENFUSION_CONSTRAINT = {"cpu",
                                                       {DataType::UINT8},
-                                                      {TensorFormat::NHWC},
+                                                      {TensorFormat::NHWC, TensorFormat::NCHW},
                                                       {{"height", RangeConstraint{MIN_HEIGHT, MAX_HEIGHT}},
                                                        {"width", RangeConstraint{MIN_WIDTH, MAX_WIDTH}},
                                                        {"channel", EnumeratedConstraint{{3}}}}};
@@ -93,7 +93,7 @@ const OperatorTensorConstraints CPU_NORMALIZE_CONSTRAINT{{NORMALIZE_TENSOR_CONST
                                                          {NORMALIZE_TENSOR_CONSTRAINT_CPU}};
 
 // QwenFusion constraint
-const OperatorTensorConstraints CPU_QWENFUSION_CONSTRAINT{{BASIC_QWENFUSION_CONSTRAINT}, {BASIC_QWENFUSION_CONSTRAINT}};
+const OperatorTensorConstraints CPU_QWENFUSION_CONSTRAINT{{BASIC_QWENFUSION_CONSTRAINT}, {}};
 
 // normalize constraint
 const OperatorTensorConstraints CPU_TO_TENSOR_CONSTRAINT{{TO_TENSOR_INPUT_TENSOR_CONSTRAINT_CPU},

@@ -96,10 +96,10 @@ throw Swig::DirectorMethodException();
 %ignore PyAcc::Image::Format() const;
 %ignore PyAcc::Image::NumBytes() const;
 %ignore PyAcc::Image::GetImagePtr() const;
-%ignore PyAcc::Image::setImage(const Acc::Image& src);
+%ignore PyAcc::Image::SetImage(const Acc::Image& src);
 
 // Log wrapper
-%ignore Acc::RegisterLogFn(LogFn fn, LogLevel minLevel);
+%ignore Acc::RegisterLogConf(LogFn fn, LogLevel minLevel);
 %feature("director") PyAcc::LogCallBacker;
 %include "PyTensor.h"
 %include "PyTensorOps.h"
