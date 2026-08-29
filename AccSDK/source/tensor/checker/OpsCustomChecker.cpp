@@ -341,8 +341,10 @@ ErrorCode QwenFusionChecker::ImplicitMalloc(const OperatorContext& ctx)
 {
     if (outputMallocFlags_[0])
     {
-        return SUCCESS;
+        LogError << "QwenFusionOperator is not allowed to pre allocate dst." << GetErrorInfo(ERR_INVALID_PARAM);
+        return ERR_INVALID_PARAM;
     }
+
     const auto* qwenCtx = dynamic_cast<const QwenFusionContext*>(&ctx);
     if (qwenCtx == nullptr)
     {
@@ -350,7 +352,7 @@ ErrorCode QwenFusionChecker::ImplicitMalloc(const OperatorContext& ctx)
         return ERR_INVALID_POINTER;
     }
     auto src = qwenCtx->inputTensorRefs[0].get();
-    auto heightIndex = HEIGHT_INDEX_NHWC;
+    auto heightIndex = src.Format() == TensorFormat::NHWC ? HEIGHT_INDEX_NHWC : HEIGHT_INDEX_NCHW;
     std::vector<size_t> dstShape = src.Shape();
     dstShape[heightIndex] = qwenCtx->resizeH;
     dstShape[heightIndex + 1] = qwenCtx->resizeW;

@@ -1,19 +1,19 @@
 /*
-* -------------------------------------------------------------------------
-*  This file is part of the MultimodalSDK project.
-* Copyright (c) 2025 Huawei Technologies Co.,Ltd.
-*
-* MultimodalSDK is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*
-*           http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-* See the Mulan PSL v2 for more details.
-* -------------------------------------------------------------------------
+ * -------------------------------------------------------------------------
+ *  This file is part of the MultimodalSDK project.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * MultimodalSDK is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *           http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ * -------------------------------------------------------------------------
  * Description: tensor file for python.
  * Author: ACC SDK
  * Create: 2025
@@ -21,16 +21,18 @@
  */
 #ifndef PYTENSOR_H
 #define PYTENSOR_H
-#include <vector>
 #include <memory>
-#include "Python.h"
+#include <vector>
 
+#include "Python.h"
 #include "acc/tensor/Tensor.h"
 #include "acc/tensor/TensorDataType.h"
-namespace PyAcc {
+namespace PyAcc
+{
 
-class Tensor {
-public:
+class Tensor
+{
+   public:
     /**
      * @brief Construct a new Tensor object
      *
@@ -54,6 +56,19 @@ public:
      * @return Tensor& input tensor
      */
     Tensor& operator=(const Tensor& other) = default;
+    /**
+     * @brief move constructor
+     *
+     * @param other input tensor
+     */
+    Tensor(Tensor&& other) = default;
+    /**
+     * @brief move assignment
+     *
+     * @param other input tensor
+     * @return Tensor& self tensor
+     */
+    Tensor& operator=(Tensor&& other) = default;
     /**
      * @brief Tensor deep copy to a new tensor, exposed as a Python interface
      *
@@ -89,7 +104,7 @@ public:
                      const Acc::DeviceMode deviceMode = Acc::DeviceMode::CPU);
 
     // inner aux func, will not expose Python interfaces.
-public:
+   public:
     /**
      * @brief Set the Acc Tensor object
      *
@@ -134,11 +149,11 @@ public:
      */
     size_t NumBytes() const;
 
-private:
+   private:
     std::shared_ptr<Acc::Tensor> tensor_ = nullptr;
     std::string deviceStr_ = "cpu";
 };
 
-} // namespace PyAcc
+}  // namespace PyAcc
 
-#endif // PYTENSOR_H
+#endif  // PYTENSOR_H

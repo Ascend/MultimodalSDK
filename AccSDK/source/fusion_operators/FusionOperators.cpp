@@ -1,19 +1,19 @@
 /*
-* -------------------------------------------------------------------------
-*  This file is part of the MultimodalSDK project.
-* Copyright (c) 2025 Huawei Technologies Co.,Ltd.
-*
-* MultimodalSDK is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*
-*           http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-* See the Mulan PSL v2 for more details.
-* -------------------------------------------------------------------------
+ * -------------------------------------------------------------------------
+ *  This file is part of the MultimodalSDK project.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * MultimodalSDK is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *           http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ * -------------------------------------------------------------------------
  * Description: Fusion Operator Api.
  * Author: ACC SDK
  * Create: 2025
@@ -22,27 +22,31 @@
 
 #include "acc/fusion_operators/FusionOperators.h"
 
-#include "acc/tensor/TensorOps.h"
-
 #include <cmath>
 #include <cstring>
 #include <vector>
 
 #include "acc/ErrorCode.h"
-#include "acc/utils/LogImpl.h"
-#include "acc/tensor/Tensor.h"
-#include "acc/tensor/TensorDataType.h"
-#include "acc/core/framework/XPUAccelerator.h"
 #include "acc/core/framework/OperatorContext.h"
 #include "acc/core/framework/OperatorIndex.h"
-#include "acc/tensor/OpsCustomChecker.h"
+#include "acc/core/framework/XPUAccelerator.h"
 #include "acc/tensor/OpsBaseChecker.h"
+#include "acc/tensor/OpsCustomChecker.h"
+#include "acc/tensor/Tensor.h"
+#include "acc/tensor/TensorDataType.h"
+#include "acc/tensor/TensorOps.h"
 #include "acc/utils/ErrorCodeUtils.h"
-namespace Acc {
-ErrorCode FusionOperator::Qwen2VLImagePreprocess(const std::vector<std::shared_ptr<Image>>& images,
-                                                 const QwenPreprocessConfig& config, std::vector<Tensor>& outputTensors)
+#include "acc/utils/LogImpl.h"
+namespace Acc
 {
-    if (images.empty()) {
+
+template <>
+ErrorCode FusionOperator::Qwen2VLImagePreprocess<Image>(const std::vector<std::shared_ptr<Image>>& images,
+                                                        const QwenPreprocessConfig& config,
+                                                        std::vector<Tensor>& outputTensors)
+{
+    if (images.empty())
+    {
         LogError << "Input images should not be empty!" << GetErrorInfo(ERR_INVALID_PARAM);
         return ERR_INVALID_PARAM;
     }
@@ -53,7 +57,8 @@ ErrorCode FusionOperator::Qwen2VLImagePreprocess(const std::vector<std::shared_p
     inputRefs.reserve(images.size());
     outputRefs.reserve(images.size());
 
-    for (size_t i = 0; i < images.size(); ++i) {
+    for (size_t i = 0; i < images.size(); ++i)
+    {
         inputRefs.push_back(std::cref(images[i]->GetTensor()));
         outputRefs.push_back(std::ref(outputTensors[i]));
     }
@@ -62,7 +67,8 @@ ErrorCode FusionOperator::Qwen2VLImagePreprocess(const std::vector<std::shared_p
                             TensorFormat::NHWC, DeviceMode::CPU);
 
     ErrorCode ret = QwenFusionChecker(OperatorId::QWENFUSION).CheckAndImplicitMalloc(opCtx);
-    if (ret != SUCCESS) {
+    if (ret != SUCCESS)
+    {
         return ret;
     }
 
@@ -70,4 +76,40 @@ ErrorCode FusionOperator::Qwen2VLImagePreprocess(const std::vector<std::shared_p
     return accelerator.ExecuteOperator(OperatorId::QWENFUSION, opCtx);
 }
 
-} // namespace Acc
+template <>
+ErrorCode FusionOperator::Qwen2VLImagePreprocess<Tensor>(const std::vector<std::shared_ptr<Tensor>>& inputs,
+                                                         const QwenPreprocessConfig& config,
+                                                         std::vector<Tensor>& outputTensors)
+{
+    if (inputs.empty())
+    {
+        LogError << "Input tensors should not be empty!" << GetErrorInfo(ERR_INVALID_PARAM);
+        return ERR_INVALID_PARAM;
+    }
+    outputTensors.resize(inputs.size());
+
+    std::vector<std::reference_wrapper<const Tensor>> inputRefs;
+    std::vector<std::reference_wrapper<Tensor>> outputRefs;
+    inputRefs.reserve(inputs.size());
+    outputRefs.reserve(inputs.size());
+
+    for (size_t i = 0; i < inputs.size(); ++i)
+    {
+        inputRefs.push_back(std::cref(*inputs[i]));
+        outputRefs.push_back(std::ref(outputTensors[i]));
+    }
+
+    QwenFusionContext opCtx(inputRefs, outputRefs, config.mean, config.std, config.resizeH, config.resizeW,
+                            inputRefs[0].get().Format(), DeviceMode::CPU);
+
+    ErrorCode ret = QwenFusionChecker(OperatorId::QWENFUSION).CheckAndImplicitMalloc(opCtx);
+    if (ret != SUCCESS)
+    {
+        return ret;
+    }
+
+    auto accelerator = Acc::GetAccelerator(opCtx.deviceMode);
+    return accelerator.ExecuteOperator(OperatorId::QWENFUSION, opCtx);
+}
+
+}  // namespace Acc

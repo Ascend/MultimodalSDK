@@ -1,19 +1,19 @@
 /*
-* -------------------------------------------------------------------------
-*  This file is part of the MultimodalSDK project.
-* Copyright (c) 2025 Huawei Technologies Co.,Ltd.
-*
-* MultimodalSDK is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*
-*           http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-* See the Mulan PSL v2 for more details.
-* -------------------------------------------------------------------------
+ * -------------------------------------------------------------------------
+ *  This file is part of the MultimodalSDK project.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * MultimodalSDK is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *           http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ * -------------------------------------------------------------------------
  * Description: preprocess file for python.
  * Author: ACC SDK
  * Create: 2025
@@ -24,13 +24,15 @@
 #define PY_PYPREPROCESS_H
 #include <vector>
 
-#include "PyUtil.h"
 #include "PyImage.h"
 #include "PyTensor.h"
+#include "PyUtil.h"
 
-namespace PyAcc {
-class Qwen2VLProcessor {
-public:
+namespace PyAcc
+{
+class Qwen2VLProcessor
+{
+   public:
     /**
      * @brief Python interface entry for preprocessing
      *
@@ -45,6 +47,9 @@ public:
      */
     static std::vector<Tensor> Preprocess(const std::vector<Image>& pyImages, const std::vector<float>& mean,
                                           const std::vector<float>& std, int resizeW, int resizeH);
+
+    static std::vector<Tensor> PreprocessTensor(const std::vector<Tensor>& pyTensors, const std::vector<float>& mean,
+                                                const std::vector<float>& std, int resizeW, int resizeH);
 };
-} // namespace PyAcc
-#endif // PY_PYPREPROCESS_H
+}  // namespace PyAcc
+#endif  // PY_PYPREPROCESS_H
