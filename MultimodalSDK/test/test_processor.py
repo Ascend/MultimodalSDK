@@ -270,14 +270,13 @@ class TestResizeAndNormalizeParamValidation(unittest.TestCase):
         self.assertIn("is not NCHW or NHWC", str(ctx.exception))
 
 
-class TestResizeAndNormalizeParamWarning(unittest.TestCase):
-    """Tests that out-of-range image_mean triggers warn (not error)."""
+class TestResizeAndNormalizeParamError(unittest.TestCase):
+    """Tests that out-of-range image_mean raises ``ValueError``."""
 
-    def test_image_mean_above_one_does_not_raise(self):
-        # Out-of-range image_mean should log a warning but not raise
-        # (we only test the validation logic, not the actual processing)
+    def test_image_mean_above_one_raises(self):
+        # Out-of-range image_mean (value > 1.0) must raise ValueError
         frames = _u8(1, 3, 16, 16)
-        try:
+        with self.assertRaises(ValueError) as ctx:
             resize_and_normalize(
                 frames,
                 height=8,
@@ -285,16 +284,14 @@ class TestResizeAndNormalizeParamWarning(unittest.TestCase):
                 image_mean=[1.5, 0.5, 0.5],  # first value out of range
                 image_std=[0.5, 0.5, 0.5],
             )
-        except ValueError as e:
-            # If ValueError, it must not be about image_mean being out of range
-            self.assertNotIn("image_mean", str(e))
-        except Exception:
-            pass
+        msg = str(ctx.exception)
+        self.assertIn("image_mean", msg)
+        self.assertIn("out of range", msg)
 
-    def test_image_mean_negative_does_not_raise(self):
-        # Negative image_mean should log a warning but not raise
+    def test_image_mean_negative_raises(self):
+        # Negative image_mean must raise ValueError
         frames = _u8(1, 3, 16, 16)
-        try:
+        with self.assertRaises(ValueError) as ctx:
             resize_and_normalize(
                 frames,
                 height=8,
@@ -302,8 +299,54 @@ class TestResizeAndNormalizeParamWarning(unittest.TestCase):
                 image_mean=[-0.1, 0.5, 0.5],
                 image_std=[0.5, 0.5, 0.5],
             )
+        msg = str(ctx.exception)
+        self.assertIn("image_mean", msg)
+        self.assertIn("out of range", msg)
+
+    def test_image_mean_above_one_in_middle_raises(self):
+        # Out-of-range value in the middle of the list must still raise
+        frames = _u8(1, 3, 16, 16)
+        with self.assertRaises(ValueError) as ctx:
+            resize_and_normalize(
+                frames,
+                height=8,
+                width=8,
+                image_mean=[0.5, 2.0, 0.5],  # middle value out of range
+                image_std=[0.5, 0.5, 0.5],
+            )
+        self.assertIn("image_mean[1]", str(ctx.exception))
+
+    def test_image_mean_boundary_zero_accepted(self):
+        # Boundary value 0.0 must be accepted (validation passes through)
+        frames = _u8(1, 3, 16, 16)
+        try:
+            resize_and_normalize(
+                frames,
+                height=8,
+                width=8,
+                image_mean=[0.0, 0.0, 0.0],
+                image_std=[0.5, 0.5, 0.5],
+            )
         except ValueError as e:
-            self.assertNotIn("image_mean", str(e))
+            # If ValueError is raised, it must NOT be about image_mean range
+            self.assertNotIn("out of range", str(e))
+        except Exception:
+            # libcore.so missing - OK
+            pass
+
+    def test_image_mean_boundary_one_accepted(self):
+        # Boundary value 1.0 must be accepted (validation passes through)
+        frames = _u8(1, 3, 16, 16)
+        try:
+            resize_and_normalize(
+                frames,
+                height=8,
+                width=8,
+                image_mean=[1.0, 1.0, 1.0],
+                image_std=[0.5, 0.5, 0.5],
+            )
+        except ValueError as e:
+            self.assertNotIn("out of range", str(e))
         except Exception:
             pass
 

@@ -998,3 +998,241 @@ selector = KFrameSelector(model_path="/path/to/clip_model", device_id=0, model_t
 frames = [np.random.randint(0, 255, (720, 1280, 3), dtype=np.uint8) for _ in range(100)]
 indices, key_frames = selector.select_keyframes(query="a dog running in the park", frames=frames, sample_num=8)
 ```
+
+## mm.core.processor.resize_and_normalize
+
+**功能描述**
+
+在 NPU 上对一批图像或视频帧执行 resize 与像素值归一化，返回 `torch.Tensor`。底层调用 `acc.Qwen2VLProcessor.PreprocessTensor`，与 Qwen2-VL / Qwen3-VL processor 中的预处理路径保持一致。
+
+**函数原型**
+
+```python
+from typing import List
+import torch
+
+def resize_and_normalize(
+    frames: torch.Tensor,
+    height: int,
+    width: int,
+    image_mean: List[float],
+    image_std: List[float],
+) -> torch.Tensor
+```
+
+**输入参数说明**
+
+|参数名|数据类型|可选/必选|说明|
+|--|--|--|--|
+|frames|torch.Tensor|必选|输入 4D 张量，`shape` 必须为 `(N, 3, H, W)` 或 `(N, H, W, 3)`（NCHW 或 NHWC），`dtype` 必须为 `torch.uint8`。|
+|height|int|必选|目标 resize 高度（像素），必须 > 0。|
+|width|int|必选|目标 resize 宽度（像素），必须 > 0。|
+|image_mean|List[float]|必选|每通道归一化均值，长度必须为 3，每个元素取值范围 `[0.0, 1.0]`，越界时抛 `ValueError`。|
+|image_std|List[float]|必选|每通道归一化标准差，长度必须为 3，所有元素必须 > 0。|
+
+**返回值说明**
+
+|数据类型|说明|
+|--|--|
+|torch.Tensor|resize + normalize 后的张量，shape 为 `(N, 3, height, width)`。|
+
+**异常说明**
+
+- `ValueError`：`frames` 不是 4D 张量 / 不是 `uint8`、height/width 非正、`image_mean` 或 `image_std` 长度不为 3 / `image_mean` 元素超出 `[0.0, 1.0]` / `image_std` 元素非正、shape 既不是 NCHW 也不是 NHWC。
+
+**示例**
+
+```python
+import torch
+from mm.core.processor import resize_and_normalize
+
+frames = torch.zeros((4, 3, 480, 640), dtype=torch.uint8)  # 4 帧 NHWC 布局同样支持
+out = resize_and_normalize(
+    frames,
+    height=224,
+    width=224,
+    image_mean=[0.5, 0.5, 0.5],
+    image_std=[0.5, 0.5, 0.5],
+)
+assert tuple(out.shape) == (4, 3, 224, 224)
+```
+
+## mm.core.scc.scc_should_run
+
+**功能描述**
+
+判断 SCC 压缩是否值得作用于当前样本。SCC 的 per-item 计算量随输入 token 数增长，超过一定规模后压缩耗时反而超过 LLM 端节省下来的开销。超过启发式阈值（默认 8192 token）时跳过压缩。
+
+**函数原型**
+
+```python
+def scc_should_run(n: int, max_tokens_per_item: int = 8192) -> bool
+```
+
+**输入参数说明**
+
+|参数名|数据类型|可选/必选|说明|
+|--|--|--|--|
+|n|int|必选|当前样本（单张图像或单个视频）的输入 token 数，必须 > 0。|
+|max_tokens_per_item|int|可选|启发式阈值，token 数 ≤ 该值时返回 True；`<= 0` 表示关闭检查，永远运行。默认 `8192`。|
+
+**返回值说明**
+
+|数据类型|说明|
+|--|--|
+|bool|`n <= max_tokens_per_item`（或阈值被关闭）时返回 True，否则返回 False。|
+
+**异常说明**
+
+- `ValueError`：`n <= 0`。
+
+**示例**
+
+```python
+from mm.core.scc import scc_should_run
+
+scc_should_run(1024)              # True  -- 默认阈值 8192
+scc_should_run(20000)             # False -- 超过默认阈值
+scc_should_run(20000, max_tokens_per_item=0)  # True -- 关闭阈值
+```
+
+## mm.core.scc.scc_shrink
+
+**功能描述**
+
+按给定压缩比计算 SCC 压缩后的目标 token 数（即 placeholder / feature 长度）。
+
+**函数原型**
+
+```python
+def scc_shrink(tokens_per_frame: int, ratio: float) -> int
+```
+
+**输入参数说明**
+
+|参数名|数据类型|可选/必选|说明|
+|--|--|--|--|
+|tokens_per_frame|int|必选|压缩前的每帧 token 数。|
+|ratio|float|必选|压缩比，必须在 `(0, 1]`，1.0 表示不压缩。|
+
+**返回值说明**
+
+|数据类型|说明|
+|--|--|
+|int|`max(1, ceil(tokens_per_frame * ratio))`，保证至少返回 1。|
+
+**异常说明**
+
+- `ValueError`：`ratio` 不在 `(0, 1]`。
+
+**示例**
+
+```python
+from mm.core.scc import scc_shrink
+
+scc_shrink(1024, 0.5)  # 512
+scc_shrink(7,    0.1)  # 1
+scc_shrink(1024, 1.0)  # 1024
+```
+
+## mm.core.scc.scc_compress_to_target
+
+**功能描述**
+
+将一组视觉 token 压缩到恰好 `k_target` 个。视频场景下逐帧独立运行 SCC 再拼接，不做跨帧特征融合；随后调整到 `k_target`（裁掉连接度最低的 center / 用均值补齐）。
+
+**函数原型**
+
+```python
+def scc_compress_to_target(
+    features: torch.Tensor,
+    k_target: int,
+    num_frames: int = 1,
+    tokens_per_frame: int = 0,
+    tau: float = 0.98,
+    epsilon: float = 0.05,
+) -> torch.Tensor
+```
+
+**输入参数说明**
+
+|参数名|数据类型|可选/必选|说明|
+|--|--|--|--|
+|features|torch.Tensor|必选|输入 token 特征，`shape=(N, D)`，`dtype` 必须为 `bfloat16` / `float16` / `float32` 之一。|
+|k_target|int|必选|压缩后目标 token 数，必须满足 `1 <= k_target <= N`，且当 `num_frames > 1` 时 `k_target >= num_frames`。|
+|num_frames|int|可选|视频帧数；`1` 表示图像，`>1` 表示视频并按帧独立压缩。默认 `1`。|
+|tokens_per_frame|int|可选|每帧原始 token 数，仅在 num_frames > 1 且 tokens_per_frame > 0 时生效；此时若 num_frames * tokens_per_frame != N 会抛错。默认 0。|
+|tau|float|可选|余弦相似度阈值，`cos > tau` 的 token 视为同一 component；取值 `(0, 1]`。默认 `0.98`。|
+|epsilon|float|可选|近似 Union-Find 采样误差容忍度，仅 CPU 回退路径使用，`(0, 1)`。默认 `0.05`。|
+
+**返回值说明**
+
+|数据类型|说明|
+|--|--|
+|torch.Tensor|shape 为 `(k_target, D)` 的压缩后特征，`dtype` 与输入保持一致。|
+
+**异常说明**
+
+- `ValueError`：输入 `dtype` 不受支持、`num_frames < 1`、`k_target` 越界、视频模式下 `N != num_frames * tokens_per_frame`。
+
+**示例**
+
+```python
+import torch
+from mm.core.scc import scc_compress_to_target
+
+# 单帧图像：1024 tokens 压到 256
+features = torch.randn(1024, 128, dtype=torch.float32)
+compressed = scc_compress_to_target(features, k_target=256)
+assert compressed.shape == (256, 128)
+
+# 视频：8 帧 × 256 tokens / 帧 压到 128 tokens
+video_features = torch.randn(8 * 256, 128, dtype=torch.float32)
+compressed = scc_compress_to_target(
+    video_features,
+    k_target=128,
+    num_frames=8,
+    tokens_per_frame=256,
+)
+assert compressed.shape == (128, 128)
+```
+
+## mm.core.scc.set_uniform_true
+
+**功能描述**
+
+生成长度为 `n` 的 bool 张量，其中恰好有 `k` 个均匀分布的 `True` 位置。用于在不调用 `scc_compress_to_target` 的场景下手动构造稀疏采样掩码。
+
+**函数原型**
+
+```python
+def set_uniform_true(n: int, k: int) -> torch.Tensor
+```
+
+**输入参数说明**
+
+|参数名|数据类型|可选/必选|说明|
+|--|--|--|--|
+|n|int|必选|输出张量长度，必须 > 0。|
+|k|int|必选|`True` 的个数，必须满足 `0 < k <= n`。|
+
+**返回值说明**
+
+|数据类型|说明|
+|--|--|
+|torch.Tensor|shape 为 `(n,)`、`dtype=bool` 的张量，含 `k` 个 `True`。多个采样点四舍五入到同一索引时，该位置仅记一次。|
+
+**异常说明**
+
+- `ValueError`：`n <= 0` 或 `k` 不在 `(0, n]`。
+
+**示例**
+
+```python
+import torch
+from mm.core.scc import set_uniform_true
+
+mask = set_uniform_true(10, 3)
+# tensor([ True, False, False, False,  True, False, False, False, False,  True])
+assert mask.sum().item() == 3
+```
