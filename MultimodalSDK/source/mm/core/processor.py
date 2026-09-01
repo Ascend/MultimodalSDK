@@ -49,7 +49,8 @@ def resize_and_normalize(
         height: Target resize height in pixels. Must be > 0.
         width: Target resize width in pixels. Must be > 0.
         image_mean: Per-channel normalization mean. Must be a list/tuple of
-            3 floats in ``[0.0, 1.0]``. Out-of-range values trigger a warning.
+            3 floats in ``[0.0, 1.0]``. Out-of-range values raise
+            ``ValueError``.
         image_std: Per-channel normalization std. Must be a list/tuple of
             3 positive floats.
 
@@ -58,7 +59,7 @@ def resize_and_normalize(
 
     Raises:
         ValueError: If any input fails the validation checks (shape, sign,
-            length or std positivity).
+            length, mean range or std positivity).
     """
     if len(frames.shape) != 4:
         error_msg = f"frames shape is not permitted, expected 4D tensor but got shape {frames.shape}"
@@ -87,8 +88,9 @@ def resize_and_normalize(
 
     for i, val in enumerate(image_mean):
         if not (0.0 <= val <= 1.0):
-            warn_msg = f"image_mean[{i}]={val} is out of range [0.0, 1.0], expected normalized value"
-            _Log.warn(warn_msg)
+            error_msg = f"image_mean[{i}]={val} is out of range [0.0, 1.0], expected normalized value"
+            _Log.error(error_msg)
+            raise ValueError(error_msg)
 
     for i, val in enumerate(image_std):
         if val <= 0.0:
