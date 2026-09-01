@@ -34,4 +34,9 @@ setup(
     },
     include_package_data=True,
     zip_safe=False,
+    entry_points={
+        'vllm.general_plugins': [
+            "vllm_scc_patch = mm.patcher.vllm:patch",
+        ],
+    },
 )

@@ -21,6 +21,7 @@ single_file_test_dirs:
   - "test/presmoke/mm_acc/video/"
   - "test/presmoke/mm_acc/audio/"
   - "test/presmoke/mm_acc/tensor/"
+  - "test/presmoke/mm_acc/vllm/"
 
 # Mapping from source file/directory to test directory to run
 # When a source file changes, run the corresponding test directory
@@ -29,3 +30,5 @@ path_mapping:
   "MultimodalSDK/source/mm/acc/wrapper/video_wrapper.py": "test/presmoke/mm_acc/video"
   "MultimodalSDK/source/mm/acc/wrapper/audio_wrapper.py": "test/presmoke/mm_acc/audio"
   "MultimodalSDK/source/mm/acc/wrapper/tensor_wrapper.py": "test/presmoke/mm_acc/tensor"
+  "MultimodalSDK/source/mm/core/": "test/presmoke/mm_acc/vllm"
+  "MultimodalSDK/source/mm/patcher/vllm/": "test/presmoke/mm_acc/vllm"
