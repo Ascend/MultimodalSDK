@@ -171,6 +171,7 @@ def vllm_server(request):
 
     env = os.environ.copy()
     env["MM_SCC_RATE"] = MM_SCC_RATE
+    env["MM_PREPROCESSOR"] = "True"
 
     cmd = _build_vllm_command(model_path, served_model_name, port)
     logger.info("Starting vLLM subprocess for %s (MM_SCC_RATE=%s)", model_path, MM_SCC_RATE)
