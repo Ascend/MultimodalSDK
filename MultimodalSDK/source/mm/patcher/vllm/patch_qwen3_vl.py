@@ -79,7 +79,7 @@ from vllm.model_executor.models.qwen3_vl import Qwen3VLMultiModalProcessor, Qwen
 from vllm.model_executor.models.vision import run_dp_sharded_mrope_vision_model
 from transformers.models.qwen3_vl.configuration_qwen3_vl import Qwen3VLConfig
 
-from .constants import MM_SCC_RATE, MM_SCC_TAU, MM_SCC_EPSILON
+from .constants import MM_SCC_RATE, MM_SCC_TAU, MM_SCC_EPSILON, MM_SCC_MAX_TOKENS_PER_ITEM
 from mm.core.scc import scc_shrink, scc_should_run, scc_compress_to_target, set_uniform_true
 
 
@@ -107,7 +107,7 @@ def _qwen3_get_prompt_updates(
 
         num_tokens = int(grid_thw.prod()) // merge_length
 
-        if scc_should_run(num_tokens):
+        if scc_should_run(num_tokens, MM_SCC_MAX_TOKENS_PER_ITEM):
             r = [hf_processor.image_token_id] * scc_shrink(num_tokens, MM_SCC_RATE)
         else:
             r = [hf_processor.image_token_id] * num_tokens
@@ -132,7 +132,7 @@ def _qwen3_get_prompt_updates(
         num_frames = int(grid_thw[0])
         tokens_per_frame_base = int(grid_thw[1:].prod()) // merge_length
 
-        if scc_should_run(tokens_per_frame_base):
+        if scc_should_run(tokens_per_frame_base, MM_SCC_MAX_TOKENS_PER_ITEM):
             tokens_per_frame = [scc_shrink(tokens_per_frame_base, MM_SCC_RATE)] * num_frames
         else:
             tokens_per_frame = [tokens_per_frame_base] * num_frames
@@ -189,7 +189,7 @@ def _qwen3_process_image_input(self, image_input: Qwen2_5_VLImageInputs):
     image_embeds_out = []
 
     for emb, size in zip(image_embeds_split, grid_thw):
-        if scc_should_run(emb.shape[0]):
+        if scc_should_run(emb.shape[0], MM_SCC_MAX_TOKENS_PER_ITEM):
             r = scc_compress_to_target(emb, scc_shrink(emb.shape[0], MM_SCC_RATE), 1, 0, MM_SCC_TAU, MM_SCC_EPSILON)
 
             emb = r
@@ -232,7 +232,7 @@ def _qwen3_process_video_input(self, video_input: Qwen2_5_VLVideoInputs) -> tupl
 
         token_per_frame = h * w // merge_size // merge_size
 
-        if scc_should_run(token_per_frame):
+        if scc_should_run(token_per_frame, MM_SCC_MAX_TOKENS_PER_ITEM):
             emb = scc_compress_to_target(
                 emb,
                 scc_shrink(token_per_frame, MM_SCC_RATE) * num_frames,
@@ -282,7 +282,7 @@ def _qwen3_iter_mm_grid_hw(
             assert t == 1, f"Image must have 1 frame, got {t}"
             llm_grid_h = h // spatial_merge_size
             llm_grid_w = w // spatial_merge_size
-            if scc_should_run(llm_grid_h * llm_grid_w):
+            if scc_should_run(llm_grid_h * llm_grid_w, MM_SCC_MAX_TOKENS_PER_ITEM):
                 yield offset, llm_grid_h, llm_grid_w, scc_shrink(llm_grid_h * llm_grid_w, MM_SCC_RATE)
             else:
                 yield offset, llm_grid_h, llm_grid_w, llm_grid_h * llm_grid_w
