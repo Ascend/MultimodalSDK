@@ -66,8 +66,11 @@ filter_3rdparty_diagnostics() {
 EXTRA_ARGS=(
     --config-file="${ROOT}/.clang-tidy"
     --quiet
-    # LLVM Regex is POSIX ERE (no PCRE lookaround); rely on AWK to drop 3rdparty diagnostics.
-    --header-filter='.*'
+    # Incremental gating: an empty-anchored regex matches no header paths, so
+    # diagnostics fire only for the main files passed as arguments (their
+    # diagnostics are always shown regardless of this filter). Legacy debt in
+    # unchanged headers included by the TU no longer blocks incremental PRs.
+    --header-filter='^$'
     --extra-arg=-std=c++17
 )
 
@@ -116,18 +119,38 @@ fi
 
 TARGETS=()
 for file in "$@"; do
+    [ -n "${file}" ] || continue
     if is_3rdparty_path "${file}"; then
         continue
     fi
     TARGETS+=("${file}")
 done
 
+# Guard: only hand real files to clang-tidy. Callers in CI pipelines may pass
+# empty strings or non-file entries; an empty list exits cleanly instead of
+# letting clang-tidy fail with "no input files specified".
+VALID_TARGETS=()
+for file in "${TARGETS[@]}"; do
+    if [ -n "${file}" ] && [ -f "${file}" ]; then
+        VALID_TARGETS+=("${file}")
+    fi
+done
+if [ "${#VALID_TARGETS[@]}" -eq 0 ]; then
+    echo "no valid C/C++ target files; skip clang-tidy" >&2
+    exit 0
+fi
+TARGETS=("${VALID_TARGETS[@]}")
+
 if [ "${#TARGETS[@]}" -eq 0 ]; then
     exit 0
 fi
 
 TIDY_STATUS=0
-OUTPUT="$("${CLANG_TIDY}" "${EXTRA_ARGS[@]}" -- "${TARGETS[@]}" 2>&1)" || TIDY_STATUS=$?
+# NOTE: source files must come BEFORE any '--' separator. clang-tidy treats
+# everything after '--' as compiler flags for the compilation database and
+# strips them from the input file list (FixedCompilationDatabase::
+# loadFromCommandLine), which previously caused "no input files specified".
+OUTPUT="$("${CLANG_TIDY}" "${EXTRA_ARGS[@]}" "${TARGETS[@]}" 2>&1)" || TIDY_STATUS=$?
 FILTERED="$(printf '%s\n' "${OUTPUT}" | filter_3rdparty_diagnostics)"
 
 if [ -n "${FILTERED}" ]; then

@@ -15,8 +15,8 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
-from typing import Tuple
-from .._impl import acc as _acc
+# `acc` is provided by the SWIG `_acc` extension at runtime
+from .._impl import acc as _acc  # pylint: disable=no-name-in-module
 from .image_wrapper import Image
 from .util import _ensure_bytes
 
@@ -47,3 +47,25 @@ def video_decode(video_path: str | bytes, device: str | bytes, frame_indices: se
     for frame in frames:
         result.append(Image._from_acc(frame))
     return result
+
+
+def video_info(video_path: str | bytes) -> dict:
+    """Video metadata api (no decoding). Validation rules are identical to
+    video_decode: mp4/MP4 suffix, permission <= 0640, not a symbolic link,
+    owned by the current user.
+
+    Args:
+        video_path (str | bytes): given video path
+
+    Returns:
+        dict: {"fps": float, "n_frames": int, "duration_sec": float}.
+            duration_sec uses the video stream duration (container duration as
+            fallback), not n_frames / fps.
+    """
+    path_bytes = _ensure_bytes(video_path, "path")
+    info = _acc.video_info(path_bytes)
+    return {
+        "fps": float(info.fps),
+        "n_frames": int(info.nFrames),
+        "duration_sec": float(info.durationSec),
+    }

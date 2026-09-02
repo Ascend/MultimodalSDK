@@ -9,17 +9,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-def create_path(file_name):
-    file_path = os.path.join(TEST_HW_USER_VIDEO_PATH, file_name)
-    if os.path.exists(file_path):
-        os.remove(file_path)
-        msg = f"{file_path} removed"
-        logger.info(msg)
-    return file_path
-
-
-def test_decode_not_mp4_mp4(capsys):
-    file_path = create_path("not_mp4.mp4")
+def test_decode_not_mp4_mp4(capsys, tmp_path):
+    # TEST_HW_USER_VIDEO_PATH is a read-only dataset mount in CI, so the fixture
+    # file must be created in the writable pytest tmp dir instead.
+    file_path = str(tmp_path / "not_mp4.mp4")
     with open(file_path, "w", encoding="utf-8") as f:
         f.write("test\n")
     os.chmod(file_path, 0o640)

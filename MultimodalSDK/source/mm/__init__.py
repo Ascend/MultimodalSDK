@@ -24,6 +24,7 @@ from .acc import (
     DeviceMode,
     Interpolation,
     video_decode,
+    video_info,
     normalize,
     load_audio,
 )
@@ -42,6 +43,7 @@ __all__ = [
     'DeviceMode',
     'Interpolation',
     'video_decode',
+    'video_info',
     'normalize',
     'MultimodalQwen2VLImageProcessor',
     'InternVL2PreProcessor',
