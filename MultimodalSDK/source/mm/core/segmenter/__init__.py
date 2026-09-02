@@ -15,7 +15,7 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
-"""KTS video segmentation package (internal building blocks).
+"""Video segmentation package: KTS building blocks and embedding backends.
 
 ``kts_algorithm`` provides the stateless KTS algorithm functions and
 ``kts_cache`` the on-disk analysis cache. Both are internals of the
@@ -23,4 +23,15 @@ segmentation pipeline and are intentionally not re-exported here: they are
 not part of the customer-facing API. The public entry point is the
 orchestrator ``KtsSegmenter`` (kts_segmenter.py), which imports these
 submodules directly.
+
+``embedding_backend`` provides the embedding API used by the pipeline
+(``EmbeddingBackend`` / ``OpenAIEmbeddingBackend``); these classes are
+re-exported here for callers of this package.
 """
+
+__all__ = [
+    "EmbeddingBackend",
+    "OpenAIEmbeddingBackend",
+]
+
+from .embedding_backend import EmbeddingBackend, OpenAIEmbeddingBackend
