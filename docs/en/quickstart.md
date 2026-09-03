@@ -25,29 +25,29 @@ Before you begin, please confirm:
 
 3. **Image Pull Example**
 
-   The image Tag format is `{version}-{chip}-{os}-{python}-{arch}`, with the following variables:
+   The image Tag format is `{version}-{cann}-{torch_npu}-910b-{os}-{python}-aarch64`, with the following variables:
 
    | Variable | Description | Example |
    |------|------|--------|
-   | `{version}` | Multimodal SDK version | `26.0.0` |
-   | `{chip}` | Ascend chip series | `910b` |
+   | `{version}` | Multimodal SDK version | `26.1.0` |
+   | `{cann}` | CANN version, including the `cann` prefix | `cann9.1.0` |
+   | `{torch_npu}` | torch_npu version, including the `torch_npu` prefix | `torch_npu2.6.0.post5` |
    | `{os}` | Base operating system | `ubuntu22.04` / `openeuler24.03` |
-   | `{python}` | Python version | `py3.11` |
-   | `{arch}` | CPU architecture | `aarch64` / `x86_64` |
+   | `{python}` | Python version | `py3.12` |
 
    ```bash
-   TAG={version}-{chip}-{os}-{python}-{arch}
+   TAG={version}-{cann}-{torch_npu}-910b-{os}-{python}-aarch64
    docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:${TAG}
    docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:${TAG} \
        multimodalsdk:${TAG}
    ```
 
-   Using version 26.0.0, 910b chip, Ubuntu 22.04, Python 3.11, aarch64 architecture as an example:
+   Using Multimodal SDK 26.1.0, CANN 9.1.0, torch_npu 2.6.0.post5, 910b chip, Ubuntu 22.04, Python 3.12, and aarch64 architecture as an example:
 
    ```bash
-   docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64
-   docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64 \
-       multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64
+   docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64
+   docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64 \
+       multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64
    ```
 
 ## Step 2: Start the Container
@@ -70,7 +70,7 @@ docker run \
     -v /usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64 \
     -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
     -v /etc/ascend_install.info:/etc/ascend_install.info \
-    -itd multimodalsdk:26.0.0-910b-ubuntu22.04-py3.11-aarch64 bash
+    -itd multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64 bash
 ```
 
 ## Step 3: Enter the Container and Load the Environment
