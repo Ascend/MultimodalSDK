@@ -1,361 +1,113 @@
 # patcher
 
+> 简介：本节描述 Multimodal SDK 在 vLLM 中提供的特性开关。通过设置以下环境变量，可以在**不修改 vLLM 源码**的前提下开启 SCC 视觉 token 压缩、预处理加速等能力。
+
+---
+
 ## 公共前置条件
 
-使用以下任一 patcher 前，请完成以下准备工作：
+使用以下任一特性前，请完成以下准备工作：
 
-- 目前仅支持从 vllm-ascend 社区获取 **v0.8.5rc1** 镜像版。
-- 镜像安装方式请参见 [vllm-ascend](https://vllm-ascend.readthedocs.io/en/v0.8.5rc1/installation.html)，安装时请选择 **Using docker**（从容器中安装）。
-- 在镜像中使用 Multimodal SDK 能力时，请首先执行以下命令：
+- 安装 Multimodal SDK。
 
-```bash
-export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver:$LD_LIBRARY_PATH
-```
-
-> [!NOTE]
-> 使用 qwen2_vl_image_processor_patcher 或 internvl2_image_processor_patcher 时，还需保证 transformers 版本为 **4.51.3**。Multimodal SDK 官方镜像已包含该版本；若在自定义环境中使用，请执行 `python3 -c "import transformers; print(transformers.__version__)"` 确认版本。
-
-本文档仅提供通过社区获取镜像的使用方式。对于其他使用方式，需自行找到以下所提到的文件并执行操作。
+> Multimodal SDK 以 vLLM plugin 的方式被自动加载（vLLM 启动时会扫描 `mm.patcher.vllm` 入口）。
 
 ---
 
-## video_patcher
+## 环境变量
 
-该补丁为 vllm 视频解码提供加速能力，可以大幅度提升视频文件的读取、解码效率。
+下表中的所有变量在 vLLM 启动时被 `mm.patcher.vllm.patch()` 一次性读取，并决定是否激活对应的 monkey patch。
 
-前置条件请参见 [公共前置条件](#公共前置条件)。
+| 环境变量 | 类型 | 取值范围 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `MM_SCC_RATE` | float | `(0, 1]` | `1.0` | SCC 视觉 token 压缩比。`1.0` 表示关闭压缩；值越小，压缩后保留的 token 越少，推理越快，但可能损失精度。 |
+| `MM_SCC_TAU` | float | `(0, 1]` | `0.95` | SCC 划分的余弦相似度阈值。值越高，合并条件越严格，信息损失越小，压缩收益越弱。 |
+| `MM_SCC_EPSILON` | float | `(0, 1)` | `0.05` | 近似 Union-Find 的采样误差容忍度，仅 CPU 回退路径使用。 |
+| `MM_SCC_MAX_TOKENS_PER_ITEM` | int | `[0, 65536]` | `8192` | 单样本 token 上限。超过该值的样本**不参与 SCC 压缩**，直接送 LLM。`0` 表示不限制。 |
+| `MM_PREPROCESSOR` | bool | `true` / `false` | `false` | 开启 SDK 的图像/视频预处理加速（走 `mm.core.processor.resize_and_normalize`）。 |
 
-**使用方式**
+任意一个变量设为非法值时，Multimodal SDK 会在 vLLM 日志中打印 warning 并回退到默认值，不会让 vLLM 启动失败。
 
-在 vllm 包的 `utils.py` 文件中添加如下内容，该文件路径在镜像中的位置为 `/vllm-workspace/vllm/vllm/multimodal/utils.py`：
+### 关闭 SDK 加速
 
-```python
-import mm.patcher.vllm.video_patcher
-```
+- **关闭 SCC 视觉 token 压缩**：`MM_SCC_RATE=1.0`（或留空使用默认值）。
+- **关闭预处理加速**：`MM_PREPROCESSOR=false`（或留空）。
 
-共计需要添加一个位置，在文件头添加以上内容即可，如下图所示。
-
-![在 vllm/multimodal/utils.py 文件头部添加 import 语句](../figures/zh-cn_image_0000002466503489.png)
-
-添加成功后，当使用 vllm 服务并传入视频文件数据时，若可以看到如下提示信息，则表示使用成功。
-
-```text
-load_file: Multimodal SDK Video Patcher Enabled!
-```
-
-> [!NOTE]
-> 当前加速能力仅针对视频文件，且格式应为 mp4，文件权限不应高于 640。
-
-**示例请求**
-
-以下 curl 命令向 vllm 服务化的 OpenAI 兼容接口 `/v1/chat/completions` 发送视频推理请求。请将 `<host>`、`<port>`、模型路径及视频文件路径替换为实际值后再执行。其他 vllm 参数请参见 [vllm 官方文档](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api)。
-
-```bash
-curl -X POST "http://<host>:<port>/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "/home/Qwen2-VL-7B-Instruct",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "video_url",
-            "video_url": {
-              "url": "file:/home/234_chunk_0001.mp4"
-            }
-          },
-          {
-            "type": "text",
-            "text": "describe the video"
-          }
-        ]
-      }
-    ],
-    "max_tokens": 100,
-    "temperature": 0,
-    "top_p": 0.1,
-    "stream": false
-  }'
-```
-
-**关键参数说明**
-
-| 参数 | 说明 |
-| -- | -- |
-| `model` | vllm 服务启动时加载的模型路径，需与启动参数 `--model` 一致。 |
-| `messages` | 对话消息列表；`role` 通常为 `user`，`content` 为文本与多模态内容的数组。 |
-| `content[].type` | 多模态内容类型。视频请求使用 `video_url`，文本提示使用 `text`。 |
-| `content[].video_url.url` | 本地视频路径，使用 `file:` 协议前缀；须为 **mp4** 格式，文件权限不应高于 **640**（参见上文注意事项）。 |
-| `content[].text` | 针对视频的文本提示词。 |
-| `max_tokens` | 生成回复的最大 token 数。 |
-| `temperature` / `top_p` | 采样参数，控制输出随机性；设为 `0` 与较小 `top_p` 时输出更稳定。 |
-| `stream` | 是否以流式方式返回结果；`false` 表示等待完整响应后一次性返回。 |
+关闭行为不影响 vLLM 服务本身启动，只是不再注入对应的 monkey patch。
 
 ---
 
-## qwen2_vl_image_processor_patcher
+## 适用模型
 
-该补丁为 vllm 在使用 Qwen2-VL 模型时的图像/视频预处理提供加速能力，对比 transformers 的预处理时延可大幅度缩短。
+设置上述环境变量后，SCC 与预处理加速会在以下模型上自动生效（vLLM 加载到对应模型类时，Multimodal SDK 会按需注入 monkey patch）：
 
-前置条件请参见 [公共前置条件](#公共前置条件)（含 transformers 4.51.3 要求）。
+| 模型 | SCC 视觉 token 压缩 | 预处理加速 |
+| --- | --- | --- |
+| **Qwen2.5-VL-7B-Instruct** | ✓ | ✓ |
+| **Qwen3-VL-8B-Instruct** | ✓ | ✓ |
+| **Qwen3.5-9B** | ✓ | ✓ |
+| **Qwen3.6-27B** | ✓ | ✓ |
 
-**使用方式**
-
-在 vllm 包的 `processor.py` 文件中添加如下内容，该文件路径在镜像中的位置为 `/vllm-workspace/vllm/vllm/transformers_utils/processor.py`：
-
-```python
-import mm.patcher.vllm.qwen2_vl_image_processor_patcher
-```
-
-共计需要添加以下两个位置：
-
-- 在函数 `get_processor` 中的 `from transformers import AutoProcessor` 的前一行添加，若使用容器，则为 62~63 行，如下图所示。
-
-  ![在 get_processor 函数中添加 patcher import 语句](../figures/zh-cn_image_0000002466503549.png)
-
-- 在函数 `get_image_processor` 中的 `from transformers import AutoImageProcessor` 的前一行添加，若使用容器，则为 174~175 行，如下图所示。
-
-  ![在 get_image_processor 函数中添加 patcher import 语句](../figures/zh-cn_image_0000002466423417.png)
-
-添加成功后，当正常运行 vllm 服务时，在正常对话后若可以看到如下提示信息，则表示使用了多模态 Qwen2-VL 图像/视频预处理加速功能。
-
-```text
-get_image_processor_class_from_name: Multimodal SDK Qwen2 VL Image Patcher Enabled!
-```
-
-**示例请求**
-
-以下 curl 命令向 vllm 服务化的 OpenAI 兼容接口 `/v1/chat/completions` 发送推理请求。请将 `<host>`、`<port>`、模型路径及媒体文件路径替换为实际值后再执行。其他 vllm 参数请参见 [vllm 官方文档](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api)。
-
-**视频示例**
-
-```bash
-curl -X POST "http://<host>:<port>/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "/home/Qwen2-VL-7B-Instruct",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "video_url",
-            "video_url": {
-              "url": "file:/home/234_chunk_0001.mp4"
-            }
-          },
-          {
-            "type": "text",
-            "text": "describe the video"
-          }
-        ]
-      }
-    ],
-    "max_tokens": 100,
-    "temperature": 0,
-    "top_p": 0.1,
-    "stream": false
-  }'
-```
-
-**图像示例**
-
-```bash
-curl -X POST "http://<host>:<port>/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "/home/Qwen2-VL-7B-Instruct",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "image_url",
-            "image_url": {
-              "url": "file:/home/test.jpg"
-            }
-          },
-          {
-            "type": "text",
-            "text": "describe the image"
-          }
-        ]
-      }
-    ],
-    "max_tokens": 100,
-    "temperature": 0,
-    "top_p": 0.1,
-    "stream": false
-  }'
-```
-
-**关键参数说明**
-
-| 参数 | 说明 |
-| -- | -- |
-| `model` | vllm 服务启动时加载的模型路径，需与启动参数 `--model` 一致。 |
-| `messages` | 对话消息列表；`role` 通常为 `user`，`content` 为文本与多模态内容的数组。 |
-| `content[].type` | 多模态内容类型。视频请求使用 `video_url`，图像请求使用 `image_url`，文本提示使用 `text`。 |
-| `content[].video_url.url` | 本地视频路径，使用 `file:` 协议前缀。 |
-| `content[].image_url.url` | 本地图像路径，使用 `file:` 协议前缀。 |
-| `content[].text` | 针对视频或图像的文本提示词。 |
-| `max_tokens` | 生成回复的最大 token 数。 |
-| `temperature` / `top_p` | 采样参数，控制输出随机性；设为 `0` 与较小 `top_p` 时输出更稳定。 |
-| `stream` | 是否以流式方式返回结果；`false` 表示等待完整响应后一次性返回。 |
+其他模型不涉及 patch 操作，因此不受影响。
 
 ---
 
-## image_patcher
+## 版本与分支对应
 
-该补丁为 vllm 图片解码提供加速能力，可以大幅度提升图片文件的读取、解码效率。
+Multimodal SDK 历史上针对 **vllm-ascend** 各版本提供过不同的 patch，不同 patch 适配的 vLLM 入口 API 互不兼容，需要在对应分支查看。
+本节只说明各版本支持的模型以及加速的部分，具体 SCC / 预处理操作请参见上文 [环境变量](#环境变量) 与 [启动 vLLM](#启动-vllm)。
 
-前置条件请参见 [公共前置条件](#公共前置条件)。
+| 适配的 vllm-ascend | 分支 | 支持的模型 | 加速的部分 |
+| --- | --- | --- | --- |
+| **v0.23.0rc1**（本文档默认） | `master` | Qwen2.5-VL · Qwen3-VL · Qwen3.5-VL · Qwen3.6-VL | SCC 视觉 token 压缩；图像 / 视频预处理加速 |
+| **v0.8.5rc1** | `branch_v26.0.0` · `branch_v26.1.0` | Qwen2-VL · InternVL2 | 视频解码加速；Qwen2-VL / InternVL2 图像预处理加速 |
 
-**使用方式**
-
-在 vllm 包的 `utils.py` 文件中添加如下内容，该文件路径在镜像中的位置为 `/vllm-workspace/vllm/vllm/multimodal/utils.py`：
-
-```python
-import mm.patcher.vllm.image_patcher
-```
-
-在文件头位置添加以上内容即可，如下图所示。
-
-![在 vllm/multimodal/utils.py 文件头部添加 image_patcher import 语句](../figures/zh-cn_image_0000002469675597.png)
-
-添加成功后，当使用 vllm 服务并传入图像文件数据时，若可以看到如下提示信息，表示使用成功。
-
-```text
-load_file: Multimodal SDK Image Patcher Enabled!
-```
-
-> [!NOTE]
-> 当前加速能力仅针对 jpeg 图像，且文件后缀应为 jpg 或 jpeg，文件权限不应高于 640。
-
-**示例请求**
-
-以下 curl 命令向 vllm 服务化的 OpenAI 兼容接口 `/v1/chat/completions` 发送图像推理请求。请将 `<host>`、`<port>`、模型路径及图像文件路径替换为实际值后再执行。其他 vllm 参数请参见 [vllm 官方文档](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api)。
-
-```bash
-curl -X POST "http://<host>:<port>/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "/home/models/internVL2",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "image_url",
-            "image_url": {
-              "url": "file:/home/test.jpg"
-            }
-          },
-          {
-            "type": "text",
-            "text": "describe the image"
-          }
-        ]
-      }
-    ],
-    "max_tokens": 100,
-    "temperature": 0.1,
-    "top_p": 0.1,
-    "stream": false
-  }'
-```
-
-**关键参数说明**
-
-| 参数 | 说明 |
-| -- | -- |
-| `model` | vllm 服务启动时加载的模型路径，需与启动参数 `--model` 一致。 |
-| `messages` | 对话消息列表；`role` 通常为 `user`，`content` 为文本与多模态内容的数组。 |
-| `content[].type` | 多模态内容类型。图像请求使用 `image_url`，文本提示使用 `text`。 |
-| `content[].image_url.url` | 本地图像路径，使用 `file:` 协议前缀；须为 **jpeg** 格式，文件后缀为 **jpg** 或 **jpeg**，文件权限不应高于 **640**（参见上文注意事项）。 |
-| `content[].text` | 针对图像的文本提示词。 |
-| `max_tokens` | 生成回复的最大 token 数。 |
-| `temperature` / `top_p` | 采样参数，控制输出随机性。 |
-| `stream` | 是否以流式方式返回结果；`false` 表示等待完整响应后一次性返回。 |
-
-## 常见问题与排障
-
-| 现象 | 处理方式 |
-| -- | -- |
-| 未看到 `Multimodal SDK ... Patcher Enabled!` 提示 | 确认已在文档指定文件和位置添加对应 `import mm.patcher.vllm...` 语句，并重启 vllm 服务。 |
-| 图像或视频读取失败 | 确认文件路径使用 `file:` 协议前缀，文件格式满足当前 patcher 约束，且文件权限不高于 640。 |
-| transformers 版本不匹配 | 在容器内执行 `python3 -c "import transformers; print(transformers.__version__)"`，确认版本为 4.51.3。 |
-| 仍无法定位问题 | 查看 vllm 服务日志，并参见[附录 > 错误码](../06_references/appendix.md#错误码)排查文件权限、路径、格式等错误。 |
+> **功能详解口径**：本文档**只**针对 `master` 分支下的 vllm-ascend v0.23.0rc1 描述；`branch_v26.x` 版本的旧 patch 使用另一套接入方式，具体用法请查阅对应分支的 `patcher.md`文档。
 
 ---
 
-## internvl2_image_processor_patcher
+## 启动 vLLM
 
-该补丁为 vllm 在使用 InternVL2 模型时的图像处理提供加速能力。
-
-前置条件请参见 [公共前置条件](#公共前置条件)（含 transformers 4.51.3 要求）。
-
-**使用方式**
-
-在 vllm-ascend 包的文件中添加如下内容，该文件路径在镜像中的位置为 `/vllm-workspace/vllm-ascend/vllm_ascend/patch/worker/patch_common/__init__.py`：
-
-```python
-import mm.patcher.vllm.internvl2_image_processor_patcher
-```
-
-添加位置如下图所示：
-
-![在 patch_common/__init__.py 中添加 internvl2_patcher import 语句](../figures/zh-cn_image_0000002436163564.png)
-
-添加成功后，当正常运行 vllm 服务时，在正常对话后若可以看到如下提示信息，表示使用了多模态 InternVL2 图像预处理加速功能。
-
-```text
-_images_to_pixel_values_lst: Multimodal SDK InternVL2 Image Patcher Enabled!
-```
-
-**示例请求**
-
-以下 curl 命令向 vllm 服务化的 OpenAI 兼容接口 `/v1/chat/completions` 发送图像推理请求。请将 `<host>`、`<port>`、模型路径及图像文件路径替换为实际值后再执行。其他 vllm 参数请参见 [vllm 官方文档](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api)。
+设置好环境变量之后，**直接使用原生的 `vllm serve` 命令即可**，无需任何额外 SDK 侧参数。例如，启用 SCC + 预处理加速跑 Qwen3-VL-8B-Instruct：
 
 ```bash
-curl -X POST "http://<host>:<port>/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "/home/models/internVL2",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "image_url",
-            "image_url": {
-              "url": "file:/home/test.jpg"
-            }
-          },
-          {
-            "type": "text",
-            "text": "describe the image"
-          }
-        ]
-      }
-    ],
-    "max_tokens": 100,
-    "temperature": 0.1,
-    "top_p": 0.1,
-    "stream": false
-  }'
+MM_SCC_RATE=0.5 \
+MM_SCC_TAU=0.95 \
+MM_SCC_EPSILON=0.05 \
+MM_SCC_MAX_TOKENS_PER_ITEM=8192 \
+MM_PREPROCESSOR=true \
+vllm serve /models/Qwen3-VL-8B-Instruct \
+    --host 0.0.0.0 \
+    --port 9000
 ```
 
-**关键参数说明**
+### 确认 patch 生效
 
-| 参数 | 说明 |
-| -- | -- |
-| `model` | vllm 服务启动时加载的模型路径，需与启动参数 `--model` 一致。 |
-| `messages` | 对话消息列表；`role` 通常为 `user`，`content` 为文本与多模态内容的数组。 |
-| `content[].type` | 多模态内容类型。图像请求使用 `image_url`，文本提示使用 `text`。 |
-| `content[].image_url.url` | 本地图像路径，使用 `file:` 协议前缀。 |
-| `content[].text` | 针对图像的文本提示词。 |
-| `max_tokens` | 生成回复的最大 token 数。 |
-| `temperature` / `top_p` | 采样参数，控制输出随机性。 |
-| `stream` | 是否以流式方式返回结果；`false` 表示等待完整响应后一次性返回。 |
+启动日志里，在开始部分如能看到下列任一行，即说明对应 patch 已被加载：
+
+| 日志关键字 | 含义 |
+| --- | --- |
+| `patch scc rate=<value>` | SCC 视觉 token 压缩已注入（`MM_SCC_RATE < 1.0`） |
+| `patch MultimodalSDK preprocessor` | 图像 / 视频预处理加速已注入（`MM_PREPROCESSOR=true`） |
+
+如下图所示，启动日志中包含 SCC 视觉 token 压缩已注入（`MM_SCC_RATE < 1.0`）的提示行。
+
+![scc_patch_log](../figures/patch_apply.png)
+
+---
+
+## 常见参数调优
+
+| 场景 | 推荐调整 |
+| --- | --- |
+| 掉点明显 | 收紧 `MM_SCC_TAU`（如 `0.98`），或适当提高 `MM_SCC_RATE`（如 `0.7`）。 |
+| 想要更激进的压缩 | 降低 `MM_SCC_RATE`（如 `0.3`）。 |
+
+---
+
+## 参考资料
+
+- `MultimodalSDK/source/mm/patcher/vllm/__init__.py` — 插件入口与开关逻辑
+- `MultimodalSDK/source/mm/patcher/vllm/constants.py` — 环境变量定义与校验
+- `MultimodalSDK/source/mm/core/scc/compressor.py` — SCC 视觉 token 压缩算法
+- `MultimodalSDK/source/mm/core/processor.py` — `resize_and_normalize` 实现
