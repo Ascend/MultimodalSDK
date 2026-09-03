@@ -28,7 +28,7 @@
 
 *在指定数据集、场景和模型的前提下，达成：*
 
-1. *支持Qwen3-VL系列模型（Qwen3-VL-8B-Instruct、Qwen3.5-9B、Qwen3.6-27B）的token压缩*
+1. *支持Qwen3-VL系列模型（Qwen3-VL-8B-Instruct、Qwen3.5-35B-A3B、Qwen3.6-27B）的token压缩*
 2. *保持Qwen2.5-VL模型的向后兼容*
 3. *精度变化：token压缩后的精度相对原始模型下降不超过1个点*
 4. *速度提升：token压缩后推理速度提升不低于20%*
@@ -40,7 +40,7 @@
 *适配模型*
 
 1. Qwen/Qwen3-VL-8B-Instruct
-2. Qwen/Qwen3.5-9B
+2. Qwen/Qwen3.5-35B-A3B
 3. Qwen/Qwen3.6-27B
 
 *测试框架与数据集*
@@ -77,7 +77,7 @@
 1. 新增SCC（Self-Clustering Compression）token压缩代码
 2. 新增patch入口，搭配vllm的插件机制激活
 3. 通过环境变量控制SCC压缩的开启和参数配置
-4. 支持Qwen3-VL系列模型（Qwen3-VL-8B-Instruct、Qwen3.5-9B、Qwen3.6-27B）
+4. 支持Qwen3-VL系列模型（Qwen3-VL-8B-Instruct、Qwen3.5-35B-A3B、Qwen3.6-27B）
 
 *兼容性范围与限制*
 
@@ -89,7 +89,7 @@
 
 *基于升级vllm-ascend 0.23.0 + Qwen3-VL的方案*
 
-1. 支持Qwen3-VL-8B-Instruct、Qwen3.5-9B、Qwen3.6-27B等多款模型
+1. 支持Qwen3-VL-8B-Instruct、Qwen3.5-35B-A3B、Qwen3.6-27B等多款模型
 2. 兼容上游vllm-ascend升级节奏
 3. 保留对Qwen2.5-VL的向后兼容
 
@@ -122,13 +122,13 @@
 2. OS：Ubuntu 22.04
 3. Arch：aarch64
 4. 编程语言：Python
-5. 模型依赖：Qwen/Qwen3-VL-8B-Instruct、Qwen/Qwen3.5-9B、Qwen/Qwen3.6-27B、vllm-ascend 0.23.0、Processor等
+5. 模型依赖：Qwen/Qwen3-VL-8B-Instruct、Qwen/Qwen3.5-35B-A3B、Qwen/Qwen3.6-27B、vllm-ascend 0.23.0、Processor等
 
 ***可验收设计：**提供相应功能、性能指标等的验收环境、标准或用例设计，保证最终的实现可达成既定目标。*
 
 *精度验收*
 
-1. 基于lmms-eval测试框架，覆盖Qwen3-VL-8B-Instruct、Qwen3.5-9B、Qwen3.6-27B三款模型在VideoMME数据集上的精度评估
+1. 基于lmms-eval测试框架，覆盖Qwen3-VL-8B-Instruct、Qwen3.5-35B-A3B、Qwen3.6-27B三款模型在VideoMME数据集上的精度评估
 2. 对比token压缩前后的精度变化，确保压缩后精度相对原始模型下降不超过1个点
 3. 评测指标：准确率（Accuracy）、子任务准确率
 
@@ -167,7 +167,7 @@
 | 模型                      | 说明                 |
 | ------------------------- | -------------------- |
 | Qwen/Qwen3-VL-8B-Instruct | Qwen3-VL-8B-Instruct |
-| Qwen/Qwen3.5-9B           | Qwen3.5-9B           |
+| Qwen/Qwen3.5-35B-A3B           | Qwen3.5-35B-A3B           |
 | Qwen/Qwen3.6-27B          | Qwen3.6-27B          |
 | Qwen2-VL-7B-Instruct      | Qwen2.5-VL（兼容）   |
 
