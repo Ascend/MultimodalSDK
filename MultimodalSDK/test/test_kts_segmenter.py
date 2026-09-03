@@ -25,9 +25,7 @@ so results are independent of chunk/batch ordering.
 
 NOTE (PR4 form): the mm.acc pre-stub block lives in test/conftest.py
 (shared by all KTS test modules); pure-function test cases for
-kts_algorithm / kts_cache live in their own modules. Only the wired
-pipeline-level cases below ship with PR4. The A/B/C/E/F groups were
-deferred to PR5 (test completion).
+kts_algorithm / kts_cache live in their own modules.
 """
 
 import os
@@ -145,6 +143,261 @@ def make_segmenter(wired, **kwargs):
     defaults = dict(embed_backend=wired["backend"])
     defaults.update(kwargs)
     return KtsSegmenter(wired["path"], **defaults)
+
+
+# --------------------------------------------------------------------------- #
+
+
+# --------------------------------------------------------------------------- #
+# A. constructor validation
+# --------------------------------------------------------------------------- #
+class TestConstructorValidation:
+    def test_video_path_type_and_emptiness(self):
+        with pytest.raises(TypeError):
+            KtsSegmenter(123, embed_backend=FakeBackend())
+        with pytest.raises(TypeError):
+            KtsSegmenter("", embed_backend=FakeBackend())
+
+    def test_video_path_suffix(self, tmp_path):
+        p = tmp_path / "video.avi"
+        p.write_bytes(b"x")
+        with pytest.raises(ValueError):
+            KtsSegmenter(str(p), embed_backend=FakeBackend())
+
+    def test_video_not_found(self, tmp_path):
+        with pytest.raises(FileNotFoundError):
+            KtsSegmenter(str(tmp_path / "nope.mp4"), embed_backend=FakeBackend())
+
+    def test_backend_or_base_url_required(self, fake_video):
+        with pytest.raises(ValueError):
+            KtsSegmenter(fake_video)  # neither backend nor base_url
+
+    def test_base_url_format(self, fake_video):
+        for bad in ("localhost:8000/v1", "http://host:8000/api", "ftp://x/v1"):
+            with pytest.raises(ValueError):
+                KtsSegmenter(fake_video, embed_base_url=bad)
+
+    def test_embed_backend_type(self, fake_video):
+        with pytest.raises(TypeError):
+            KtsSegmenter(fake_video, embed_backend="not-a-backend")
+
+    def test_numeric_ranges(self, fake_video):
+        bad_cases = [
+            dict(sample_interval_sec=0),
+            dict(sample_interval_sec=-1),
+            dict(sample_interval_sec=3601),
+            dict(target_segment_duration=0),
+            dict(target_segment_duration=86401),
+            dict(min_segment_duration=-1),
+            dict(min_segment_duration=100),
+            dict(lambda_penalty=0),
+            dict(lambda_penalty=-1e-3),
+            dict(boundary_align_window=-1),
+            dict(boundary_align_window=11),
+            dict(jpeg_quality=49),
+            dict(jpeg_quality=101),
+            dict(batch_size=0),
+            dict(embed_workers=0),
+            dict(embed_timeout=0),
+        ]
+        for kwargs in bad_cases:
+            with pytest.raises(ValueError):
+                KtsSegmenter(fake_video, embed_backend=FakeBackend(), **kwargs)
+
+    def test_bool_type_params(self, fake_video):
+        for kwargs in (dict(use_cache=1), dict(keep_frames="yes")):
+            with pytest.raises(TypeError):
+                KtsSegmenter(fake_video, embed_backend=FakeBackend(), **kwargs)
+
+    def test_cache_dir_missing_and_unwritable(self, fake_video, tmp_path, monkeypatch):
+        with pytest.raises(FileNotFoundError):
+            KtsSegmenter(
+                fake_video,
+                embed_backend=FakeBackend(),
+                cache_dir=str(tmp_path / "nope"),
+            )
+        d = tmp_path / "ro"
+        d.mkdir()
+        monkeypatch.setattr(os, "access", lambda p, m: False)
+        with pytest.raises(PermissionError):
+            KtsSegmenter(fake_video, embed_backend=FakeBackend(), cache_dir=str(d))
+
+    def test_progress_callback_not_callable(self, fake_video):
+        with pytest.raises(TypeError):
+            KtsSegmenter(fake_video, embed_backend=FakeBackend(), progress_callback=42)
+
+    def test_posix_owner_and_permission(self, fake_video, monkeypatch):
+        real_stat = os.stat
+
+        class St:
+            st_mode = 0o100644
+            st_uid = 1000
+
+        monkeypatch.setattr(os, "name", "posix")
+        monkeypatch.setattr(os, "getuid", lambda: 1000, raising=False)
+        monkeypatch.setattr(os, "stat", lambda p: St())
+        # owner mismatch
+        monkeypatch.setattr(os, "getuid", lambda: 2000, raising=False)
+        with pytest.raises(PermissionError):
+            KtsSegmenter(fake_video, embed_backend=FakeBackend())
+        # permission 0644 > 0640 (other has read)
+        monkeypatch.setattr(os, "getuid", lambda: 1000, raising=False)
+        with pytest.raises(PermissionError):
+            KtsSegmenter(fake_video, embed_backend=FakeBackend())
+        # 0640 itself is fine
+        St.st_mode = 0o100640
+        KtsSegmenter(fake_video, embed_backend=FakeBackend())
+        # 0600 (subset) is fine
+        St.st_mode = 0o100600
+        KtsSegmenter(fake_video, embed_backend=FakeBackend())
+        assert real_stat(fake_video).st_size > 0
+
+    def test_symlink_rejected(self, tmp_path):
+        target = tmp_path / "real.mp4"
+        target.write_bytes(b"x")
+        link = tmp_path / "link.mp4"
+        try:
+            link.symlink_to(target)
+        except OSError:  # privilege-restricted on Windows
+            pytest.skip("symlink creation not permitted")
+        with pytest.raises(PermissionError):
+            KtsSegmenter(str(link), embed_backend=FakeBackend())
+
+
+# --------------------------------------------------------------------------- #
+# B. 1 fps sampling equivalence — pipeline-level cases
+# (pure grid / mapping cases live in test_kts_algorithm.py)
+# --------------------------------------------------------------------------- #
+class TestSamplingEquivalence:
+    def test_full_flow_writes_one_jpeg_per_sample_point(self, wired):
+        seg = make_segmenter(wired, lambda_penalty=0.5)
+        seg.segment()
+        n = len(seg.sample_times)
+        frame_dir = Path(seg.sample_frame_paths[0]).parent
+        files = sorted(frame_dir.glob("*.jpg"))
+        assert len(files) == n
+        assert [p.name for p in files] == [f"f{i:06d}.jpg" for i in range(n)]
+
+    def test_tail_frame_duplicated(self, wired, monkeypatch):
+        # duration 2.5 s @ 2 fps (5 frames): times [0, 1, 2, 2.5-1e-6]
+        #   -> mapped [0, 2, 4, 4]: the last sample duplicates frame 4's JPEG
+        monkeypatch.setattr(ks_mod, "video_info", make_video_info(fps=2.0, n_frames=5, duration=2.5))
+        wired["decoder"].n_frames = 5
+        seg = make_segmenter(wired, lambda_penalty=0.5)
+        seg.segment()
+        paths = seg.sample_frame_paths
+        assert len(paths) == 4
+        assert Path(paths[2]).read_bytes() == Path(paths[3]).read_bytes()
+        assert Path(paths[0]).read_bytes() != Path(paths[2]).read_bytes()
+        assert wired["decoder"].calls == [[0, 2, 4]]  # frame 4 decoded once
+
+    def test_decode_batches_of_64(self, wired):
+        seg = make_segmenter(wired, lambda_penalty=0.5)
+        seg.segment()
+        # 101 unique frame indices (100 s @ 1 fps) -> 64 + 37
+        assert len(wired["decoder"].calls) == 2
+        assert len(wired["decoder"].calls[0]) == 64
+        assert len(wired["decoder"].calls[1]) == 37
+        all_idx = sorted(i for c in wired["decoder"].calls for i in c)
+        assert all_idx == sorted(set(all_idx))  # each target decoded exactly once
+
+
+# --------------------------------------------------------------------------- #
+# C. lambda auto-calibration
+# --------------------------------------------------------------------------- #
+class TestLambdaCalibration:
+    def _seg_with_table(
+        self,
+        wired,
+        monkeypatch,
+        seg_count_by_lambda,
+        duration=600.0,
+        target=60.0,
+        **kwargs,
+    ):
+        """Patches the DP so lambda L yields len(splits) = seg_count-1."""
+        info = make_video_info(fps=25.0, n_frames=int(duration * 25), duration=duration)
+        monkeypatch.setattr(ks_mod, "video_info", info)
+        wired["decoder"].n_frames = int(duration * 25)
+
+        def fake_dp(P, N, lambda_):  # pylint: disable=invalid-name
+            n = seg_count_by_lambda[lambda_]
+            return list(range(1, n))  # n-1 splits -> n segments after conversion
+
+        # Patch the shared low-level solver, not kts_dp_segment_full:
+        # auto_select_lambda calls _dp_solve directly (the kernel matrix is
+        # precomputed once and reused across the whole grid), and
+        # kts_dp_segment_full delegates to _dp_solve too, so this single
+        # patch covers both the calibration scan and the final DP.
+        monkeypatch.setattr(ka_mod, "_dp_solve", fake_dp)
+        return make_segmenter(
+            wired,
+            target_segment_duration=target,
+            min_segment_duration=0.0,
+            boundary_align_window=0,
+            **kwargs,
+        )
+
+    def test_longest_plateau_first_lambda(self, wired, monkeypatch):
+        # target 60 s / 600 s -> n_target=10, range [5, 20]
+        # plateau of 8-segment lambdas (4 wide) beats the 15-segment one (2 wide)
+        counts = [3, 3, 3, 8, 8, 8, 8, 15, 15, 25, 30, 30, 40, 40, 40, 40, 40, 40, 40]
+        table = dict(zip(LAMBDA_GRID, counts))
+        seg = self._seg_with_table(wired, monkeypatch, table)
+        result = seg.segment()
+        assert result.lambda_penalty == LAMBDA_GRID[3]
+        assert len(result.segments) == 8
+
+    def test_plateau_tie_fewer_segments(self, wired, monkeypatch):
+        # two in-range plateaus of equal width -> fewer segments wins
+        counts = [
+            5,
+            5,
+            5,
+            5,
+            12,
+            12,
+            12,
+            12,
+            25,
+            25,
+            25,
+            25,
+            25,
+            25,
+            25,
+            25,
+            25,
+            25,
+            25,
+        ]
+        table = dict(zip(LAMBDA_GRID, counts))
+        seg = self._seg_with_table(wired, monkeypatch, table)
+        result = seg.segment()
+        assert result.lambda_penalty == LAMBDA_GRID[0]
+        assert len(result.segments) == 5
+
+    def test_empty_in_range_falls_back_to_closest(self, wired, monkeypatch):
+        # all counts out of range [5, 20]; |25-10|=15 is closest (|30-10|=20, |40-10|=30)
+        counts = [30] * 5 + [25] * 6 + [40] * 8
+        table = dict(zip(LAMBDA_GRID, counts))
+        seg = self._seg_with_table(wired, monkeypatch, table)
+        result = seg.segment()
+        assert result.lambda_penalty == LAMBDA_GRID[5]
+        assert len(result.segments) == 25
+
+    def test_explicit_lambda_skips_calibration(self, wired, monkeypatch):
+        calls = {"n": 0}
+
+        def fake_dp(embeds, lambda_, quiet=False):
+            calls["n"] += 1
+            return [len(embeds) // 2]
+
+        monkeypatch.setattr(ka_mod, "kts_dp_segment_full", fake_dp)
+        seg = make_segmenter(wired, lambda_penalty=0.5)
+        seg.segment()
+        assert calls["n"] == 1  # single DP run, no 19-point scan
+        assert seg.lambda_penalty == 0.5
 
 
 # --------------------------------------------------------------------------- #
@@ -279,3 +532,95 @@ class TestSelectFramesCap:
         assert picked_idx == sorted(candidates[int(j)] for j in keep)
         assert len(picked_idx) == 24
         assert picked_idx[0] >= 20
+
+
+# E. caching
+# --------------------------------------------------------------------------- #
+class TestCaching:
+    def test_cache_roundtrip(self, wired):
+        seg1 = make_segmenter(wired, lambda_penalty=0.5)
+        seg1.segment()
+        assert wired["backend"].image_calls == 2
+
+        backend2 = FakeBackend(split_at=50)  # same backend_id
+        seg2 = KtsSegmenter(wired["path"], embed_backend=backend2, lambda_penalty=0.5, use_cache=True)
+        result = seg2.segment()
+        assert backend2.image_calls == 0  # embeddings from cache
+        assert len(wired["decoder"].calls) == 2  # no extra decode
+        assert len(result.segments) == 2
+        assert len(seg2.sample_frame_paths) == 101  # frame files reused
+        assert all(Path(p).is_file() for p in seg2.sample_frame_paths)
+
+    def test_cache_key_contains_backend_id(self, wired):
+        seg1 = make_segmenter(wired, lambda_penalty=0.5)
+        seg1.segment()
+        key1 = seg1._cache.key
+
+        backend2 = FakeBackend(split_at=50, backend_id="fake:v2")
+        seg2 = KtsSegmenter(wired["path"], embed_backend=backend2, lambda_penalty=0.5)
+        assert seg2._cache.key != key1
+        seg2.segment()
+        assert backend2.image_calls == 2  # cache miss -> recompute
+
+    def test_use_cache_false_recomputes(self, wired):
+        seg1 = make_segmenter(wired, lambda_penalty=0.5)
+        seg1.segment()
+        backend2 = FakeBackend(split_at=50)
+        seg2 = KtsSegmenter(wired["path"], embed_backend=backend2, lambda_penalty=0.5, use_cache=False)
+        seg2.segment()
+        assert backend2.image_calls == 2
+
+    def test_keep_frames_false_cleans_files(self, wired):
+        seg = make_segmenter(wired, lambda_penalty=0.5, keep_frames=False)
+        result = seg.segment()
+        assert len(result.segments) == 2
+        assert seg.sample_frame_paths == []
+        frame_dirs = list(Path(wired["path"]).parent.glob(".kts_cache/frames_*"))
+        leftover = [p for d in frame_dirs for p in d.glob("*.jpg")]
+        assert frame_dirs and not leftover
+
+    def test_keep_frames_false_blocks_select_frames(self, wired):
+        seg = make_segmenter(wired, lambda_penalty=0.5, keep_frames=False)
+        seg.segment()
+        with pytest.raises(RuntimeError, match="frame files are unavailable"):
+            seg.select_frames(seg._result.segments)
+
+
+# --------------------------------------------------------------------------- #
+# F. retrieve / select_frames
+# --------------------------------------------------------------------------- #
+class TestRetrieve:
+    def test_requires_segment_first(self, wired):
+        seg = make_segmenter(wired, lambda_penalty=0.5)
+        with pytest.raises(RuntimeError, match="segment\\(\\) must be called"):
+            seg.retrieve("query")
+
+    def test_retrieval_ranking_and_time_order(self, wired):
+        seg = make_segmenter(wired, lambda_penalty=0.5)
+        seg.segment()
+        # "A" -> e0 -> segment 1 (frames < 50) ranks first; result is time-ordered
+        hits = seg.retrieve("A question", top_k=2)
+        assert len(hits) == 2
+        assert hits[0].start_sec == 0.0  # best match, but time order preserved
+        assert hits[1].start_sec == 50.0
+        hits_b = seg.retrieve("B question", top_k=1)  # -> e1 -> segment 2
+        assert hits_b[0].start_sec == 50.0
+        assert wired["backend"].text_calls == 2
+
+    def test_top_k_above_segment_count_returns_all(self, wired):
+        seg = make_segmenter(wired, lambda_penalty=0.5)
+        seg.segment()
+        hits = seg.retrieve("A", top_k=99)
+        assert len(hits) == 2
+
+    def test_query_validation(self, wired):
+        seg = make_segmenter(wired, lambda_penalty=0.5)
+        seg.segment()
+        with pytest.raises(TypeError):
+            seg.retrieve(123)
+        with pytest.raises(ValueError):
+            seg.retrieve("")
+        with pytest.raises(ValueError):
+            seg.retrieve("q", top_k=0)
+        with pytest.raises(ValueError):
+            seg.retrieve("q", top_k=True)  # bool is not an int here
