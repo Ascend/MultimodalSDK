@@ -31,6 +31,7 @@ from .acc import (
 from .comm import LogLevel, register_log_conf
 from .adapter import MultimodalQwen2VLImageProcessor, InternVL2PreProcessor
 from .core import BaseFrameSelector, KFrameSelector, KRangFrameSelector
+from .core import EmbeddingBackend, OpenAIEmbeddingBackend, KtsSegmenter, VideoSegment, SegmentResult
 
 __all__ = [
     'Tensor',
@@ -51,5 +52,10 @@ __all__ = [
     'BaseFrameSelector',
     'KFrameSelector',
     'KRangFrameSelector',
+    'EmbeddingBackend',
+    'OpenAIEmbeddingBackend',
+    'KtsSegmenter',
+    'VideoSegment',
+    'SegmentResult',
 ]
 register_log_conf(LogLevel.INFO, None)

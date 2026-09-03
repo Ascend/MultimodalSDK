@@ -134,21 +134,8 @@ class TestInitValidation:
             OpenAIEmbeddingBackend(base_url=VALID_BASE_URL, max_concurrent=bad_concurrency)
 
     def test_protocol_invalid(self):
-        with pytest.raises(ValueError):
-            OpenAIEmbeddingBackend(base_url=VALID_BASE_URL, protocol="grpc")
-
-    def test_custom_requires_both_functions(self):
-        with pytest.raises(ValueError):
-            OpenAIEmbeddingBackend(base_url=VALID_BASE_URL, protocol="custom")
-
-    def test_custom_functions_must_be_callable(self):
         with pytest.raises(TypeError):
-            OpenAIEmbeddingBackend(
-                base_url=VALID_BASE_URL,
-                protocol="custom",
-                custom_encode_images="not-callable",
-                custom_encode_text=lambda t: [0.0, 1.0],
-            )
+            OpenAIEmbeddingBackend(base_url=VALID_BASE_URL, protocol="grpc")
 
     def test_timeout_passed_to_client(self):
         with patch("openai.OpenAI") as openai_cls:
@@ -174,16 +161,6 @@ class TestInitValidation:
         with patch.dict(sys.modules, {"openai": None}):
             with pytest.raises(ImportError, match="openai"):
                 OpenAIEmbeddingBackend(base_url=VALID_BASE_URL)
-
-    def test_custom_protocol_does_not_import_openai(self):
-        backend = OpenAIEmbeddingBackend(
-            base_url=VALID_BASE_URL,
-            protocol="custom",
-            custom_encode_images=lambda paths: [[1.0, 0.0]] * len(paths),
-            custom_encode_text=lambda text: [1.0, 0.0],
-        )
-        assert backend._client is None
-        backend.close()
 
     def test_backend_id(self):
         with patch("openai.OpenAI"):
@@ -384,62 +361,6 @@ class TestEncodeText:
         client.embeddings.create.return_value = _make_embedding_response([0.0, 0.0])
         vec = backend.encode_text("query")
         np.testing.assert_array_equal(vec, np.array([0.0, 0.0], dtype=np.float32))
-
-
-# ------------------------------------------------------------------ #
-# custom protocol injection
-# ------------------------------------------------------------------ #
-class TestCustomProtocol:
-    def _make_backend(self):
-        def encode_images(paths):
-            return [[float(len(paths)), 1.0] for _ in paths]
-
-        def encode_text(text):
-            return [float(len(text)), 1.0]
-
-        return OpenAIEmbeddingBackend(
-            base_url=VALID_BASE_URL,
-            protocol="custom",
-            custom_encode_images=encode_images,
-            custom_encode_text=encode_text,
-        )
-
-    def test_custom_images_normalized(self, tmp_path):
-        backend = self._make_backend()
-        try:
-            paths = _write_frames(tmp_path, [b"a", b"b"])
-            mat = backend.encode_images(paths)
-            assert mat.shape == (2, 2)
-            np.testing.assert_allclose(np.linalg.norm(mat, axis=1), 1.0, atol=1e-6)
-        finally:
-            backend.close()
-
-    def test_custom_images_wrong_shape(self, tmp_path):
-        backend = self._make_backend()
-        try:
-            paths = _write_frames(tmp_path, [b"a", b"b"])
-            with patch.object(backend, "_custom_encode_images", return_value=[[1.0, 0.0]]):
-                with pytest.raises(RuntimeError, match="expected"):
-                    backend.encode_images(paths)
-        finally:
-            backend.close()
-
-    def test_custom_text_normalized(self):
-        backend = self._make_backend()
-        try:
-            vec = backend.encode_text("abcd")
-            assert vec.shape == (2,)
-            np.testing.assert_allclose(np.linalg.norm(vec), 1.0, atol=1e-6)
-        finally:
-            backend.close()
-
-    def test_chat_path_unavailable(self):
-        backend = self._make_backend()
-        try:
-            with pytest.raises(RuntimeError, match="custom"):
-                backend.encode_text_chat("query")
-        finally:
-            backend.close()
 
 
 # ------------------------------------------------------------------ #
