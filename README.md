@@ -32,8 +32,7 @@ Multimodal SDK 是面向昇腾设备优化的多模态大模型推理预处理�
 | [图像处理](./docs/zh/04_user_guide/user_guide.md#图片处理) | 支持图像读取、resize、crop 及 NumPy 数据转换，适用于多模态模型图片预处理场景 | [链接](./docs/zh/05_api/function_reference.md) |
 | [视频处理](./docs/zh/04_user_guide/user_guide.md#视频处理) | 支持按指定帧 ID 解码或按目标帧数均匀采样，返回可继续处理的 Image 对象列表 | [链接](./docs/zh/05_api/function_reference.md) |
 | [音频处理](./docs/zh/04_user_guide/user_guide.md#音频处理) | 支持单文件、文件列表和目录批量音频加载，并可指定重采样率 | [链接](./docs/zh/05_api/function_reference.md) |
-| [模型预处理适配](./docs/zh/05_api/adapter.md) | 提供 Qwen2VL、InternVL2 等模型预处理适配接口 | [链接](./docs/zh/05_api/adapter.md) |
-| [推理框架补丁](./docs/zh/05_api/patcher.md) | 提供 vLLM 框架预处理加速补丁，便于在现有推理流程中集成加速能力 | [链接](./docs/zh/05_api/patcher.md) |
+| [推理框架补丁](./docs/zh/05_api/patcher.md) | 提供 vLLM 框架补丁，便于在现有推理流程中集成加速能力 | [链接](./docs/zh/05_api/patcher.md) |
 
 ## 🚀 快速入门
 
@@ -54,7 +53,6 @@ API 说明请参考：
 | 文档 | 说明 |
 | --- | --- |
 | [功能函数参考](./docs/zh/05_api/function_reference.md) | Tensor、Image、video_decode、load_audio 等接口说明 |
-| [Adapter](./docs/zh/05_api/adapter.md) | 模型预处理适配接口说明 |
 | [patcher](./docs/zh/05_api/patcher.md) | vLLM 框架预处理加速补丁说明 |
 | [Python 接口说明](./docs/zh/05_api/README.md) | 数据类型枚举与 API 文档入口 |
 

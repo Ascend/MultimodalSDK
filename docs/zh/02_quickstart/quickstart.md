@@ -154,7 +154,6 @@ docker rm multimodal_container
 | 图像 resize/crop 可视化样例 | [样例和指导 > 图片处理](../04_user_guide/user_guide.md#图片处理) |
 | 视频帧解码 | [样例和指导 > 视频处理](../04_user_guide/user_guide.md#视频处理) |
 | 音频加载 | [样例和指导 > 音频处理](../04_user_guide/user_guide.md#音频处理) |
-| Qwen2VL / InternVL2 预处理加速 | [Adapter](../05_api/adapter.md) |
 | vLLM 推理框架集成 | [patcher](../05_api/patcher.md) |
 | API 完整参考 | [功能函数参考](../05_api/function_reference.md) |
 
