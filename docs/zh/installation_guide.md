@@ -10,7 +10,6 @@
 |--|--|
 |Multimodal SDK|多模态软件包|
 
-
 **软件数字签名验证<a name="section10830205518487"></a>**
 
 为了防止软件包在传递过程中或存储期间被恶意篡改，下载软件包时请下载对应的数字签名文件用于完整性验证。
@@ -23,7 +22,6 @@
 
 企业客户请访问：[https://support.huawei.com/enterprise/zh/tool/software-digital-signature-openpgp-validation-tool-TL1000000054](https://support.huawei.com/enterprise/zh/tool/software-digital-signature-openpgp-validation-tool-TL1000000054)
 
-
 ## 安装依赖<a name="ZH-CN_TOPIC_0000002423192164"></a>
 
 ### 安装Ubuntu系统依赖<a name="ZH-CN_TOPIC_0000002423192152"></a>
@@ -33,17 +31,17 @@ Ubuntu系统环境中所需依赖名称、对应版本及获取建议请参见[�
 **表 1** Ubuntu系统依赖名称对应版本
 
 <a name="table20540329125613"></a>
+
 |依赖名称|版本建议|获取建议|
 |--|--|--|
 |Python|3.9及以上|建议通过获取源码包编译安装。|
-|CMake|3.14及以上|建议通过包管理模块安装。|
-|Make|4.1及以上|建议通过包管理模块安装。|
-|GCC|9.4及以上|建议通过包管理模块安装。|
-
+|CMake|3.14及以上|建议通过包管理器安装。|
+|Make|4.1及以上|建议通过包管理器安装。|
+|GCC|9.4及以上|建议通过包管理器安装。|
 
 参考如下命令，检查是否已安装GCC、Make、CMake等依赖软件。
 
-```
+```bash
 gcc --version
 make --version
 cmake --version
@@ -52,13 +50,12 @@ python3 --version
 
 若分别返回如下信息，说明相应软件已安装（以下回显仅为示例，请以实际情况为准）。
 
-```
+```bash
 gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
 GNU Make 4.1
 cmake version 3.14.2
 Python 3.10.12
 ```
-
 
 ### 安装NPU驱动固件和CANN<a name="ZH-CN_TOPIC_0000002456910773"></a>
 
@@ -95,21 +92,21 @@ Python 3.10.12
 </tbody>
 </table>
 
-
 >[!NOTE] 说明 
->-   \{npu\_type\}表示芯片名称。
->-   \{version\}表示软件版本号。
->-   \{arch\}表示CPU架构。
+>
+> - \{npu\_type\}表示芯片名称。
+> - \{version\}表示软件版本号。
+> - \{arch\}表示CPU架构。
 
 **安装NPU驱动固件和CANN<a name="section2121626113418"></a>**
 
-1.  参考《CANN 软件安装指南》中的“安装NPU驱动和固件”章节（商用版）或“安装NPU驱动和固件”章节（社区版）安装NPU驱动固件。
-2.  参考《CANN 软件安装指南》的“安装CANN”章节（商用版）或《CANN 软件安装指南》的“安装CANN”章节（社区版）安装CANN。
+1. 参考《CANN 软件安装指南》中的“安装NPU驱动和固件”章节（商用版）或“安装NPU驱动和固件”章节（社区版）安装NPU驱动固件。
+2. 参考《CANN 软件安装指南》的“安装CANN”章节（商用版）或《CANN 软件安装指南》的“安装CANN”章节（社区版）安装CANN。
 
     >[!NOTE] 说明
-    >-   安装CANN（Toolkit），NPU驱动固件和安装Multimodal SDK的用户需为同一用户，建议为普通用户。
-    >-   安装CANN时，为确保Multimodal SDK正常使用，CANN的相关依赖也需要一并安装。
-
+    >
+    > - 安装CANN（Toolkit），NPU驱动固件和安装Multimodal SDK的用户需为同一用户，建议为普通用户。
+    > - 安装CANN时，为确保Multimodal SDK正常使用，CANN的相关依赖也需要一并安装。
 
 ### 安装Python软件包依赖<a name="ZH-CN_TOPIC_0000002466622269"></a>
 
@@ -118,6 +115,7 @@ Python 3.10.12
 **表 1**  依赖名称对应版本
 
 <a name="table20540329125613"></a>
+
 |依赖名称|版本建议|获取建议|
 |--|--|--|
 |transformers|4.51.3|建议通过pip获取。|
@@ -125,46 +123,43 @@ Python 3.10.12
 |numpy|1.26.4|建议通过pip获取。|
 |torch|2.5.1|建议通过pip获取。|
 
-
 **注意事项<a name="section1297475493911"></a>**
 
 如需安装Multimodal SDK软件包以外的第三方软件，请注意及时升级最新版本，关注并修补存在的漏洞。
-
-
 
 ## 安装Multimodal SDK<a name="ZH-CN_TOPIC_0000002456790913"></a>
 
 **安装须知<a name="section3134195618512"></a>**
 
--   安装和运行Multimodal SDK的用户，需要满足：
-    -   安装和运行Multimodal SDK的用户建议为普通用户。
-    -   安装和运行Multimodal SDK的用户需为同一用户。
-    -   安装CANN（Toolkit），NPU驱动固件和安装Multimodal SDK的用户需为同一用户，建议为普通用户。
+- 安装和运行Multimodal SDK的用户，需要满足：
+    - 安装和运行Multimodal SDK的用户建议为普通用户。
+    - 安装和运行Multimodal SDK的用户需为同一用户。
+    - 安装CANN（Toolkit），NPU驱动固件和安装Multimodal SDK的用户需为同一用户，建议为普通用户。
 
--   软件包的安装、升级、卸载及版本查询相关的日志会保存至“\~/log/mindxsdk/deployment.log”文件；完整性校验、提取文件、tar命令访问相关的日志会保存至“\~/log/makeself/makeself.log”文件。用户可查看相应文件，完成后续的日志跟踪及审计。
+- 软件包的安装、升级、卸载及版本查询相关的日志会保存至“\~/log/mindxsdk/deployment.log”文件；完整性校验、提取文件、tar命令访问相关的日志会保存至“\~/log/makeself/makeself.log”文件。用户可查看相应文件，完成后续的日志跟踪及审计。
 
 **安装准备<a name="section15633111461011"></a>**
 
-确保安装环境中已执行CANN环境变量配置脚本，使环境变量生效。具体执行路径，请按照实际安装为准。
+确保安装环境中已执行CANN环境变量配置脚本，使环境变量生效。具体执行路径，请以实际安装路径为准。
 
-```
+```bash
 # 安装toolkit包
 . /usr/local/Ascend/cann/set_env.sh #此处为CANN默认安装路径，根据实际安装路径修改
 ```
 
 **安装步骤<a name="section12327567584"></a>**
 
-1.  以软件包的安装用户登录安装环境。
-2.  将Multimodal SDK软件包上传到安装环境的任意路径下并进入软件包所在路径。
-3.  增加对软件包的可执行权限。
+1. 以软件包的安装用户登录安装环境。
+2. 将Multimodal SDK软件包上传到安装环境的任意路径下并进入软件包所在路径。
+3. 增加对软件包的可执行权限。
 
-    ```
+    ```bash
     chmod u+x Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run
     ```
 
-4.  执行如下命令，校验软件包的一致性和完整性。
+4. 执行如下命令，校验软件包的一致性和完整性。
 
-    ```
+    ```bash
     ./Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run --check
     ```
 
@@ -172,50 +167,50 @@ Python 3.10.12
 
     若显示如下信息，说明软件包已通过校验。
 
-    ```
+    ```bash
     Verifying archive integrity...  100%   SHA256 checksums are OK. All good.    
     ```
 
-5.  创建Multimodal SDK软件包的安装路径。不建议在“/tmp”路径下安装。
-    -   若用户未指定安装路径，软件会默认安装到Multimodal SDK软件包所在的路径。
-    -   若用户想指定安装路径，需要先创建安装路径。以安装路径“/home/work/Mind\_SDK”为例：
+5. 创建Multimodal SDK软件包的安装路径。不建议在“/tmp”路径下安装。
+    - 若用户未指定安装路径，软件会默认安装到Multimodal SDK软件包所在的路径。
+    - 若用户想指定安装路径，需要先创建安装路径。以安装路径“/home/work/Mind\_SDK”为例：
 
-        ```
+        ```bash
         mkdir -p /home/work/Mind_SDK
         ```
 
-6.  进入Multimodal SDK软件包所在路径，参考以下命令安装Multimodal SDK（安装路径的相关约束请参见[表1](#table1361972315353)）。
+6. 进入Multimodal SDK软件包所在路径，参考以下命令安装Multimodal SDK（安装路径的相关约束请参见[表1](#table1361972315353)）。
 
-    -   若用户指定了安装路径，将安装在指定的路径下。以安装路径“/home/work/Mind\_SDK”为例：
+    - 若用户指定了安装路径，将安装在指定的路径下。以安装路径“/home/work/Mind\_SDK”为例：
 
-        ```
+        ```bash
         ./Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run --install --install-path=/home/work/Mind_SDK
         ```
 
         或者
 
-        ```
+        ```bash
         echo y | ./Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run --install --install-path=/home/work/Mind_SDK
         ```
 
-    -   若用户未指定安装路径，将安装在当前路径下。
+    - 若用户未指定安装路径，将安装在当前路径下。
 
-        ```
+        ```bash
         ./Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run --install
         ```
 
         或者
 
-        ```
+        ```bash
         echo y | ./Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run --install
         ```
 
     >[!NOTE] 说明 
     >--install安装命令同时支持输入可选参数，如[表1](#table1361972315353)所示。
 
-7.  进入Multimodal SDK安装路径下的“script”目录，执行以下命令使Multimodal SDK的环境变量生效。
+7. 进入Multimodal SDK安装路径下的“script”目录，执行以下命令使Multimodal SDK的环境变量生效。
 
-    ```
+    ```bash
     source set_env.sh
     ```
 
@@ -302,36 +297,34 @@ Python 3.10.12
 </tbody>
 </table>
 
-
 >[!NOTE] 说明 
 >以下参数未展示在--help参数中，用户请勿直接使用。
->-   --xwin：使用xwin模式运行。
->-   --phase2：要求执行第二步动作。
+>
+> - --xwin：使用xwin模式运行。
+> - --phase2：要求执行第二步动作。
 
 # 卸载<a name="ZH-CN_TOPIC_0000002423352016"></a>
 
 **操作步骤<a name="section12002371094"></a>**
 
-1.  进入Multimodal SDK的安装路径，确认Multimodal SDK目录下“script”目录中的“uninstall.sh”脚本是否有可执行权限。
+1. 进入Multimodal SDK的安装路径，确认Multimodal SDK目录下“script”目录中的“uninstall.sh”脚本是否有可执行权限。
 
-    ```
-    cd multimodal/script
+    ```bash
+    cd <实际安装路径>/script
     ls -l uninstall.sh
     ```
 
     若脚本没有可执行权限，请执行如下命令，赋予“uninstall.sh”脚本可执行权限。
 
-    ```
+    ```bash
     chmod u+x uninstall.sh
     ```
 
-2.  执行如下命令，开始执行卸载。在执行卸载脚本时，脚本会卸载已安装的python whl包并删除安装目录。
+2. 执行如下命令，开始执行卸载。在执行卸载脚本时，脚本会卸载已安装的python whl包并删除安装目录。
 
-    ```
+    ```bash
     ./uninstall.sh
     ```
 
     >[!NOTE] 说明 
     >使用“uninstall.sh”脚本进行卸载操作仅适用于正常安装途径，且安装后未对安装文件结构进行修改，如需解决安装异常等情况，请通过完全删除安装目录下任何有关multimodal的文件夹，以及pip uninstall mm卸载安装的Python包文件。
-
-
