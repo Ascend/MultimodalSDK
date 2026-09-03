@@ -33,7 +33,7 @@ import base64
 import os
 from abc import ABC, abstractmethod
 from concurrent.futures import ThreadPoolExecutor
-from typing import Callable, List, Optional, Sequence
+from typing import List, Optional, Sequence
 
 import numpy as np
 
@@ -118,9 +118,6 @@ class OpenAIEmbeddingBackend(EmbeddingBackend):
         timeout: float = 60.0,
         max_concurrent: int = 32,
         api_key: Optional[str] = None,
-        protocol: str = "openai",
-        custom_encode_images: Optional[Callable] = None,
-        custom_encode_text: Optional[Callable] = None,
     ):
         """Initializes the backend.
 
@@ -134,13 +131,6 @@ class OpenAIEmbeddingBackend(EmbeddingBackend):
                 the validated baseline placeholder ``"EMPTY"`` is used (vLLM
                 ignores the key by default). Set it explicitly when the
                 service requires authentication.
-            protocol: ``"openai"`` for the built-in implementation, ``"custom"``
-                to inject encoding functions (e.g. an internal client wrapper).
-            custom_encode_images: Required when ``protocol="custom"``:
-                ``List[frame path] -> np.ndarray (N x dim)`` (raw vectors; this
-                class applies L2 normalization).
-            custom_encode_text: Required when ``protocol="custom"``:
-                ``str -> np.ndarray (dim,)`` (raw vector; normalized here).
         """
         if not isinstance(base_url, str):
             raise TypeError("base_url must be str")
@@ -158,32 +148,21 @@ class OpenAIEmbeddingBackend(EmbeddingBackend):
             raise ValueError("max_concurrent must be a positive integer")
         if api_key is not None and (not isinstance(api_key, str) or not api_key):
             raise ValueError("api_key must be a non-empty string when provided")
-        if protocol not in ("openai", "custom"):
-            raise ValueError("protocol must be 'openai' or 'custom'")
-        if protocol == "custom":
-            if custom_encode_images is None or custom_encode_text is None:
-                raise ValueError("custom_encode_images and custom_encode_text are required when protocol='custom'")
-            if not callable(custom_encode_images) or not callable(custom_encode_text):
-                raise TypeError("custom_encode_images and custom_encode_text must be callable")
 
         self._base_url = base_url
         self._model_name = model_name
         self._timeout = float(timeout)
         self._max_concurrent = max_concurrent
         self._api_key = api_key if api_key is not None else _API_KEY_PLACEHOLDER
-        self._protocol = protocol
-        self._custom_encode_images = custom_encode_images
-        self._custom_encode_text = custom_encode_text
         self._closed = False
         self._client = None
         self._resp_type = None
 
-        if protocol == "openai":
-            self._init_client()
+        self._init_client()
 
         _Logger.info(
             f"OpenAIEmbeddingBackend initialized: url={base_url}, "
-            f"model={model_name}, protocol={protocol}, timeout={self._timeout}s, "
+            f"model={model_name}, timeout={self._timeout}s, "
             f"max_concurrent={self._max_concurrent}"
         )
 
@@ -197,13 +176,14 @@ class OpenAIEmbeddingBackend(EmbeddingBackend):
 
             try:
                 # canonical path (same import as the validated mx_rag baseline)
-                from openai.types.create_embedding_response import CreateEmbeddingResponse
+                from openai.types.create_embedding_response import (
+                    CreateEmbeddingResponse,
+                )
             except ImportError:
                 from openai.types import CreateEmbeddingResponse  # version fallback
         except ImportError as e:
             raise ImportError(
-                "the 'openai' package (>=1.30) is required by OpenAIEmbeddingBackend; "
-                "install it or use protocol='custom' with injected functions"
+                "the 'openai' package (>=1.30) is required by OpenAIEmbeddingBackend; please install it via pip"
             ) from e
         # api key is resolved at construction (placeholder by default); the
         # key value itself is intentionally never logged.
@@ -213,8 +193,6 @@ class OpenAIEmbeddingBackend(EmbeddingBackend):
     @property
     def backend_id(self) -> str:
         """Cache identity tag, e.g. ``openai:Qwen3-VL-Embedding-2B``."""
-        if self._protocol == "custom":
-            return f"custom:{id(self)}"
         return f"openai:{self._model_name}"
 
     def _ensure_open(self):
@@ -253,15 +231,6 @@ class OpenAIEmbeddingBackend(EmbeddingBackend):
         self._ensure_open()
         self._validate_image_paths(image_paths)
 
-        if self._protocol == "custom":
-            raw = self._custom_encode_images(list(image_paths))
-            mat = np.asarray(raw, dtype=np.float32)
-            if mat.ndim != 2 or mat.shape[0] != len(image_paths):
-                raise RuntimeError(
-                    f"custom_encode_images returned shape {mat.shape}, expected ({len(image_paths)}, dim)"
-                )
-            return _l2_normalize_rows(mat)
-
         with ThreadPoolExecutor(max_workers=self._max_concurrent) as ex:
             vecs = list(ex.map(self._encode_single_image, image_paths))
         return np.stack(vecs, axis=0)
@@ -283,11 +252,17 @@ class OpenAIEmbeddingBackend(EmbeddingBackend):
             b64 = base64.b64encode(f.read()).decode("ascii")
         return {
             "messages": [
-                {"role": "system", "content": [{"type": "text", "text": _SYSTEM_INSTRUCTION}]},
+                {
+                    "role": "system",
+                    "content": [{"type": "text", "text": _SYSTEM_INSTRUCTION}],
+                },
                 {
                     "role": "user",
                     "content": [
-                        {"type": "image_url", "image_url": {"url": _IMAGE_DATA_URL_TEMPLATE.format(b64=b64)}},
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": _IMAGE_DATA_URL_TEMPLATE.format(b64=b64)},
+                        },
                         {"type": "text", "text": ""},
                     ],
                 },
@@ -321,10 +296,6 @@ class OpenAIEmbeddingBackend(EmbeddingBackend):
         self._ensure_open()
         self._validate_text(text)
 
-        if self._protocol == "custom":
-            raw = self._custom_encode_text(text)
-            return _l2_normalize(np.asarray(raw, dtype=np.float32))
-
         try:
             resp = self._client.embeddings.create(model=self._model_name, input=[text])
         except Exception as e:  # noqa: BLE001
@@ -340,11 +311,12 @@ class OpenAIEmbeddingBackend(EmbeddingBackend):
         """
         self._ensure_open()
         self._validate_text(text)
-        if self._protocol == "custom":
-            raise RuntimeError("encode_text_chat is not available with protocol='custom'")
         body = {
             "messages": [
-                {"role": "system", "content": [{"type": "text", "text": _SYSTEM_INSTRUCTION}]},
+                {
+                    "role": "system",
+                    "content": [{"type": "text", "text": _SYSTEM_INSTRUCTION}],
+                },
                 {"role": "user", "content": [{"type": "text", "text": text}]},
                 {"role": "assistant", "content": [{"type": "text", "text": ""}]},
             ],

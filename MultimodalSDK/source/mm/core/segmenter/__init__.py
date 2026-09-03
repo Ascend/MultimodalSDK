@@ -32,6 +32,10 @@ re-exported here for callers of this package.
 __all__ = [
     "EmbeddingBackend",
     "OpenAIEmbeddingBackend",
+    "VideoSegment",
+    "SegmentResult",
+    "KtsSegmenter",
 ]
 
 from .embedding_backend import EmbeddingBackend, OpenAIEmbeddingBackend
+from .kts_segmenter import VideoSegment, SegmentResult, KtsSegmenter

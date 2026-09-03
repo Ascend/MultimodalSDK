@@ -17,6 +17,16 @@
 # -------------------------------------------------------------------------
 
 
-__all__ = ["BaseFrameSelector", "KRangFrameSelector", "KFrameSelector"]
+__all__ = [
+    "BaseFrameSelector",
+    "KRangFrameSelector",
+    "KFrameSelector",
+    "EmbeddingBackend",
+    "OpenAIEmbeddingBackend",
+    "VideoSegment",
+    "SegmentResult",
+    "KtsSegmenter",
+]
 
 from .frame_selector import BaseFrameSelector, KRangFrameSelector, KFrameSelector
+from .segmenter import EmbeddingBackend, OpenAIEmbeddingBackend, VideoSegment, SegmentResult, KtsSegmenter
