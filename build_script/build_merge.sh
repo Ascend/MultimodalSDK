@@ -83,12 +83,20 @@ if [[ "${1:-}" == "test" ]]; then
         NEED_LCOV=true
     fi
     if [ "${NEED_LCOV}" = true ]; then
-        if [ ! -d "${MERGE_BUILD_DIR}/lcov-2.0" ]; then
+        LCOV_TARBALL="/opt/multimodal/lcov-2.0.tar.gz"
+        LCOV_SRC_DIR="${MERGE_BUILD_DIR}/lcov-2.0"
+        if [ -d "${LCOV_SRC_DIR}" ]; then
+            echo "[INFO] lcov-2.0 already extracted at ${LCOV_SRC_DIR}"
+        elif [ -f "${LCOV_TARBALL}" ]; then
+            echo "[INFO] Found lcov-2.0.tar.gz at ${LCOV_TARBALL}, reusing..."
+            cp "${LCOV_TARBALL}" "${MERGE_BUILD_DIR}/"
+            tar -xzf "${MERGE_BUILD_DIR}/lcov-2.0.tar.gz"
+        else
             echo "[INFO] Downloading lcov 2.0..."
             wget -q https://github.com/linux-test-project/lcov/releases/download/v2.0/lcov-2.0.tar.gz
             tar -xzf lcov-2.0.tar.gz
         fi
-        cd lcov-2.0
+        cd "${LCOV_SRC_DIR}"
         make install
     fi
     cd "${ACC_BUILD_DIR}"
