@@ -6,6 +6,7 @@ set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 ROOT_DIR=$(cd "${SCRIPT_DIR}/.." && pwd)
+CACHE_DIR="${MULTIMODAL_CACHE_DIR:-/opt/multimodal}"
 
 SKIP_FETCH=0
 WITH_TEST_DEPS=0
@@ -94,10 +95,19 @@ clone_repo() {
 
 fetch_opensource() {
     local tarball="${ROOT_DIR}/AccSDK/opensource.tar.gz"
+    local cached_tarball="${CACHE_DIR}/opensource.tar.gz"
     local url="${OPENSOURCE_URL:-https://mindcluster.obs.cn-north-4.myhuaweicloud.com/opensource.tar.gz}"
 
     if [ -f "${tarball}" ]; then
         echo "[INFO] opensource.tar.gz already present at ${tarball}"
+        return 0
+    fi
+
+    if [ -f "${cached_tarball}" ]; then
+        echo "[INFO] Found cached opensource.tar.gz at ${cached_tarball}, copying..."
+        mkdir -p "$(dirname "${tarball}")"
+        cp "${cached_tarball}" "${tarball}"
+        echo "[INFO] opensource.tar.gz copied to ${tarball}"
         return 0
     fi
 
@@ -108,11 +118,20 @@ fetch_opensource() {
 
 fetch_makeself() {
     local makeself_dir="${ROOT_DIR}/makeself"
+    local cached_dir="${CACHE_DIR}/makeself"
     local repo="${MAKESELF_REPO:-https://gitcode.com/gh_mirrors/ma/makeself.git}"
     local branch="${MAKESELF_VERSION:-release-2.5.0}"
 
     if [ -f "${makeself_dir}/makeself.sh" ]; then
         echo "[INFO] makeself already present at ${makeself_dir}"
+        return 0
+    fi
+
+    if [ -d "${cached_dir}" ] && [ -f "${cached_dir}/makeself.sh" ]; then
+        echo "[INFO] Found cached makeself at ${cached_dir}, copying..."
+        rm -rf "${makeself_dir}"
+        cp -a "${cached_dir}" "${makeself_dir}"
+        echo "[INFO] makeself copied to ${makeself_dir}"
         return 0
     fi
 
@@ -123,11 +142,20 @@ fetch_makeself() {
 fetch_makeself_patch() {
     local patch_dir="${ROOT_DIR}/makeself_patch"
     local patch_file="${patch_dir}/makeself-2.5.0.patch"
+    local cached_dir="${CACHE_DIR}/makeself_patch"
     local repo="${MAKESELF_PATCH_REPO:-https://gitcode.com/cann-src-third-party/makeself.git}"
     local branch="${MAKESELF_PATCH_VERSION:-v2.5.0.x}"
 
     if [ -f "${patch_file}" ]; then
         echo "[INFO] makeself patch already present at ${patch_file}"
+        return 0
+    fi
+
+    if [ -d "${cached_dir}" ]; then
+        echo "[INFO] Found cached makeself patch at ${cached_dir}, copying..."
+        rm -rf "${patch_dir}"
+        cp -a "${cached_dir}" "${patch_dir}"
+        echo "[INFO] makeself patch copied to ${patch_dir}"
         return 0
     fi
 

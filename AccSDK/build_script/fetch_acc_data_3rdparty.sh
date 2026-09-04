@@ -7,6 +7,7 @@ set -euo pipefail
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 ACC_DATA_ROOT=$(cd "${SCRIPT_DIR}/../acc_data" && pwd)
 THIRDPARTY_DIR="${ACC_DATA_ROOT}/3rdparty"
+CACHE_DIR="${MULTIMODAL_CACHE_DIR:-/opt/multimodal}"
 
 PYBIND11_DIR="${THIRDPARTY_DIR}/pybind/pybind11"
 PYBIND11_REPO="${PYBIND11_REPO:-https://gitcode.com/GitHub_Trending/py/pybind11.git}"
@@ -58,6 +59,15 @@ fetch_pybind11() {
         return 0
     fi
 
+    if [ -d "${CACHE_DIR}/pybind11" ] && [ -f "${CACHE_DIR}/pybind11/CMakeLists.txt" ]; then
+        echo "[INFO] Found cached pybind11 at ${CACHE_DIR}/pybind11, copying..."
+        mkdir -p "${THIRDPARTY_DIR}/pybind"
+        rm -rf "${PYBIND11_DIR}"
+        cp -a "${CACHE_DIR}/pybind11" "${PYBIND11_DIR}"
+        echo "[INFO] pybind11 copied to ${PYBIND11_DIR}"
+        return 0
+    fi
+
     echo "[INFO] Fetching pybind11 ${PYBIND11_VERSION}..."
     mkdir -p "${THIRDPARTY_DIR}/pybind"
 
@@ -80,6 +90,15 @@ fetch_googletest() {
 
     if [ -f "${GTEST_DIR}/CMakeLists.txt" ]; then
         echo "[INFO] googletest already present at ${GTEST_DIR}"
+        return 0
+    fi
+
+    if [ -d "${CACHE_DIR}/googletest" ] && [ -f "${CACHE_DIR}/googletest/CMakeLists.txt" ]; then
+        echo "[INFO] Found cached googletest at ${CACHE_DIR}/googletest, copying..."
+        mkdir -p "${THIRDPARTY_DIR}/gtest"
+        rm -rf "${GTEST_DIR}"
+        cp -a "${CACHE_DIR}/googletest" "${GTEST_DIR}"
+        echo "[INFO] googletest copied to ${GTEST_DIR}"
         return 0
     fi
 

@@ -105,3 +105,11 @@ RUN groupadd -r -g 1000 HwHiAiUser && \
     echo "HwHiAiUser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 WORKDIR /root
+
+RUN mkdir -p /opt/multimodal && \
+    wget -q https://github.com/linux-test-project/lcov/releases/download/v2.0/lcov-2.0.tar.gz -O /opt/multimodal/lcov-2.0.tar.gz && \
+    wget -q https://mindcluster.obs.cn-north-4.myhuaweicloud.com/opensource.tar.gz -O /opt/multimodal/opensource.tar.gz && \
+    git clone --depth 1 -b release-2.5.0 https://gitcode.com/gh_mirrors/ma/makeself.git /opt/multimodal/makeself && \
+    git clone --depth 1 -b v2.5.0.x https://gitcode.com/cann-src-third-party/makeself.git /opt/multimodal/makeself_patch && \
+    git clone --depth 1 -b v2.13.6 https://gitcode.com/GitHub_Trending/py/pybind11.git /opt/multimodal/pybind11 && \
+    git clone --depth 1 -b release-1.11.0 https://gitcode.com/GitHub_Trending/go/googletest.git /opt/multimodal/googletest
