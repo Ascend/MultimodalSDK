@@ -29,6 +29,10 @@ VLLM_PORT = 18000
 # SCC token compression patches; 1.0 disables them.
 MM_SCC_RATE = "0.5"
 
+# MM_MEDIA_IO forwarded to the vLLM subprocess. "True" routes vLLM media
+# loading (video/image decode) through the SDK decoder stack.
+MM_MEDIA_IO = "True"
+
 # Wait at most this many seconds for the vLLM server to become ready.
 VLLM_SERVER_READY_TIMEOUT = 600
 
