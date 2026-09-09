@@ -10,6 +10,34 @@
 - 请先完成[快速入门](../02_quickstart/quickstart.md)或[安装部署](../03_installation_guide/installation_guide.md)，确认 `import mm` 成功。
 - 图片示例需要安装 `matplotlib`，仅用于展示处理结果：`pip3 install matplotlib`。
 - 示例文件权限不应高于 640。图片当前支持 jpg/jpeg，视频当前支持 mp4，音频当前支持 wav。
+- 建议在 Jupyter 中运行文中样例，可直观查看处理结果。以下脚本一键完成"启动容器 → 安装依赖 → 启动 Jupyter"（镜像与设备挂载与[快速入门](../02_quickstart/quickstart.md)一致，设备编号按实际 NPU 调整）：
+
+    ```bash
+    # 1. 启动容器（若已存在先删除：docker stop multimodal_container && docker rm multimodal_container）
+    docker run \
+        --name multimodal_container \
+        --device /dev/davinci0 \
+        --device /dev/davinci_manager \
+        --device /dev/devmm_svm \
+        --device /dev/hisi_hdc \
+        -v /usr/local/dcmi:/usr/local/dcmi \
+        -v /usr/local/bin/npu-smi:/usr/local/bin/npu-smi \
+        -v /usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64 \
+        -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
+        -v /etc/ascend_install.info:/etc/ascend_install.info \
+        -p 8888:8888 \
+        -itd multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64 bash
+
+    # 2. 进入容器，安装依赖并启动 Jupyter
+    docker exec -it multimodal_container bash -c '
+    pip3 install --no-cache-dir jupyterlab matplotlib
+    export MULTIMODAL_SDK_HOME="/usr/local/multimodal"
+    source ${MULTIMODAL_SDK_HOME}/script/set_env.sh
+    jupyter lab --no-browser --port=8888 --ip=0.0.0.0 --allow-root
+    '
+    ```
+
+    启动后终端会打印访问地址（含 token），形如 `http://127.0.0.1:8888/lab?token=xxxx`。在宿主机浏览器中打开该地址（容器已通过 `-p 8888:8888` 映射端口，本机直接访问 `http://127.0.0.1:8888/lab?token=xxxx` 即可），新建 Notebook，将文中样例代码复制进去执行。
 
 ## 图片处理
 
@@ -22,7 +50,7 @@ import mm  # 引入多模态SDK包
 import matplotlib.pyplot as plt  # 仅做图像展示使用
 from matplotlib.patches import Rectangle  # 仅做图像展示使用，用于绘制矩形框
 
-dog_img = mm.Image.open("/home/test.jpg")  # 通过多模态Image类，从实际文件构造Image变量（注意文件权限不能超过640）
+dog_img = mm.Image.open("/data/test.jpg")  # 通过多模态Image类，从实际文件构造Image变量（注意文件权限不能超过640）
 dog_resized_img = dog_img.resize((480, 480), mm.Interpolation.BICUBIC, mm.DeviceMode.CPU)  # 使用双立方插值算法在CPU模式下对图像进行缩放
 dog_cropped_img = dog_resized_img.crop(100, 100, 300, 300, mm.DeviceMode.CPU)  # 基于缩放后的图像使用CPU模式进行裁剪
 
