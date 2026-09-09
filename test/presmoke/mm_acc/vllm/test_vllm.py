@@ -40,6 +40,7 @@ from urllib.error import URLError
 import pytest
 from mm_test.common import (
     IMAGE_PATH,
+    MM_MEDIA_IO,
     MM_SCC_RATE,
     MODEL_PATHS,
     USER_PROMPT,
@@ -172,9 +173,12 @@ def vllm_server(request):
     env = os.environ.copy()
     env["MM_SCC_RATE"] = MM_SCC_RATE
     env["MM_PREPROCESSOR"] = "True"
+    env["MM_MEDIA_IO"] = MM_MEDIA_IO
 
     cmd = _build_vllm_command(model_path, served_model_name, port)
-    logger.info("Starting vLLM subprocess for %s (MM_SCC_RATE=%s)", model_path, MM_SCC_RATE)
+    logger.info(
+        "Starting vLLM subprocess for %s (MM_SCC_RATE=%s, MM_MEDIA_IO=%s)", model_path, MM_SCC_RATE, MM_MEDIA_IO
+    )
     logger.info("Command: %s", cmd)
     # ``with subprocess.Popen`` only closes the pipes and then ``wait()``s for
     # the child to exit; it never sends a signal. Terminate explicitly inside

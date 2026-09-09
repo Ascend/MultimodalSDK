@@ -110,3 +110,11 @@ MM_PREPROCESSOR = _parse_bool(
     os.environ.get("MM_PREPROCESSOR", ""),
     default=False,
 )
+
+# MM_MEDIA_IO: bool. Empty / unset -> False
+# When True,route vLLM media loading through the SDK decoder stack.
+MM_MEDIA_IO = _parse_bool(
+    "MM_MEDIA_IO",
+    os.environ.get("MM_MEDIA_IO", ""),
+    default=False,
+)

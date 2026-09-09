@@ -25,11 +25,12 @@ which individual monkey-patch modules to load:
 
 * ``MM_SCC_RATE < 1.0``     -> enable SCC token compression patches
 * ``MM_PREPROCESSOR``       -> enable MultimodalSDK preprocessor patches
+* ``MM_MEDIA_IO``           -> route vLLM media IO through the SDK decoders
 
 This file is original to MultimodalSDK and is not adapted from upstream.
 """
 
-from .constants import MM_PREPROCESSOR, MM_SCC_RATE
+from .constants import MM_MEDIA_IO, MM_PREPROCESSOR, MM_SCC_RATE
 from ...comm.log import _Logger as _Log
 
 
@@ -47,3 +48,8 @@ def patch():
         from . import patch_qwen3_processor  # noqa: F401
 
         _Log.info("patch MultimodalSDK preprocessor")
+
+    if MM_MEDIA_IO:
+        from . import patch_media_io  # noqa: F401
+
+        _Log.info("patch vLLM media IO to SDK decoders")

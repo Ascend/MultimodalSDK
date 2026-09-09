@@ -25,6 +25,7 @@
 | `MM_SCC_EPSILON` | float | `(0, 1)` | `0.05` | 近似 Union-Find 的采样误差容忍度，仅 CPU 回退路径使用。 |
 | `MM_SCC_MAX_TOKENS_PER_ITEM` | int | `[0, 65536]` | `8192` | 单样本 token 上限。超过该值的样本**不参与 SCC 压缩**，直接送 LLM。`0` 表示不限制。 |
 | `MM_PREPROCESSOR` | bool | `true` / `false` | `false` | 开启 SDK 的图像/视频预处理加速（走 `mm.core.processor.resize_and_normalize`）。 |
+| `MM_MEDIA_IO` | bool | `true` / `false` | `false` | 开启 SDK 的视频/图像解码加速。 |
 
 任意一个变量设为非法值时，Multimodal SDK 会在 vLLM 日志中打印 warning 并回退到默认值，不会让 vLLM 启动失败。
 
@@ -32,6 +33,7 @@
 
 - **关闭 SCC 视觉 token 压缩**：`MM_SCC_RATE=1.0`（或留空使用默认值）。
 - **关闭预处理加速**：`MM_PREPROCESSOR=false`（或留空）。
+- **关闭媒体解码加速**：`MM_MEDIA_IO=false`（或留空）。
 
 关闭行为不影响 vLLM 服务本身启动，只是不再注入对应的 monkey patch。
 
@@ -48,7 +50,9 @@
 | **Qwen3.5-35B-A3B** | ✓ | ✓ |
 | **Qwen3.6-27B** | ✓ | ✓ |
 
-其他模型不涉及 patch 操作，因此不受影响。
+其他模型不涉及 SCC / 预处理 patch 操作，因此不受影响。
+
+> **媒体解码加速（`MM_MEDIA_IO`）与模型无关**：该 patch 替换的是 vLLM 的 `VideoMediaIO` / `ImageMediaIO` 媒体加载入口，作用于媒体解码层而非模型侧，因此对**所有模型**生效，不限于上表列出的模型。
 
 ---
 
@@ -59,7 +63,7 @@ Multimodal SDK 历史上针对 **vllm-ascend** 各版本提供过不同的 patch
 
 | 适配的 vllm-ascend | 分支 | 支持的模型 | 加速的部分 |
 | --- | --- | --- | --- |
-| **v0.23.0rc1**（本文档默认） | `master` | Qwen2.5-VL · Qwen3-VL · Qwen3.5 · Qwen3.6 | SCC 视觉 token 压缩；图像 / 视频预处理加速 |
+| **v0.23.0rc1**（本文档默认） | `master` | Qwen2.5-VL · Qwen3-VL · Qwen3.5 · Qwen3.6 | SCC 视觉 token 压缩（限上述模型）；图像 / 视频预处理加速（限上述模型）；视频 / 图像解码加速（所有模型） |
 | **v0.8.5rc1** | `branch_v26.0.0` · `branch_v26.1.0` | Qwen2.5-VL · InternVL2 | 视频解码加速；Qwen2.5-VL / InternVL2 图像预处理加速 |
 
 > **功能详解口径**：本文档**只**针对 `master` 分支下的 vllm-ascend v0.23.0rc1 描述；`branch_v26.x` 版本的旧 patch 使用另一套接入方式，具体用法请查阅对应分支的 `patcher.md`文档。
@@ -76,6 +80,7 @@ MM_SCC_TAU=0.95 \
 MM_SCC_EPSILON=0.05 \
 MM_SCC_MAX_TOKENS_PER_ITEM=8192 \
 MM_PREPROCESSOR=true \
+MM_MEDIA_IO=true \
 vllm serve /models/Qwen3-VL-8B-Instruct \
     --host 0.0.0.0 \
     --port 9000
@@ -89,6 +94,7 @@ vllm serve /models/Qwen3-VL-8B-Instruct \
 | --- | --- |
 | `patch scc rate=<value>` | SCC 视觉 token 压缩已注入（`MM_SCC_RATE < 1.0`） |
 | `patch MultimodalSDK preprocessor` | 图像 / 视频预处理加速已注入（`MM_PREPROCESSOR=true`） |
+| `patch vLLM media IO to SDK decoders` | 媒体解码加速已注入（`MM_MEDIA_IO=true`） |
 
 如下图所示，启动日志中包含 SCC 视觉 token 压缩已注入（`MM_SCC_RATE < 1.0`）的提示行。
 
@@ -109,5 +115,6 @@ vllm serve /models/Qwen3-VL-8B-Instruct \
 
 - `MultimodalSDK/source/mm/patcher/vllm/__init__.py` — 插件入口与开关逻辑
 - `MultimodalSDK/source/mm/patcher/vllm/constants.py` — 环境变量定义与校验
+- `MultimodalSDK/source/mm/patcher/vllm/patch_media_io.py` — 媒体解码加速 patch（`VideoMediaIO` / `ImageMediaIO`）
 - `MultimodalSDK/source/mm/core/scc/compressor.py` — SCC 视觉 token 压缩算法
 - `MultimodalSDK/source/mm/core/processor.py` — `resize_and_normalize` 实现
