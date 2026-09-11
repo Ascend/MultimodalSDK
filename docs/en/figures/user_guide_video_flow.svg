@@ -1,0 +1,76 @@
+<svg xmlns="http://w3.org" width="920" height="420" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">Video processing pipeline</title>
+  <desc id="desc">Demonstrates how video_decode decodes video based on a frame ID list or a target frame count constraint.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52657a"/>
+    </marker>
+    <style>
+      .box { fill: #f7f9fc; stroke: #52657a; stroke-width: 1.6; rx: 10; }
+      .main { fill: #fff3df; stroke: #c7781c; }
+      .out { fill: #e8f5f0; stroke: #328a67; }
+      .text { font-family: "Huawei Sans", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; font-size: 16px; fill: #1f2937; text-anchor: middle; dominant-baseline: middle; }
+      .small { font-size: 14px; }
+      .label { font-size: 13px; fill: #4b5563; font-family: "Huawei Sans", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; }
+      .line { fill: none; stroke: #52657a; stroke-width: 1.8; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <!-- Input Node -->
+  <rect x="58" y="180" width="150" height="56" class="box"/>
+  <text x="133" y="208" class="text">
+    <tspan x="133" dy="-2">Input video file</tspan>
+  </text>
+
+  <!-- Configuration Node -->
+  <rect x="270" y="180" width="150" height="56" class="box"/>
+  <text x="345" y="208" class="text">
+    <tspan x="345" dy="-2">Set file permissions</tspan>
+  </text>
+  <path d="M 208 208 L 270 208" class="line"/>
+
+  <!-- Core Function Decoder -->
+  <rect x="485" y="180" width="150" height="56" class="box main"/>
+  <text x="560" y="208" class="text">video_decode</text>
+  <path d="M 420 208 L 485 208" class="line"/>
+
+  <!-- Branch Conditional States -->
+  <rect x="475" y="52" width="170" height="56" class="box main"/>
+  <text x="560" y="80" class="text small">Frame ID list not empty</text>
+  
+  <rect x="475" y="308" width="170" height="56" class="box main"/>
+  <text x="560" y="336" class="text small">Frame ID list empty</text>
+
+  <!-- Vertical Branch Vectors with Labels -->
+  <path d="M 560 180 L 560 108" class="line"/>
+  <text x="566" y="142" class="label" text-anchor="start">Decode specified frames</text>
+  
+  <path d="M 560 236 L 560 308" class="line"/>
+  <text x="566" y="278" class="label" text-anchor="start">Uniform sampling</text>
+
+  <!-- Output / Return Block Handling -->
+  <rect x="710" y="52" width="165" height="56" class="box out"/>
+  <text x="792.5" y="80" class="text small">
+    <tspan x="792.5" dy="-2">Return specified frame</tspan>
+    <tspan x="792.5" dy="16">list</tspan>
+  </text>
+  
+  <rect x="710" y="308" width="165" height="56" class="box out"/>
+  <text x="792.5" y="336" class="text small">
+    <tspan x="792.5" dy="-2">Return target frame</tspan>
+    <tspan x="792.5" dy="16">count list</tspan>
+  </text>
+  
+  <path d="M 645 80 L 710 80" class="line"/>
+  <path d="M 645 336 L 710 336" class="line"/>
+
+  <!-- Validation Node -->
+  <rect x="710" y="180" width="165" height="56" class="box out"/>
+  <text x="792.5" y="208" class="text small">
+    <tspan x="792.5" dy="-2">Check returned list</tspan>
+    <tspan x="792.5" dy="16">length</tspan>
+  </text>
+  
+  <path d="M 792.5 108 L 792.5 180" class="line"/>
+  <path d="M 792.5 308 L 792.5 236" class="line"/>
+</svg>

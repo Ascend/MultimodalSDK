@@ -601,7 +601,7 @@ img_resize = img.resize((10, 10), Interpolation.BICUBIC, DeviceMode.CPU)
 **函数原型**
 
 ```python
-crop(top: int, left: int, height: int, width: int, device_mode: DeviceMode = DeviceMode.CPU) -> "Image":
+crop(top: int, left: int, height: int, width: int, device_mode: DeviceMode = DeviceMode.CPU) -> "Image"
 ```
 
 **参数说明**
