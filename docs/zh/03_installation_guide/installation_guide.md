@@ -16,7 +16,7 @@ Multimodal SDK 支持[离线安装](#离线安装)（`run` 包 / `Wheel` 包）�
 
 ### 安装 NPU 驱动固件和 CANN
 
-请参见《[CANN 快速安装](https://www.hiascend.com/cann/download)》，选择 CANN（Compute Architecture for Neural Networks）9.1.0 及 HDK（Hardware Development Kit）26.1.0 完成 NPU（Neural Processing Unit）驱动固件和 CANN 软件（包含Toolkit和ops包）的安装，并配置环境变量。
+请参见《[CANN 快速安装](https://www.hiascend.com/cann/download)》，选择 CANN（Compute Architecture for Neural Networks）9.1.0 及 HDK（Hardware Developer Kit）26.1.0 完成 NPU（Neural Processing Unit）驱动固件和 CANN 软件（包含Toolkit和ops包）的安装，并配置环境变量。
 
 ### 其他依赖
 

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+  <title id="title">Examples and Guidance — Overall Workflow</title>
+  <desc id="desc">Shows the image, video, and audio processing workflows using Multimodal SDK.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5f6f89"/>
+    </marker>
+    <style>
+      .box { fill: #f7f9fc; stroke: #5f6f89; stroke-width: 1.6; rx: 10; }
+      .start { fill: #e8f5f0; stroke: #328a67; }
+      .image { fill: #e8f1ff; stroke: #3c73c4; }
+      .video { fill: #fff3df; stroke: #c7781c; }
+      .audio { fill: #f0eafe; stroke: #7d63c7; }
+      .text { font-family: "Huawei Sans", "HuaweiSans", "Noto Sans CJK SC", Arial, sans-serif; font-size: 17px; fill: #1f2937; text-anchor: middle; dominant-baseline: middle; }
+      .small { font-size: 15px; }
+      .line { fill: none; stroke: #5f6f89; stroke-width: 1.8; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <!-- Title box -->
+  <path class="box" style="fill:#e8f5f0;stroke:#328a67" d="M330 25h300v48H330z"/>
+  <text x="480" y="50" class="text" font-size="17">Prepare input data</text>
+
+  <!-- Scenario selection -->
+  <path class="box" d="M330 110h300v48H330z"/>
+  <text x="480" y="135" class="text" font-size="16">Select a processing scenario</text>
+
+  <!-- Arrow from title to scenario -->
+  <path d="M480 73v37" class="line"/>
+
+  <!-- Three scenario boxes - wider to fit text -->
+  <path class="box image" d="M60 210h230v48H60z"/>
+  <text x="175" y="235" class="text" font-size="16">Image processing</text>
+
+  <path class="box video" d="M365 210h230v48H365z"/>
+  <text x="480" y="235" class="text" font-size="16">Video processing</text>
+
+  <path class="box audio" d="M670 210h230v48H670z"/>
+  <text x="785" y="235" class="text" font-size="16">Audio processing</text>
+
+  <!-- Arrows from scenario selection to the three boxes -->
+  <path d="M480 158v30H175v22" class="line"/>
+  <path d="M480 158v52" class="line"/>
+  <path d="M480 158v30h305v22" class="line"/>
+
+  <!-- Image processing detail boxes -->
+  <!-- "Read image files" fits in one line -->
+  <path class="box image" d="M60 310h230v44H60z"/>
+  <text x="175" y="333" class="text small">Read image files</text>
+
+  <!-- "Convert resized/cropped files to NumPy" overflows → wrap -->
+  <path class="box image" d="M60 390h230v52H60z"/>
+  <text x="175" y="408" class="text small">
+    <tspan x="175" dy="0">Convert resized/cropped</tspan>
+    <tspan x="175" dy="18">files to NumPy</tspan>
+  </text>
+
+  <path d="M175 258v52" class="line"/>
+  <path d="M175 354v36" class="line"/>
+
+  <!-- Video processing detail boxes -->
+  <!-- "Read video files" fits in one line -->
+  <path class="box video" d="M365 310h230v44H365z"/>
+  <text x="480" y="333" class="text small">Read video files</text>
+
+  <!-- "Decode by frame ID or count" overflows → wrap -->
+  <path class="box video" d="M365 390h230v52H365z"/>
+  <text x="480" y="408" class="text small">
+    <tspan x="480" dy="0">Decode by frame</tspan>
+    <tspan x="480" dy="18">ID or count</tspan>
+  </text>
+
+  <path d="M480 258v52" class="line"/>
+  <path d="M480 354v36" class="line"/>
+
+  <!-- Audio processing detail boxes -->
+  <!-- "Read audio files" fits in one line -->
+  <path class="box audio" d="M670 310h230v44H670z"/>
+  <text x="785" y="333" class="text small">Read audio files</text>
+
+  <!-- "(Optional) Resample and return data" overflows → wrap -->
+  <path class="box audio" d="M670 390h230v52H670z"/>
+  <text x="785" y="408" class="text small">
+    <tspan x="785" dy="0">(Optional) Resample</tspan>
+    <tspan x="785" dy="18">and return data</tspan>
+  </text>
+
+  <path d="M785 258v52" class="line"/>
+  <path d="M785 354v36" class="line"/>
+</svg>
