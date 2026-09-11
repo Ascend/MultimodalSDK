@@ -190,9 +190,7 @@ def _qwen3_process_image_input(self, image_input: Qwen2_5_VLImageInputs):
 
     for emb, size in zip(image_embeds_split, grid_thw):
         if scc_should_run(emb.shape[0], MM_SCC_MAX_TOKENS_PER_ITEM):
-            r = scc_compress_to_target(emb, scc_shrink(emb.shape[0], MM_SCC_RATE), 1, 0, MM_SCC_TAU, MM_SCC_EPSILON)
-
-            emb = r
+            emb = emb[set_uniform_true(emb.shape[0], scc_shrink(emb.shape[0], MM_SCC_RATE))]
             image_embeds_out.append(emb)
         else:
             image_embeds_out.append(emb)
