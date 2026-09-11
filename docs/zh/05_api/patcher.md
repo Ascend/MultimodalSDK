@@ -72,7 +72,7 @@ Multimodal SDK 历史上针对 **vllm-ascend** 各版本提供过不同的 patch
 
 ## 启动 vLLM
 
-设置好环境变量之后，**直接使用原生的 `vllm serve` 命令即可**，无需任何额外 SDK 侧参数。例如，启用 SCC + 预处理加速跑 Qwen3-VL-8B-Instruct：
+设置好环境变量之后，**直接使用原生的 `vllm serve` 命令即可**，无需任何额外 SDK 侧参数。例如，启用 SCC + 预处理加速运行 Qwen3-VL-8B-Instruct：
 
 ```bash
 MM_SCC_RATE=0.5 \
@@ -99,6 +99,65 @@ vllm serve /models/Qwen3-VL-8B-Instruct \
 如下图所示，启动日志中包含 SCC 视觉 token 压缩已注入（`MM_SCC_RATE < 1.0`）的提示行。
 
 ![scc_patch_log](../figures/patch_apply.png)
+
+---
+
+## 媒体解码加速的文件要求与请求示例
+
+开启 `MM_MEDIA_IO=true` 后，vLLM 的视频 / 图像解码统一走 SDK 解码器（替换 `VideoMediaIO` / `ImageMediaIO`），对请求中的媒体文件有以下要求：
+
+| 媒体类型 | 支持格式 | 说明 |
+| --- | --- | --- |
+| 图片 | jpg / jpeg | 其他格式（png / bmp / webp 等）不在 SDK 解码器支持范围内，请求会返回错误。 |
+| 视频 | mp4 | 其他容器（avi / mkv / mov 等）不在 SDK 解码器支持范围内，请求会返回错误。 |
+
+补充说明：
+
+- 使用 `file://` 需在启动 vLLM 时指定 `--allowed-local-media-path`，将媒体文件所在目录加入白名单，否则 vLLM 会拒绝访问本地文件。例如媒体文件放在 `/data` 下：`--allowed-local-media-path /data`。
+- 媒体文件权限不应高于 640。
+- patch 层会校验文件存在性，文件不存在时直接报错，不会回退到原生解码。
+
+### 图片请求示例
+
+通过 OpenAI 兼容接口发送带图片的请求，`image_url` 使用 `file://` 协议指向服务端本地 jpg / jpeg 文件：
+
+```bash
+curl http://localhost:9000/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "/models/Qwen3-VL-8B-Instruct",
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image_url", "image_url": {"url": "file:///data/images/dog.jpg"}},
+                    {"type": "text", "text": "描述这张图片的内容"}
+                ]
+            }
+        ]
+    }'
+```
+
+### 视频请求示例
+
+视频请求使用 `video_url` 类型，同样以 `file://` 协议指向服务端本地 mp4 文件：
+
+```bash
+curl http://localhost:9000/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "/models/Qwen3-VL-8B-Instruct",
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "video_url", "video_url": {"url": "file:///data/videos/demo.mp4"}},
+                    {"type": "text", "text": "描述这段视频的内容"}
+                ]
+            }
+        ]
+    }'
+```
 
 ---
 
