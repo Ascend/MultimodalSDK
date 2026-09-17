@@ -215,12 +215,12 @@ VRS -->> U: VideoRagInferenceResult
 
 **开发环境设计**：
 
-- 硬件平台：Atlas 800I A2
+- 硬件平台：Atlas 800I A2 推理服务器
 - 软件环境：CANN工具链、VLLM、torch-npu
 
 **开发约束**：
 
-- 硬件需求: Atlas 800I A2
+- 硬件需求: Atlas 800I A2 推理服务器
 - 编程语言: Python
 - 模型依赖: Qwen2.5-VL-32B/Whisper-Large-V3-Turbo/MinerU/MMDINO/BLIP2-ITM-VIT-G/Qwen3-Embedding/Qwen3-Reranker
 
