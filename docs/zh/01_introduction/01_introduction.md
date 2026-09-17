@@ -34,4 +34,4 @@
 
 | 产品系列 | 产品型号 | 操作系统版本 |
 | -- | -- | -- |
-| Atlas A2 推理系列产品 | Atlas 800I A2 推理服务器 | Ubuntu 22.04 / openEuler 24.03 |
+| Atlas A2推理系列产品 | Atlas 800I A2 推理服务器 | Ubuntu 22.04 / openEuler 24.03 |

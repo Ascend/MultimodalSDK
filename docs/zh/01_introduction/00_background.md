@@ -20,7 +20,7 @@
 | 名词 | 说明 |
 |------|------|
 | NPU | Neural Processing Unit，神经网络处理单元，昇腾处理器的核心计算单元 |
-| Atlas 800I A2 | 华为 Atlas 推理服务器型号，Multimodal SDK 支持的硬件平台 |
+| Atlas 800I A2 推理服务器 | 华为 Atlas 推理服务器型号，Multimodal SDK 支持的硬件平台 |
 | davinci | 昇腾 NPU 设备在 Linux 系统中的设备文件名，位于 `/dev/davinci*` |
 
 ### 数据类型与格式

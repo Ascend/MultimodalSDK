@@ -80,7 +80,7 @@ VideoRagService
 
 ### 3.1 硬件要求
 
-- **NPU**：Atlas800I A2(Ascend 910B， 4 卡)
+- **NPU**：Atlas 800I A2 推理服务器(Ascend 910B， 4 卡)
 - **内存**：≥ 128 GB
 - **磁盘**：≥ 400 GB（模型权重 + 缓存 + 数据集）
 

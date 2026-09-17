@@ -125,7 +125,7 @@ MultimodalSDK 的调用全部集中在 (media_processor.py)，承担整条流水
 
 ### 5.1 环境准备（完整流水线，推荐容器化部署）
 
-完整流水线需要：昇腾 NPU 环境（Atlas 800I A2）+ Multimodal SDK + CLIP 模型 + VLM 推理服务 + ffmpeg。推荐容器化部署（已在 8x Ascend 910B4、驱动 24.1.0.3、Docker 26.1.3 环境实测验证）：
+完整流水线需要：昇腾 NPU 环境（Atlas 800I A2 推理服务器）+ Multimodal SDK + CLIP 模型 + VLM 推理服务 + ffmpeg。推荐容器化部署（已在 8x Ascend 910B4、驱动 24.1.0.3、Docker 26.1.3 环境实测验证）：
 
 **双容器架构**：
 
