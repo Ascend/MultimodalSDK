@@ -15,8 +15,21 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
+# adapter仅适配vLLM 4以前的版本（对应transformers 4.x）：依赖transformers的
+# Qwen2VLImageProcessor / BatchFeature等旧接口。transformers >= 5（新构建环境，
+# 见build_script/build.sh安装transformers==5.5.4）或未安装transformers时不再引入，
+# 避免import mm报错。
+from importlib.metadata import version as _pkg_version, PackageNotFoundError
 
-from .qwen2_vl_preprocessor import MultimodalQwen2VLImageProcessor
-from .internvl2_preprocessor import InternVL2PreProcessor
+AVAILABLE = False
 
-__all__ = ['MultimodalQwen2VLImageProcessor', 'InternVL2PreProcessor']
+try:
+    _transformers_major = int(_pkg_version("transformers").split(".")[0])
+except (PackageNotFoundError, ValueError):
+    _transformers_major = -1
+
+if 0 <= _transformers_major < 5:
+    from .qwen2_vl_preprocessor import MultimodalQwen2VLImageProcessor  # noqa: F401
+    from .internvl2_preprocessor import InternVL2PreProcessor  # noqa: F401
+
+    AVAILABLE = True

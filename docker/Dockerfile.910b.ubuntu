@@ -14,9 +14,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt install -y git-lfs libpcre2-dev libcapture-tiny-perl libdatetime-perl && \
     apt clean && rm -rf /var/lib/apt/lists/*
 
-ARG SWIG_VERSION=4.3.0
-ARG SWIG_SHA256=f7203ef796f61af986c70c05816236cbd0d31b7aa9631e5ab53020ab7804aa9e
-RUN curl -fsSL "https://downloads.sourceforge.net/project/swig/swig/swig-${SWIG_VERSION}/swig-${SWIG_VERSION}.tar.gz" -o swig.tgz && \
+RUN SWIG_VERSION=4.3.0 && \
+    SWIG_SHA256=f7203ef796f61af986c70c05816236cbd0d31b7aa9631e5ab53020ab7804aa9e && \
+    curl -fsSL "https://downloads.sourceforge.net/project/swig/swig/swig-${SWIG_VERSION}/swig-${SWIG_VERSION}.tar.gz" -o swig.tgz && \
     echo "${SWIG_SHA256}  swig.tgz" | sha256sum -c - && \
     tar -xzf swig.tgz && \
     cd "swig-${SWIG_VERSION}" && \
@@ -25,33 +25,21 @@ RUN curl -fsSL "https://downloads.sourceforge.net/project/swig/swig/swig-${SWIG_
 
 RUN pip3 config set global.trusted-host repo.huaweicloud.com && \
     pip3 config set global.index-url https://repo.huaweicloud.com/repository/pypi/simple && \
+    pip3 config set global.extra-index-url https://triton-ascend.osinfra.cn/pypi/simple && \
     pip3 config set global.timeout 200
 
 RUN mkdir /vllm-workspace/ && cd /vllm-workspace/ && \
-    git clone --branch v0.8.5 https://atomgit.com/GitHub_Trending/vl/vllm.git && \
-    git clone --branch v0.8.5rc1 https://gitcode.com/gh_mirrors/vl/vllm-ascend.git
-
-RUN cd /vllm-workspace/vllm-ascend && \
-    sed -i '/inner_kernel_operator_intf.h/d' csrc/kernels/pos_encoding_kernels.cpp && \
-    sed -i 's/torch-npu==2.5.1/torch-npu==2.6.0.post5/g' pyproject.toml && \
-    sed -i 's/torch>=2.5.1/torch>=2.6.0/g' pyproject.toml && \
-    sed -i 's/torchvision<0.21.0/torchvision==0.21.0/g' pyproject.toml && \
-    sed -i 's/torch-npu==2.5.1/torch-npu==2.6.0.post5/g' requirements.txt && \
-    sed -i 's/torch>=2.5.1/torch>=2.6.0/g' requirements.txt && \
-    sed -i 's/torchvision<0.21.0/torchvision==0.21.0/g' requirements.txt && \
-    sed -i 's/--cmake/--cmakedir/' setup.py
+    git clone --branch releases/v0.23.0 https://atomgit.com/GitHub_Trending/vl/vllm.git && \
+    git clone --branch v0.23.0 https://gitcode.com/gh_mirrors/vl/vllm-ascend.git
 
 RUN cd /vllm-workspace/vllm && VLLM_TARGET_DEVICE=empty pip3 install -e  .
 
-RUN cd /vllm-workspace/vllm-ascend && source /usr/local/Ascend/ascend-toolkit/set_env.sh && pip3 install -e .
+RUN pip3 install triton-ascend==3.2.1
+
+RUN export SOC_VERSION="ascend910b1" && cd /vllm-workspace/vllm-ascend && source /usr/local/Ascend/ascend-toolkit/set_env.sh && pip3 install -e .
 
 # delete cmake from pip3, useless after compile of vllm-ascend
-RUN pip3 uninstall -y cmake triton
-
-RUN pip3 install transformers==4.51.3 && \
-    pip3 install pillow==11.2.1 && \
-    pip3 install numpy==1.26.4 && \
-    pip3 install "setuptools<82"
+RUN pip3 uninstall -y cmake
 
 RUN wget https://gitcode.com/Ascend/MultimodalSDK/releases/download/v26.1.0/Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run && \
     chmod +x Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run && \

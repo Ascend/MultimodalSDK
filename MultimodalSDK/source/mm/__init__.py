@@ -28,8 +28,8 @@ from .acc import (
     load_audio,
 )
 from .comm import LogLevel, register_log_conf
-from .adapter import MultimodalQwen2VLImageProcessor, InternVL2PreProcessor
 from .core import BaseFrameSelector, KFrameSelector, KRangFrameSelector
+from . import adapter
 
 __all__ = [
     'Tensor',
@@ -43,11 +43,18 @@ __all__ = [
     'Interpolation',
     'video_decode',
     'normalize',
-    'MultimodalQwen2VLImageProcessor',
-    'InternVL2PreProcessor',
     'load_audio',
     'BaseFrameSelector',
     'KFrameSelector',
     'KRangFrameSelector',
 ]
+
+# adapter仅在transformers 4.x（对应vLLM 4以前的版本）可用，见 mm/adapter/__init__.py；
+# 不可用时这两个类不导出，mm其余功能不受影响。
+if adapter.AVAILABLE:
+    from .adapter import MultimodalQwen2VLImageProcessor, InternVL2PreProcessor
+
+    __all__ += ['MultimodalQwen2VLImageProcessor', 'InternVL2PreProcessor']
+del adapter
+
 register_log_conf(LogLevel.INFO, None)

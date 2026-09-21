@@ -44,8 +44,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 pip3 install "pillow>=11.2.1"
-pip3 install torch-npu==2.6.0.post5
-pip3 install transformers==4.51.3
+pip3 install torch-npu==2.10.0.post4
+pip3 install transformers==5.5.4
 pip3 install einops
 
 BUILD_ARGS=("${PARSED_BUILD_ARGS[@]}")
@@ -156,8 +156,8 @@ chmod +x "${OUTPUT_DIR}/script/install.sh"
 if [[ "${BUILD_ARGS[*]}" == *"test"* ]]; then
     echo "[INFO] Building test: install whl first..."
     # torchvision is only used by UTs as a reference implementation for tensor conversion and normalization.
-    # Keep it aligned with torch-npu 2.6.0.post5.
-    pip3 install torchvision==0.21.0 coverage pytest pytest-cov pytest-html
+    # Keep it aligned with torch-npu 2.10.0.post4.
+    pip3 install torchvision==0.25.0 coverage pytest pytest-cov pytest-html
     WHL_FILE=$(find "${A_ROOT_DIR}/dist" -name "*.whl" | head -n 1)
     if [ -z "$WHL_FILE" ]; then
         echo "[ERROR] whl package not found!"
