@@ -23,12 +23,12 @@ Multimodal SDK 支持[离线安装](#离线安装)（`run` 包 / `Wheel` 包）�
 | 依赖名称       | 版本建议                     | 获取建议                                                                 |
 | ------------ | ------------------------- | ---------------------------------------------------------------------- |
 | Python       | 最低 3.10；**推荐 3.12** | 建议通过包管理器安装：<br>Ubuntu：`sudo apt-get install -y python3 python3-pip python3-dev`<br>openEuler：`sudo yum install -y python3 python3-pip python3-devel`<br>若系统自带版本过低，可从源码编译或安装更高版本 |
-| transformers | 4.51.3                    | 通过 pip 安装：<br>`pip3 install transformers==4.51.3`                       |
+| transformers | 5.5.4                     | 通过 pip 安装：<br>`pip3 install transformers==5.5.4`                       |
 | einops       | 0.8.2                     | 通过 pip 安装：<br>`pip3 install einops==0.8.2`                            |
 | pillow       | 11.2.1 及以上               | 通过 pip 安装：<br>`pip3 install pillow==11.2.1`                           |
 | numpy        | 1.26.4                    | 通过 pip 安装：<br>`pip3 install numpy==1.26.4`                            |
-| torch        | 2.6.0                     | 通过 pip 安装：<br>`pip3 install torch==2.6.0` |
-| TorchNPU     | 2.6.0.post5               | 通过 pip 安装：<br>`pip3 install torch-npu==2.6.0.post5`<br> |
+| torch        | 2.10.0                     | 通过 pip 安装：<br>`pip3 install torch==2.10.0` |
+| torch-npu     | 2.10.0.post4               | 通过 pip 安装：<br>`pip3 install torch-npu==2.10.0.post4`<br> |
 
 ## 安装方式
 

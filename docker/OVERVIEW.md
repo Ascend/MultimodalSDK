@@ -31,7 +31,7 @@ Tags follow this pattern:
 | ---------------- | ------------------------------- | ------------------------- |
 | `multimodalsdk_version` | `26.1.0`   | MultimodalSDK version              |
 | `cann_version`   | `9.1.0`              | cann version      |
-| `torch-npu_version`   | `2.6.0.post5`              | torch-npu version      |
+| `torch-npu_version`   | `2.10.0.post4`              | torch-npu version      |
 | `chip_series`    | `910b`         | Target Atlas chip family |
 | `os`             | `ubuntu22.04`, `openeuler24.03` | Base operating system     |
 | `python_version` | `py3.12`    | Python version            |
@@ -40,8 +40,8 @@ Tags follow this pattern:
 
 | Tag                                | Dockerfile                                                   |
 | ---------------------------------- | ------------------------------------------------------------ |
-| `26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-openeuler24.03-py3.12-aarch64`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
-| `26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
+| `26.1.0-cann9.1.0-torch_npu2.10.0.post4-910b-openeuler24.03-py3.12-aarch64`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
+| `26.1.0-cann9.1.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
 
 ---
 
@@ -94,7 +94,7 @@ MultimodalSDK provides sample code to help developers get started quickly. You c
 
 ```bash
 # Add required software by developer
-FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64
+FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-cann9.1.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64
 
 RUN apt update -y && \
     ...

@@ -43,12 +43,12 @@
 
 设置上述环境变量后，SCC 与预处理加速会在以下模型上自动生效（vLLM 加载到对应模型类时，Multimodal SDK 会按需注入 monkey patch）：
 
-| 模型 | SCC 视觉 token 压缩 | 预处理加速 |
-| --- | --- | --- |
-| **Qwen2.5-VL-7B-Instruct** | ✓ | ✓ |
-| **Qwen3-VL-8B-Instruct** | ✓ | ✓ |
-| **Qwen3.5-35B-A3B** | ✓ | ✓ |
-| **Qwen3.6-27B** | ✓ | ✓ |
+| 模型 | SCC 视觉 token 压缩 | 预处理加速 | 推荐 `MM_SCC_RATE` |
+| --- | --- | --- | --- |
+| **Qwen2.5-VL-7B-Instruct** | ✓ | ✓ | 0.5 |
+| **Qwen3-VL-8B-Instruct** | ✓ | ✓ | 0.6 |
+| **Qwen3.6-35B-A3B** | ✓ | ✓ | 0.7 |
+| **Qwen3.6-27B** | ✓ | ✓ | 0.6 |
 
 其他模型不涉及 SCC / 预处理 patch 操作，因此不受影响。
 

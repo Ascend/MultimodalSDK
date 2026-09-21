@@ -19,7 +19,16 @@ import unittest
 import numpy as np
 import os
 from PIL import Image as PILImage
-from mm import Image, ImageFormat, MultimodalQwen2VLImageProcessor, InternVL2PreProcessor
+
+# adapter仅在transformers 4.x（对应vLLM 4以前的版本）可用，见 mm/adapter/__init__.py。
+# 不可用时其内部模块不会被引入，用AVAILABLE守卫条件import，避免collection阶段报错；
+# else分支兜底赋None，防止pylint报possibly-used-before-assignment（此时用例整体skip，不会真正执行）。
+from mm import adapter as _mm_adapter
+
+if _mm_adapter.AVAILABLE:
+    from mm import Image, ImageFormat, InternVL2PreProcessor
+else:
+    Image = ImageFormat = InternVL2PreProcessor = None
 
 
 VALID_IMAGE_PATH = "./test/assets/dog_1920_1080.jpg"
@@ -29,8 +38,11 @@ MIN_RATIO_NUM = 1
 MAX_RATIO_NUM = 12
 
 
+@unittest.skipIf(
+    not _mm_adapter.AVAILABLE,
+    "adapter仅适用于vLLM 4以前的版本（transformers 4.x），当前环境不可用",
+)
 class Test_InternVL2_Preprocess(unittest.TestCase):
-
     def test_valid_image(self):
         os.chmod(VALID_IMAGE_PATH, 0o640)
         image = Image.open(VALID_IMAGE_PATH, DEVICE_CPU)
@@ -43,14 +55,14 @@ class Test_InternVL2_Preprocess(unittest.TestCase):
         image = Image.open(VALID_IMAGE_PATH, DEVICE_CPU)
         internVL2PreProcessor = InternVL2PreProcessor()
         with self.assertRaises(ValueError):
-            result = internVL2PreProcessor.preprocess_image(image, 448, MAX_RATIO_NUM, MIN_RATIO_NUM, True)
+            internVL2PreProcessor.preprocess_image(image, 448, MAX_RATIO_NUM, MIN_RATIO_NUM, True)
 
     def test_invalid_image(self):
         img = np.random.randint(0, 256, size=(8193, 8193, 3), dtype=np.uint8)
         pil_img = PILImage.fromarray(img)
         internVL2PreProcessor = InternVL2PreProcessor()
         with self.assertRaises(RuntimeError):
-            result = internVL2PreProcessor.preprocess_image(pil_img, 448, MIN_RATIO_NUM, MAX_RATIO_NUM, True)
+            internVL2PreProcessor.preprocess_image(pil_img, 448, MIN_RATIO_NUM, MAX_RATIO_NUM, True)
 
 
 if __name__ == "__main__":

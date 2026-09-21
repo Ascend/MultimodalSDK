@@ -16,12 +16,28 @@
 # See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
 import unittest
+
 import numpy as np
 from PIL import Image as PILImage
-from mm import Image, ImageFormat, MultimodalQwen2VLImageProcessor
-from mm.adapter.qwen2_vl_preprocessor import _check_image, ImageConstraints
+
+# adapter仅在transformers 4.x（对应vLLM 4以前的版本）可用，见 mm/adapter/__init__.py。
+# 不可用时其内部模块不会被引入，用AVAILABLE守卫条件import，避免collection阶段报错；
+# else分支兜底赋None，防止pylint报possibly-used-before-assignment（此时用例整体skip，不会真正执行）。
+from mm import adapter as _mm_adapter
+
+if _mm_adapter.AVAILABLE:
+    from mm import Image, ImageFormat
+    from mm import MultimodalQwen2VLImageProcessor
+    from mm.adapter.qwen2_vl_preprocessor import _check_image, ImageConstraints
+else:
+    Image = ImageFormat = MultimodalQwen2VLImageProcessor = None
+    _check_image = ImageConstraints = None
 
 
+@unittest.skipIf(
+    not _mm_adapter.AVAILABLE,
+    "adapter仅适用于vLLM 4以前的版本（transformers 4.x），当前环境不可用",
+)
 class Test_Qwen2VL_Preprocess(unittest.TestCase):
     BATCH_SIZE = 8
     PATCH_SIZE = 14
@@ -133,8 +149,9 @@ class Test_Qwen2VL_Preprocess(unittest.TestCase):
         self.assertIn("pixel_values_videos", bf3.data)
 
         multi_video_arrays = [
-            np.stack([np.random.randint(0, 256, (H, W, 3), dtype=np.uint8)
-                      for _ in range(np.random.randint(2, 5))], axis=0)
+            np.stack(
+                [np.random.randint(0, 256, (H, W, 3), dtype=np.uint8) for _ in range(np.random.randint(2, 5))], axis=0
+            )
             for _ in range(2)
         ]
         bf4 = MultimodalQwen2VLImageProcessor().preprocess(None, videos=multi_video_arrays)
@@ -143,7 +160,7 @@ class Test_Qwen2VL_Preprocess(unittest.TestCase):
         mixed_video = [
             Image.from_numpy(np.random.randint(0, 256, (H, W, 3), dtype=np.uint8), ImageFormat.RGB),
             PILImage.fromarray(np.random.randint(0, 256, (H, W, 3), dtype=np.uint8)),
-            np.random.randint(0, 256, (H, W, 3), dtype=np.uint8)
+            np.random.randint(0, 256, (H, W, 3), dtype=np.uint8),
         ]
         bf5 = MultimodalQwen2VLImageProcessor().preprocess(None, videos=mixed_video)
         self.assertIn("pixel_values_videos", bf5.data)
@@ -166,13 +183,15 @@ class Test_Qwen2VL_Preprocess(unittest.TestCase):
 
         arr = self.random_image_array()
         with self.assertRaises(ValueError):
-            MultimodalQwen2VLImageProcessor().preprocess(arr, patch_size=self.PATCH_SIZE, merge_size=self.MERGE_SIZE,
-                                                         max_pixels=1)
+            MultimodalQwen2VLImageProcessor().preprocess(
+                arr, patch_size=self.PATCH_SIZE, merge_size=self.MERGE_SIZE, max_pixels=1
+            )
 
         arr = self.random_image_array()
         with self.assertRaises(ValueError):
-            MultimodalQwen2VLImageProcessor().preprocess(arr, patch_size=self.PATCH_SIZE, merge_size=self.MERGE_SIZE,
-                                                         min_pixels=3136, max_pixels=3136)
+            MultimodalQwen2VLImageProcessor().preprocess(
+                arr, patch_size=self.PATCH_SIZE, merge_size=self.MERGE_SIZE, min_pixels=3136, max_pixels=3136
+            )
 
         arr = self.random_image_array()
         with self.assertRaises(ValueError):
@@ -286,11 +305,7 @@ class Test_Qwen2VL_Preprocess(unittest.TestCase):
             MultimodalQwen2VLImageProcessor().preprocess(arr, temporal_patch_size=5)
 
     def test_video_frames_with_invalid_types(self):
-        frames = [
-            np.random.randint(0, 256, (32, 32, 3), dtype=np.uint8),
-            "not an image",
-            None
-        ]
+        frames = [np.random.randint(0, 256, (32, 32, 3), dtype=np.uint8), "not an image", None]
         with self.assertRaises(TypeError):
             MultimodalQwen2VLImageProcessor().preprocess(None, videos=frames)
             MultimodalQwen2VLImageProcessor().preprocess([[], [[], []], [], []], videos=[[], [], [], [[], []]])
@@ -298,7 +313,7 @@ class Test_Qwen2VL_Preprocess(unittest.TestCase):
     def test_images_and_videos_mixed_types_video_used(self):
         images = [
             np.random.randint(0, 256, (32, 32, 3), dtype=np.uint8),
-            PILImage.fromarray(np.random.randint(0, 256, (32, 32, 3), dtype=np.uint8))
+            PILImage.fromarray(np.random.randint(0, 256, (32, 32, 3), dtype=np.uint8)),
         ]
         videos = [self.random_video_list()]
         bf = MultimodalQwen2VLImageProcessor().preprocess(images=images, videos=videos)
@@ -332,7 +347,6 @@ class Test_Qwen2VL_Preprocess(unittest.TestCase):
         for val, err in zip(invalid_std, std_error):
             with self.assertRaises(err):
                 processor.preprocess(images=[], videos=videos, image_std=val)
-
 
 
 if __name__ == "__main__":

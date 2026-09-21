@@ -62,10 +62,10 @@ source /home/work/Mind_SDK/multimodal/script/set_env.sh
 **Solution**: Install the required versions according to [Installation Guide > Other Dependencies](../03_installation_guide/installation_guide.md#installing-other-dependencies):
 
 ```bash
-pip3 install transformers==4.51.3 pillow==11.2.1 numpy==1.26.4
+pip3 install transformers==5.5.4 pillow==11.2.1 numpy==1.26.4
 ```
 
-Install `torch` and `TorchNPU` according to the compatibility table for `vllm-ascend==v0.8.5rc1`. For details, see [Installation Guide > Other Dependencies](../03_installation_guide/installation_guide.md#installing-other-dependencies).
+Install `torch` and `torch-npu` according to the compatibility table for `vllm-ascend==v0.23.0`. For details, see [Installation Guide > Other Dependencies](../03_installation_guide/installation_guide.md#installing-other-dependencies).
 
 ### Q: Why does `torchvision` report that `lzma` is missing even though the `lzma` module is installed?
 
