@@ -15,75 +15,52 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
-"""Pytest bootstrap for the mm package.
 
-On a target environment (Linux with the built ``_acc`` extension) the real
-``mm`` package is imported as-is. On a development machine without the SWIG
-build artifacts, importing ``mm`` fails at ``libcore.so`` preloading; in that
-case minimal stub modules for ``mm`` / ``mm.core`` / ``mm.comm`` /
-``mm.comm.log`` and the ``mm.acc`` wrapper chain (pulled in by
-``mm.core.segmenter`` package imports) are injected so pure-Python modules
-(e.g. ``mm.core.segmenter``) stay testable. Tests that require the real
-``_acc`` fail on import either way, exactly as before.
+"""Root conftest — mocks native lib dependencies so tests can run without libcore.so.
+
+This file is loaded by pytest before any test module imports.  It checks whether
+``mm.acc._impl`` can be imported normally; if not (libcore.so missing), it
+installs a mock ``acc`` module so that ``import mm`` succeeds.
 """
 
+from __future__ import annotations
+
 import sys
-import types
-from pathlib import Path
+import warnings
+from unittest.mock import MagicMock
 
-try:
-    import mm  # noqa: F401
-except Exception:  # noqa: BLE001  no usable real mm package here
-    _mm_root = Path(__file__).resolve().parents[1] / "source" / "mm"
 
-    _mm_pkg = types.ModuleType("mm")
-    _mm_pkg.__path__ = [str(_mm_root)]
-    sys.modules.setdefault("mm", _mm_pkg)
+def _ensure_mm_importable():
+    """Ensure ``import mm`` works even without the native C++ library."""
+    try:
+        import mm  # noqa: F401
 
-    _core_pkg = types.ModuleType("mm.core")
-    _core_pkg.__path__ = [str(_mm_root / "core")]
-    sys.modules.setdefault("mm.core", _core_pkg)
+        return
+    except ImportError:
+        pass
 
-    _comm_pkg = types.ModuleType("mm.comm")
-    _comm_pkg.__path__ = [str(_mm_root / "comm")]
-    sys.modules.setdefault("mm.comm", _comm_pkg)
+    # Create mock modules for the native acc layer
+    mock_acc = MagicMock()
+    mock_acc_impl = MagicMock()
+    mock_wrapper = MagicMock()
 
-    _log_mod = types.ModuleType("mm.comm.log")
+    # Register mocks in sys.modules BEFORE importing mm
+    sys.modules["mm.acc"] = mock_acc
+    sys.modules["mm.acc._impl"] = mock_acc_impl
+    sys.modules["mm.acc._impl.acc"] = MagicMock()
+    sys.modules["mm.acc.wrapper"] = mock_wrapper
+    for sub in ["tensor_wrapper", "image_wrapper", "video_wrapper", "audio_wrapper", "data_type", "util"]:
+        sys.modules[f"mm.acc.wrapper.{sub}"] = MagicMock()
 
-    class _StubLogger:
-        @staticmethod
-        def debug(message):  # noqa: D102
-            pass
+    # Now mm should be importable
+    try:
+        import mm  # noqa: F401
+    except Exception as exc:
+        warnings.warn(
+            f"import mm failed even with mocked native modules: {exc!r}. "
+            "Tests importing mm will fail during collection.",
+            stacklevel=2,
+        )
 
-        @staticmethod
-        def info(message):  # noqa: D102
-            pass
 
-        @staticmethod
-        def warn(message):  # noqa: D102
-            pass
-
-        @staticmethod
-        def error(message):  # noqa: D102
-            pass
-
-        @staticmethod
-        def fatal(message):  # noqa: D102
-            pass
-
-    _log_mod._Logger = _StubLogger
-    sys.modules.setdefault("mm.comm.log", _log_mod)
-
-    # SWIG-based acc wrapper chain: stub video_decode / video_info so that
-    # ``mm.core.segmenter`` package imports resolve on any machine.
-    _acc_pkg = types.ModuleType("mm.acc")
-    sys.modules.setdefault("mm.acc", _acc_pkg)
-
-    _acc_wrapper_pkg = types.ModuleType("mm.acc.wrapper")
-    sys.modules.setdefault("mm.acc.wrapper", _acc_wrapper_pkg)
-
-    if "mm.acc.wrapper.video_wrapper" not in sys.modules:
-        _video_wrapper = types.ModuleType("mm.acc.wrapper.video_wrapper")
-        _video_wrapper.video_decode = lambda *a, **k: []
-        _video_wrapper.video_info = lambda *a, **k: {}
-        sys.modules["mm.acc.wrapper.video_wrapper"] = _video_wrapper
+_ensure_mm_importable()
