@@ -13,6 +13,7 @@
 
 <span style="font-size:14px;">
 
+🔹 **[2026.09.30]**：🚀 [Multimodal SDK 26.2.0 Release 版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.2.0)<br>
 🔹 **[2026.07.31]**：🚀 [Multimodal SDK 26.1.0 Release 版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.1.0)<br>
 🔹 **[2026.04.25]**：🚀 [Multimodal SDK 26.0.0 Release 版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.0.0)<br>
 🔹 **[2025.12.30]**：🚀 Multimodal SDK 开源发布<br>
@@ -65,6 +66,7 @@ API 说明请参考：
 | 版本 | 维护策略 | 当前状态 | 发布日期 | 后续状态 | EOL 日期 |
 | --- | --- | --- | --- | --- | --- |
 | master | 长期支持 | 开发 | 在研分支，不发布 | 持续开发 | - |
+| v26.2.0 | 常规分支 | 维护 | 2026-09-30 | 预计2027-03-31起进入无维护状态 | 2027-03-31 |
 | v26.1.0 | 常规分支 | 维护 | 2026-07-31 | 预计2027-01-31起进入无维护状态 | 2027-01-31 |
 | v26.0.0 | 常规分支 | 维护 | 2026-04-25 | 预计2026-10-25起进入无维护状态 | 2026-10-25 |
 

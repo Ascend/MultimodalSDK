@@ -29,8 +29,8 @@ Tag 遵循以下格式：
 
 | 字段         | 示例值                          | 说明             |
 | ------------ | ------------------------------- | ---------------- |
-| `MultimodalSDK版本`   | `26.1.0`              | MultimodalSDK 版本号      |
-| `cann版本`   | `9.1.0`              | cann 版本号      |
+| `MultimodalSDK版本`   | `26.2.0`              | MultimodalSDK 版本号      |
+| `cann版本`   | `9.2.0`              | cann 版本号      |
 | `torch-npu版本`   | `2.10.0.post4`              | torch-npu 版本号      |
 | `芯片系列`   | `910b`          | 目标芯片系列 |
 | `操作系统`   | `ubuntu22.04`、`openeuler24.03` | 基础操作系统     |
@@ -40,8 +40,8 @@ Tag 遵循以下格式：
 
 | Tag                                | Dockerfile                                                   |
 | ---------------------------------- | ------------------------------------------------------------ |
-| `26.1.0-cann9.1.0-torch_npu2.10.0.post4-910b-openeuler24.03-py3.12-aarch64`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
-| `26.1.0-cann9.1.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
+| `26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-openeuler24.03-py3.12-aarch64`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
+| `26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
 
 ---
 
@@ -87,7 +87,7 @@ docker exec -it multimodal_container bash
 ### 如何二次开发
 
 ```bash
-FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-cann9.1.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64
+FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64
 
 RUN apt update -y && \
     ...

@@ -34,9 +34,9 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 
    | 变量 | 含义 | 示例值 |
    |------|------|--------|
-   | `{version}` | Multimodal SDK 版本 | `26.1.0` |
-   | `{cann}` | cann 版本 | `9.1.0` |
-   | `{torch_npu}` | torch_npu 版本 | `2.6.0.rc1` |
+   | `{version}` | Multimodal SDK 版本 | `26.2.0` |
+   | `{cann}` | cann 版本 | `9.2.0` |
+   | `{torch_npu}` | torch_npu 版本 | `2.10.0.post4` |
    | `{os}` | 基础操作系统 | `ubuntu22.04` / `openeuler24.03` |
    | `{python}` | Python 版本 | `py3.12` |
 
@@ -47,12 +47,12 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
        multimodalsdk:${TAG}
    ```
 
-   以 26.1.0 版本、Ubuntu 22.04、Python 3.12 为例：
+   以 26.2.0 版本、Ubuntu 22.04、Python 3.12 为例：
 
    ```bash
-   docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64
-   docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64 \
-       multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64
+   docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64
+   docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64 \
+       multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64
    ```
 
 ## 步骤 2：启动容器
@@ -82,7 +82,7 @@ docker run \
     -v /usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64 \
     -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
     -v /etc/ascend_install.info:/etc/ascend_install.info \
-    -itd multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64 bash
+    -itd multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64 bash
 
 docker ps -a | grep multimodal_container
 ```

@@ -1,4 +1,4 @@
-FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:9.1.0-910b-openeuler24.03-py3.12
+FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:9.2.0-beta.2-910b-openeuler24.03-py3.12
 
 USER root
 
@@ -75,10 +75,11 @@ RUN export SOC_VERSION="ascend910b1" && cd /vllm-workspace/vllm-ascend && source
 # delete cmake from pip3, useless after compile of vllm-ascend
 RUN pip3 uninstall -y cmake
 
-RUN wget https://gitcode.com/Ascend/MultimodalSDK/releases/download/v26.1.0/Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run && \
-    chmod +x Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run && \
-    bash Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run --install --install-path=/usr/local && \
-    ln -s /usr/lib64/libbz2.so.1.0.8 /usr/local/multimodal/opensource/FFmpeg/lib/libbz2.so.1.0
+RUN wget https://gitcode.com/Ascend/MultimodalSDK/releases/download/v26.2.0/Ascend-mindxsdk-multimodal_26.2.0_linux-aarch64.run && \
+    chmod +x Ascend-mindxsdk-multimodal_26.2.0_linux-aarch64.run && \
+    bash Ascend-mindxsdk-multimodal_26.2.0_linux-aarch64.run --install --install-path=/usr/local
+
+RUN ln -s /usr/lib64/libbz2.so.1.0.8 /usr/lib64/libbz2.so.1.0
 
 # Download the MultimodalSDK test image into the container.
 RUN mkdir -p /data && \
