@@ -34,9 +34,9 @@ Before you begin, ensure that:
 
    | Variable | Description | Example Value |
    |------|------|--------|
-   | `{version}` | Multimodal SDK version | `26.1.0` |
-   | `{cann}` | CANN version | `9.1.0` |
-   | `{torch_npu}` | torch_npu version | `2.6.0.rc1` |
+   | `{version}` | Multimodal SDK version | `26.2.0` |
+   | `{cann}` | CANN version | `9.2.0` |
+   | `{torch_npu}` | torch_npu version | `2.10.0.post4` |
    | `{os}` | Base operating system | `ubuntu22.04`/`openeuler24.03` |
    | `{python}` | Python version | `py3.12` |
 
@@ -47,12 +47,12 @@ Before you begin, ensure that:
        multimodalsdk:${TAG}
    ```
 
-   The following example uses version 26.1.0, Ubuntu 22.04, and Python 3.12:
+   The following example uses version 26.2.0, Ubuntu 22.04, and Python 3.12:
 
    ```bash
-   docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64
-   docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64 \
-       multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64
+   docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64
+   docker tag swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64 \
+       multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64
    ```
 
 ## Step 2: Starting the Container
@@ -82,7 +82,7 @@ docker run \
     -v /usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64 \
     -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
     -v /etc/ascend_install.info:/etc/ascend_install.info \
-    -itd multimodalsdk:26.1.0-cann9.1.0-torch_npu2.6.0.post5-910b-ubuntu22.04-py3.12-aarch64 bash
+    -itd multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64 bash
 
 docker ps -a | grep multimodal_container
 ```

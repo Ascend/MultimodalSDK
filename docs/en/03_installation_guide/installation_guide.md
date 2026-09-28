@@ -2,7 +2,7 @@
 
 ## Installation Overview
 
-This document describes how to install the latest version of Multimodal SDK. It supports only the Atlas 800I A2 inference server running Ubuntu 22.04 or openEuler 24.03. It is recommended that you reserve at least 16GB of available disk space and 8GB of available memory. Multimodal SDK is currently an officially supported version and is compatible with CANN 9.1.0 and the corresponding supporting software.
+This document describes how to install the latest version of Multimodal SDK. It supports only the Atlas 800I A2 inference server running Ubuntu 22.04 or openEuler 24.03. It is recommended that you reserve at least 16GB of available disk space and 8GB of available memory. Multimodal SDK is currently an officially supported version and is compatible with CANN 9.2.0 and the corresponding supporting software.
 
 Multimodal SDK supports three installation methods: [offline installation](#offline-installation) (`run` package / `Wheel` package), [source installation](#source-installation), and [image installation](#image-installation). The `run` package is a self-extracting installation script that includes all dependencies. The `Wheel` package is a Python binary distribution package. Image installation deploys Multimodal SDK using a container image.
 
@@ -16,19 +16,19 @@ If you need to install third-party software other than the Multimodal SDK softwa
 
 ### Installing the NPU Driver, Firmware, and CANN
 
-Refer to the [CANN Installation Guide](https://www.hiascend.com/cann/download), select CANN (Compute Architecture for Neural Networks) 9.1.0 and HDK (Hardware Developer Kit) 26.1.0, and install the NPU driver, firmware, and CANN software, including the Toolkit and ops packages. Then configure the required environment variables.
+Refer to the [CANN Installation Guide](https://www.hiascend.com/cann/download), select CANN (Compute Architecture for Neural Networks) 9.2.0 and HDK (Hardware Developer Kit) 26.2.0, and install the NPU driver, firmware, and CANN software, including the Toolkit and ops packages. Then configure the required environment variables.
 
 ### Installing Other Dependencies
 
 | Dependency | Recommended Version | Installation Method |
 | ---------- | ------------------- | ------------------- |
 | Python | Minimum 3.10; **recommended 3.12** | Install using the package manager:<br>Ubuntu: `sudo apt-get install -y python3 python3-pip python3-dev`<br>openEuler: `sudo yum install -y python3 python3-pip python3-devel`<br>If the system version is too low, compile from source or install a higher version. |
-| transformers | 4.51.3 | Install using pip:<br>`pip3 install transformers==4.51.3` |
+| transformers | 5.5.4 | Install using pip:<br>`pip3 install transformers==5.5.4` |
 | einops | 0.8.2 | Install using pip:<br>`pip3 install einops==0.8.2` |
 | pillow | 11.2.1 or later | Install using pip:<br>`pip3 install pillow==11.2.1` |
 | numpy | 1.26.4 | Install using pip:<br>`pip3 install numpy==1.26.4` |
-| torch | 2.6.0 | Install using pip:<br>`pip3 install torch==2.6.0` |
-| torch-npu | 2.6.0.post5 | Install using pip:<br>`pip3 install torch-npu==2.6.0.post5` |
+| torch | 2.10.0 | Install using pip:<br>`pip3 install torch==2.10.0` |
+| torch-npu | 2.10.0.post4 | Install using pip:<br>`pip3 install torch-npu==2.10.0.post4` |
 
 ## Installing the SDK
 
@@ -49,12 +49,12 @@ Multimodal SDK provides three installation methods: offline installation (`run` 
 
 **Preparing for Installation**
 
-Download the Multimodal SDK package from [Multimodal SDK Releases](https://gitcode.com/Ascend/MultimodalSDK/releases). The package name is `Ascend-mindxsdk-multimodal_{version}_linux-aarch64.run`, where `{version}` is the SDK version, such as `26.1.0`.
+Download the Multimodal SDK package from [Multimodal SDK Releases](https://gitcode.com/Ascend/MultimodalSDK/releases). The package name is `Ascend-mindxsdk-multimodal_{version}_linux-aarch64.run`, where `{version}` is the SDK version, such as `26.2.0`.
 
 The following commands use `${MMSDK_PACKAGE}` to represent the name of the downloaded `.run` package. Set it to the actual package filename. For example:
 
 ```bash
-export MMSDK_PACKAGE=Ascend-mindxsdk-multimodal_26.1.0_linux-aarch64.run
+export MMSDK_PACKAGE=Ascend-mindxsdk-multimodal_26.2.0_linux-aarch64.run
 ```
 
 Make sure that the CANN environment variable configuration script has been executed in the installation environment:
