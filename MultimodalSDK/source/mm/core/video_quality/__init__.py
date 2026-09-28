@@ -31,14 +31,17 @@ Public API:
       delivered).
     - ``DeviceResolver``: unified device resolution (auto → NPU/CPU).
     - ``WeightResolver``: unified weight-path resolution.
+    - ``FrameLoader`` / ``load_frames``: uniform-sampling and continuous-fps
+      decoding; ``SharedClipBackbone`` / ``clear_backbone_cache`` /
+      ``get_cache_info``: process-level backbone pool; ``VideoQualityPipeline``:
+      one-decode, shared-frame scoring.
 
 .. note::
 
    Concrete scorer implementations (motion, naturalness, aesthetics, etc.)
-   and the ``VideoQualityPipeline`` combiner will be provided in subsequent
-   versions.  In this release ``create_scorer`` returns a ``KeyError`` for
-   any unknown name; it is prepared for registration from future scorer
-   packages.
+   will be provided in subsequent versions.  In this release
+   ``create_scorer`` returns a ``KeyError`` for any unknown name; it is
+   prepared for registration from future scorer packages.
 """
 
 from .base import (
@@ -53,6 +56,10 @@ from .base import (
 )
 from .device import DeviceResolver
 from .weights import WeightResolver
+from .frame_loader import FrameLoader, load_frames
+from .backbones import SharedClipBackbone, get_cache_info
+from .backbones import clear_cache as clear_backbone_cache
+from .pipeline import VideoQualityPipeline
 
 __all__ = [
     # Data contracts
@@ -68,4 +75,10 @@ __all__ = [
     # Infrastructure
     "DeviceResolver",
     "WeightResolver",
+    "FrameLoader",
+    "load_frames",
+    "SharedClipBackbone",
+    "clear_backbone_cache",
+    "get_cache_info",
+    "VideoQualityPipeline",
 ]
