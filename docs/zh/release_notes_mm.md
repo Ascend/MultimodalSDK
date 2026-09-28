@@ -1,5 +1,12 @@
 # 版本说明
 
+## 关键特性
+
+- SCC 视觉 Token 压缩：按语义相似度聚合视觉 embedding 并同步调整 image/video placeholder 数量，在尽量保持模型效果的前提下减少视觉 token 数量、提升多模态推理吞吐。
+- 图片、视频解码与预处理加速：SDK 提供高性能的图片、视频解码与预处理，降低多模态推理的预处理时延。
+- 关键帧筛选：基于文本-图像相似度筛选与查询最相关的离散关键帧，支持在连续场景区间内自适应重采样，提升视频问答、目标出现时间定位的上下文召回。
+- 自动寻优与多尺度重采样：提供基于 Video RAG 的视频理解与问答参考设计，覆盖帧提取、音频提取、ASR、OCR、目标检测、语义检索、重排序与 Prompt 组装，提升长视频问答的上下文召回与生成效果。
+
 ## 版本配套说明
 
 ### 产品版本信息
@@ -7,15 +14,15 @@
 | 项目 | 内容 |
 | -- | -- |
 | 产品名称 | Multimodal SDK |
-| 产品版本 | 26.1.0 |
+| 产品版本 | 26.2.0 |
 | 版本类型 | Release 版本 |
 
 ### 相关产品版本配套说明
 
 | 产品名称 | 版本 |
 | -- | -- |
-| Ascend HDK | 26.1.0 |
-| CANN | 9.1.0 |
+| Ascend HDK | 26.2.0 |
+| CANN | 9.2.0 |
 
 ## 版本兼容性说明
 
@@ -27,7 +34,8 @@
 
 <table style="table-layout: fixed; width: 345px"><colgroup>
 <col style="width: 156px">
-<col style="width: 91px">
+<col style="width: 98px">
+<col style="width: 98px">
 <col style="width: 98px">
 </colgroup>
 <thead>
@@ -38,15 +46,25 @@
   <tr>
     <th>9.0.0</th>
     <th>9.1.0</th>
-  </tr></thead>
+    <th>9.2.0</th>
+  </tr>
+</thead>
 <tbody>
   <tr>
     <td>26.0.0</td>
     <td>Y</td>
     <td>/</td>
+    <td>/</td>
   </tr>
   <tr>
     <td>26.1.0</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>/</td>
+  </tr>
+  <tr>
+    <td>26.2.0</td>
+    <td>Y</td>
     <td>Y</td>
     <td>Y</td>
   </tr>
@@ -57,7 +75,8 @@
 
 <table style="table-layout: fixed; width: 345px"><colgroup>
 <col style="width: 156px">
-<col style="width: 91px">
+<col style="width: 98px">
+<col style="width: 98px">
 <col style="width: 98px">
 </colgroup>
 <thead>
@@ -68,15 +87,24 @@
   <tr>
     <th>26.0.RC1</th>
     <th>26.1.0</th>
+    <th>26.2.0</th>
   </tr></thead>
 <tbody>
   <tr>
     <td>26.0.0</td>
     <td>Y</td>
     <td>/</td>
+    <td>/</td>
   </tr>
   <tr>
     <td>26.1.0</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>/</td>
+  </tr>
+  <tr>
+    <td>26.2.0</td>
+    <td>Y</td>
     <td>Y</td>
     <td>Y</td>
   </tr>
@@ -93,9 +121,7 @@
 
 | 特性名称 | 特性描述 | 配套产品型号 |
 | -- | -- | -- |
-| 关键帧筛选 | 新增KFrameSelector/KRangFrameSelector类，支持基于文本-图像相似度从视频中筛选与查询相关的离散关键帧；支持识别连续场景区间并在区间内进行自适应重采样，适用于通用视频问答、目标出现时间定位等场景。 | Atlas 800I A2 推理服务器 |
-| 自动寻优与多尺度重采样 | 新增自动寻优与多尺度重采样示例，提供基于 Video RAG 的视频理解与问答参考设计，支持视频帧提取、音频提取、ASR、OCR、目标检测、语义检索、检索重排序和 Prompt 组装，支持自适应关键帧选择、均匀采样回退和音频重采样，提升长视频问答的上下文召回与生成效果。 | Atlas 800I A2 推理服务器 |
-| 基于 vllm-ascend 和 Qwen2.5-VL 模型的 Token 压缩 | 新增 SCC（Semantic Connected Components）视觉 token 压缩参考设计，提供 vllm-ascend 中 Qwen2.5-VL 的服务端视觉 token 压缩补丁和验证流程示例，支持按语义相似度聚合视觉 embedding 并同步调整 image/video placeholder 数量，在尽量保持模型效果的前提下降低视觉 token 数量、提升多模态推理吞吐。 | Atlas 800I A2 推理服务器 |
+| 基于 vllm-ascend 和 Qwen 模型的 Token 压缩 | 将 SCC（Semantic Connected Components，语义连通分量）视觉 token 压缩能力从参考设计合入主代码，vllm-ascend 中的 Qwen 系列 VL 模型可直接使用。该特性按语义相似度聚合视觉 embedding，并同步调整 image/video placeholder 数量，在尽量保持模型效果的前提下减少视觉 token 数量、提升多模态推理吞吐；压缩开关与参数通过环境变量配置，对现有业务代码零侵入。 | Atlas 800I A2 推理服务器 |
 
 ### 业务接口变更
 
@@ -127,11 +153,11 @@
 
 无
 
-## 26.1.0 版本配套文档
+## 26.2.0 版本配套文档
 
 | 文档名称 | 内容简介 | 更新说明 |
 | -- | -- | -- |
-| [《Multimodal SDK 26.1.0 用户指南》](./04_user_guide/user_guide.md) | 主要包括 Multimodal SDK 图片处理、视频处理和音频处理典型场景的基础预处理接口使用样例与操作指导。 | 变更详见[《Multimodal SDK 26.1.0 用户指南》](./04_user_guide/user_guide.md)。 |
+| [《Multimodal SDK 26.2.0 用户指南》](./04_user_guide/user_guide.md) | 主要包括 Multimodal SDK 图片处理、视频处理和音频处理典型场景的基础预处理接口使用样例与操作指导。 | 变更详见[《Multimodal SDK 26.2.0 用户指南》](./04_user_guide/user_guide.md)。 |
 
 ## 病毒扫描结果
 
@@ -140,3 +166,11 @@
 ## 漏洞修补列表
 
 无
+
+## 修订记录
+
+**表 3**
+
+| 文档版本 | 发布日期 | 修改说明 |
+| --- | --- | --- |
+| 01 | 2026-09-30 | 第一次正式发布。 |
