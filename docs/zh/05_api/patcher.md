@@ -63,10 +63,10 @@ Multimodal SDK 历史上针对 **vllm-ascend** 各版本提供过不同的 patch
 
 | 适配的 vllm-ascend | 分支 | 支持的模型 | 加速的部分 |
 | --- | --- | --- | --- |
-| **v0.23.0rc1**（本文档默认） | `master` | Qwen2.5-VL · Qwen3-VL · Qwen3.5 · Qwen3.6 | SCC 视觉 token 压缩（限上述模型）；图像 / 视频预处理加速（限上述模型）；视频 / 图像解码加速（所有模型） |
+| **v0.23.0**（本文档默认） | `master` `release/v26.2.0` | Qwen2.5-VL · Qwen3-VL · Qwen3.5 · Qwen3.6 | SCC 视觉 token 压缩（限上述模型）；图像 / 视频预处理加速（限上述模型）；视频 / 图像解码加速（所有模型） |
 | **v0.8.5rc1** | `branch_v26.0.0` · `branch_v26.1.0` | Qwen2.5-VL · InternVL2 | 视频解码加速；Qwen2.5-VL / InternVL2 图像预处理加速 |
 
-> **功能详解口径**：本文档**只**针对 `master` 分支下的 vllm-ascend v0.23.0rc1 描述；`branch_v26.x` 版本的旧 patch 使用另一套接入方式，具体用法请查阅对应分支的 `patcher.md`文档。
+> **功能详解口径**：本文档**只**针对 `master` 分支下的 vllm-ascend v0.23.0 描述；`branch_v26.x` 版本的旧 patch 使用另一套接入方式，具体用法请查阅对应分支的 `patcher.md`文档。
 
 ---
 

@@ -1,361 +1,179 @@
-# `patcher`
+# patcher
+
+> Introduction: This section describes the feature switches provided by the Multimodal SDK in vLLM. By setting the environment variables below, you can enable capabilities such as SCC visual token compression and preprocessing acceleration **without modifying the vLLM source code**.
+
+---
 
 ## Common Prerequisites
 
-Before using any of the patchers below, complete the following preparations:
+Before using any of these features, complete the following preparations:
 
-- Currently, only the **v0.8.5rc1** image obtained from the vllm-ascend community is supported.
-- For instructions on installing the image, see the [vllm-ascend documentation](https://vllm-ascend.readthedocs.io/en/v0.8.5rc1/installation.html). When installing the image, select **Using docker** (install from within the container).
-- Before using Multimodal SDK capabilities in the image, run the following command:
+- Install the Multimodal SDK.
 
-```bash
-export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver:$LD_LIBRARY_PATH
-```
-
-> [!NOTE]
-> When using `qwen2_vl_image_processor_patcher` or `internvl2_image_processor_patcher`, ensure that the Transformers version is **4.51.3**. The official Multimodal SDK image already includes this version. If you are using a custom environment, run `python3 -c "import transformers; print(transformers.__version__)"` to verify the version.
-
-This document describes only how to use the image obtained from the community. For other usage methods, you need to locate the files mentioned below and perform the required operations yourself.
+> The Multimodal SDK is automatically loaded as a vLLM plugin (vLLM scans for the `mm.patcher.vllm` entry point at startup).
 
 ---
 
-## `video_patcher`
+## Environment Variables
 
-Accelerates video decoding in vLLM and can significantly improve video file reading and decoding performance.
+All variables in the table below are read once by `mm.patcher.vllm.patch()` when vLLM starts, and determine whether the corresponding monkey patch is activated.
 
-For prerequisites, see [Common Prerequisites](#common-prerequisites).
+| Environment Variable | Type | Value Range | Default | Description |
+| --- | --- | --- | --- | --- |
+| `MM_SCC_RATE` | float | `(0, 1]` | `1.0` | SCC visual token compression ratio. `1.0` disables compression; the smaller the value, the fewer tokens retained after compression and the faster the inference, but accuracy may degrade. |
+| `MM_SCC_TAU` | float | `(0, 1]` | `0.95` | Cosine similarity threshold for SCC partitioning. A higher value means stricter merging criteria, less information loss, and weaker compression gains. |
+| `MM_SCC_EPSILON` | float | `(0, 1)` | `0.05` | Sampling error tolerance for approximate Union-Find, used only in the CPU fallback path. |
+| `MM_SCC_MAX_TOKENS_PER_ITEM` | int | `[0, 65536]` | `8192` | Maximum number of tokens per sample. Samples exceeding this limit are **excluded from SCC compression** and sent directly to the LLM. `0` means no limit. |
+| `MM_PREPROCESSOR` | bool | `true` / `false` | `false` | Enable the SDK's image/video preprocessing acceleration (via `mm.core.processor.resize_and_normalize`). |
+| `MM_MEDIA_IO` | bool | `true` / `false` | `false` | Enable the SDK's video/image decoding acceleration. |
 
-**Usage**
+If any variable is set to an invalid value, the Multimodal SDK prints a warning in the vLLM log and falls back to the default value; vLLM startup will not fail.
 
-Add the following content to the `utils.py` file in the vLLM package. In the image, the file is located at `/vllm-workspace/vllm/vllm/multimodal/utils.py`:
+### Disabling SDK Acceleration
 
-```python
-import mm.patcher.vllm.video_patcher
-```
+- **Disable SCC visual token compression**: `MM_SCC_RATE=1.0` (or leave unset to use the default).
+- **Disable preprocessing acceleration**: `MM_PREPROCESSOR=false` (or leave unset).
+- **Disable media decoding acceleration**: `MM_MEDIA_IO=false` (or leave unset).
 
-Add this line at the beginning of the file, as shown in the following figure.
-
-![Adding the import statement to the beginning of the vllm/multimodal/utils.py file](../figures/en-us_image_0000002466503489.png)
-
-After adding the line, run the vLLM service and pass video file data to it. If the following message appears, the patcher is enabled:
-
-```text
-load_file: Multimodal SDK Video Patcher Enabled!
-```
-
-> [!NOTE]
-> This acceleration capability currently applies only to video files in `mp4` format. The file permissions must be no more permissive than `640`.
-
-**Example Request**
-
-The following `curl` command sends a video inference request to the OpenAI-compatible `/v1/chat/completions` API provided by the vLLM service. Replace `<host>`, `<port>`, the model path, and the video file path with actual values before running the command. For other vLLM parameters, see the [official vLLM documentation](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api).
-
-```bash
-curl -X POST "http://<host>:<port>/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "/home/Qwen2-VL-7B-Instruct",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "video_url",
-            "video_url": {
-              "url": "file:/home/234_chunk_0001.mp4"
-            }
-          },
-          {
-            "type": "text",
-            "text": "describe the video"
-          }
-        ]
-      }
-    ],
-    "max_tokens": 100,
-    "temperature": 0,
-    "top_p": 0.1,
-    "stream": false
-  }'
-```
-
-**Key Parameters**
-
-| Parameter | Description |
-| --------- | ----------- |
-| `model` | Model path loaded when the vLLM service starts. Must match the `--model` startup parameter. |
-| `messages` | List of conversation messages. `role` is typically `user`, and `content` is an array of text and multimodal content. |
-| `content[].type` | Multimodal content type. Use `video_url` for video requests and `text` for text prompts. |
-| `content[].video_url.url` | Local video path with the `file:` protocol prefix. The video must be in `mp4` format, and the file permissions must be no more permissive than `640` (see the note above). |
-| `content[].text` | Text prompt for the video. |
-| `max_tokens` | Maximum number of tokens to generate in the response. |
-| `temperature` / `top_p` | Sampling parameters that control output randomness. Setting `temperature` to `0` and using a small `top_p` produces more stable output. |
-| `stream` | Specifies whether to return the result in streaming mode. `false` means that the complete response is returned at once. |
+Disabling does not affect vLLM service startup; the corresponding monkey patch is simply not injected.
 
 ---
 
-## `qwen2_vl_image_processor_patcher`
+## Supported Models
 
-Accelerates image and video preprocessing in vLLM when using Qwen2-VL models and can significantly reduce preprocessing latency compared with Transformers.
+Once the environment variables above are set, SCC and preprocessing acceleration take effect automatically on the following models (when vLLM loads the corresponding model class, the Multimodal SDK injects the monkey patches on demand):
 
-For prerequisites, see [Common Prerequisites](#common-prerequisites), including the Transformers 4.51.3 requirement.
+| Model | SCC Visual Token Compression | Preprocessing Acceleration | Recommended `MM_SCC_RATE` |
+| --- | --- | --- | --- |
+| **Qwen2.5-VL-7B-Instruct** | ✓ | ✓ | 0.5 |
+| **Qwen3-VL-8B-Instruct** | ✓ | ✓ | 0.6 |
+| **Qwen3.6-35B-A3B** | ✓ | ✓ | 0.7 |
+| **Qwen3.6-27B** | ✓ | ✓ | 0.6 |
 
-**Usage**
+Other models are not involved in SCC / preprocessing patches and are therefore unaffected.
 
-Add the following content to the `processor.py` file in the vLLM package. In the image, the file is located at `/vllm-workspace/vllm/vllm/transformers_utils/processor.py`:
-
-```python
-import mm.patcher.vllm.qwen2_vl_image_processor_patcher
-```
-
-Add the import statement at the following two locations:
-
-- In the `get_processor` function, add it on the line before `from transformers import AutoProcessor`. If you are using a container, this is around lines 62–63, as shown in the following figure.
-
-  ![Adding the patcher import statement in the get\_processor function](../figures/en-us_image_0000002466503549.png)
-
-- In the `get_image_processor` function, add it on the line before `from transformers import AutoImageProcessor`. If you are using a container, this is around lines 174–175, as shown in the following figure.
-
-  ![Adding the patcher import statement in the get\_image\_processor function](../figures/en-us_image_0000002466423417.png)
-
-After adding the lines, run the vLLM service. If the following message appears when you send a normal request, the Qwen2-VL image and video preprocessing acceleration feature is enabled:
-
-```text
-get_image_processor_class_from_name: Multimodal SDK Qwen2 VL Image Patcher Enabled!
-```
-
-**Example Request**
-
-The following `curl` commands send inference requests to the OpenAI-compatible `/v1/chat/completions` API provided by the vLLM service. Replace `<host>`, `<port>`, the model path, and the media file path with actual values before running the commands. For other vLLM parameters, see the [official vLLM documentation](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api).
-
-**Video Processing Example**
-
-```bash
-curl -X POST "http://<host>:<port>/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "/home/Qwen2-VL-7B-Instruct",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "video_url",
-            "video_url": {
-              "url": "file:/home/234_chunk_0001.mp4"
-            }
-          },
-          {
-            "type": "text",
-            "text": "describe the video"
-          }
-        ]
-      }
-    ],
-    "max_tokens": 100,
-    "temperature": 0,
-    "top_p": 0.1,
-    "stream": false
-  }'
-```
-
-**Image Processing Example**
-
-```bash
-curl -X POST "http://<host>:<port>/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "/home/Qwen2-VL-7B-Instruct",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "image_url",
-            "image_url": {
-              "url": "file:/home/test.jpg"
-            }
-          },
-          {
-            "type": "text",
-            "text": "describe the image"
-          }
-        ]
-      }
-    ],
-    "max_tokens": 100,
-    "temperature": 0,
-    "top_p": 0.1,
-    "stream": false
-  }'
-```
-
-**Key Parameters**
-
-| Parameter | Description |
-| --------- | ----------- |
-| `model` | Model path loaded when the vLLM service starts. Must match the `--model` startup parameter. |
-| `messages` | List of conversation messages. `role` is typically `user`, and `content` is an array of text and multimodal content. |
-| `content[].type` | Multimodal content type. Use `video_url` for video requests, `image_url` for image requests, and `text` for text prompts. |
-| `content[].video_url.url` | Local video path with the `file:` protocol prefix. |
-| `content[].image_url.url` | Local image path with the `file:` protocol prefix. |
-| `content[].text` | Text prompt for the video or image. |
-| `max_tokens` | Maximum number of tokens to generate in the response. |
-| `temperature` / `top_p` | Sampling parameters that control output randomness. Setting `temperature` to `0` and using a small `top_p` produces more stable output. |
-| `stream` | Specifies whether to return the result in streaming mode. `false` means that the complete response is returned at once. |
+> **Media decoding acceleration (`MM_MEDIA_IO`) is model-agnostic**: this patch replaces vLLM's `VideoMediaIO` / `ImageMediaIO` media loading entry points and acts on the media decoding layer rather than the model side, so it takes effect for **all models**, not just those listed in the table above.
 
 ---
 
-## `image_patcher`
+## Version and Branch Mapping
 
-Accelerates image decoding in vLLM and can significantly improve image file reading and decoding performance.
+Historically, the Multimodal SDK has provided different patches for different versions of **vllm-ascend**. The vLLM entry APIs targeted by these patches are mutually incompatible, so you need to check the corresponding branch.
+This section only describes the supported models and accelerated components per version; for details on SCC / preprocessing operations, see [Environment Variables](#environment-variables) and [Starting vLLM](#starting-vllm) above.
 
-For prerequisites, see [Common Prerequisites](#common-prerequisites).
+| vllm-ascend Version | Branch | Supported Models | Accelerated Components |
+| --- | --- | --- | --- |
+| **v0.23.0** (default for this document) | `master` `release/v26.2.0` | Qwen2.5-VL · Qwen3-VL · Qwen3.5 · Qwen3.6 | SCC visual token compression (limited to the models above); image/video preprocessing acceleration (limited to the models above); video/image decoding acceleration (all models) |
+| **v0.8.5rc1** | `branch_v26.0.0` · `branch_v26.1.0` | Qwen2.5-VL · InternVL2 | Video decoding acceleration; Qwen2.5-VL / InternVL2 image preprocessing acceleration |
 
-**Usage**
-
-Add the following content to the `utils.py` file in the vLLM package. In the image, the file is located at `/vllm-workspace/vllm/vllm/multimodal/utils.py`:
-
-```python
-import mm.patcher.vllm.image_patcher
-```
-
-Add this line at the beginning of the file, as shown in the following figure.
-
-![Adding the image\_patcher import statement to the beginning of the vllm/multimodal/utils.py file](../figures/en-us_image_0000002469675597.png)
-
-After adding the line, run the vLLM service and pass image file data to it. If the following message appears, the patcher is enabled:
-
-```text
-load_file: Multimodal SDK Image Patcher Enabled!
-```
-
-> [!NOTE]
-> This acceleration capability currently applies only to JPEG images. The file extension must be `jpg` or `jpeg`, and the file permissions must be no more permissive than `640`.
-
-**Example Request**
-
-The following `curl` command sends an image inference request to the OpenAI-compatible `/v1/chat/completions` API provided by the vLLM service. Replace `<host>`, `<port>`, the model path, and the image file path with actual values before running the command. For other vLLM parameters, see the [official vLLM documentation](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api).
-
-```bash
-curl -X POST "http://<host>:<port>/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "/home/models/internVL2",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "image_url",
-            "image_url": {
-              "url": "file:/home/test.jpg"
-            }
-          },
-          {
-            "type": "text",
-            "text": "describe the image"
-          }
-        ]
-      }
-    ],
-    "max_tokens": 100,
-    "temperature": 0.1,
-    "top_p": 0.1,
-    "stream": false
-  }'
-```
-
-**Key Parameters**
-
-| Parameter | Description |
-| --------- | ----------- |
-| `model` | Model path loaded when the vLLM service starts. Must match the `--model` startup parameter. |
-| `messages` | List of conversation messages. `role` is typically `user`, and `content` is an array of text and multimodal content. |
-| `content[].type` | Multimodal content type. Use `image_url` for image requests and `text` for text prompts. |
-| `content[].image_url.url` | Local image path with the `file:` protocol prefix. The image must be in JPEG format, the file extension must be `jpg` or `jpeg`, and the file permissions must be no more permissive than `640` (see the note above). |
-| `content[].text` | Text prompt for the image. |
-| `max_tokens` | Maximum number of tokens to generate in the response. |
-| `temperature` / `top_p` | Sampling parameters that control output randomness. |
-| `stream` | Specifies whether to return the result in streaming mode. `false` means that the complete response is returned at once. |
-
-## Common Issues and Troubleshooting
-
-| Symptom | Resolution |
-| ------- | ---------- |
-| The `Multimodal SDK ... Patcher Enabled!` message does not appear. | Verify that the corresponding `import mm.patcher.vllm...` statement has been added to the file and location specified in this document, and restart the vLLM service. |
-| Image or video reading fails. | Verify that the file path uses the `file:` protocol prefix, the file format meets the requirements of the current patcher, and the file permissions are no more permissive than `640`. |
-| The Transformers version does not match the requirement. | Run `python3 -c "import transformers; print(transformers.__version__)"` in the container and verify that the version is 4.51.3. |
-| The issue cannot be located. | Check the vLLM service logs and see [Appendix > Error Codes](../06_references/appendix.md#error-codes) to troubleshoot issues such as incorrect file permissions, paths, and formats. |
+> **Scope note**: This document describes **only** vllm-ascend v0.23.0 on the `master` branch; the legacy patches on `branch_v26.x` use a different integration approach — see the `patcher.md` document on the corresponding branch for details.
 
 ---
 
-## `internvl2_image_processor_patcher`
+## Starting vLLM
 
-Accelerates image processing in vLLM when using InternVL2 models.
-
-For prerequisites, see [Common Prerequisites](#common-prerequisites), including the Transformers 4.51.3 requirement.
-
-**Usage**
-
-Add the following content to a file in the vllm-ascend package. In the image, the file is located at `/vllm-workspace/vllm-ascend/vllm_ascend/patch/worker/patch_common/__init__.py`:
-
-```python
-import mm.patcher.vllm.internvl2_image_processor_patcher
-```
-
-Add it at the location shown in the following figure:
-
-![Adding the internvl2\_patcher import statement to patch\_common/init.py](../figures/en-us_image_0000002436163564.png)
-
-After adding the line, run the vLLM service. If the following message appears when you send a normal request, the multimodal InternVL2 image preprocessing acceleration feature is enabled:
-
-```text
-_images_to_pixel_values_lst: Multimodal SDK InternVL2 Image Patcher Enabled!
-```
-
-**Example Request**
-
-The following `curl` command sends an image inference request to the OpenAI-compatible `/v1/chat/completions` API provided by the vLLM service. Replace `<host>`, `<port>`, the model path, and the image file path with actual values before running the command. For other vLLM parameters, see the [official vLLM documentation](https://docs.vllm.ai/en/v0.8.5/serving/openai_compatible_server.html#chat-api).
+After setting the environment variables, **just use the native `vllm serve` command** — no additional SDK-side arguments are required. For example, to run Qwen3-VL-8B-Instruct with SCC + preprocessing acceleration enabled:
 
 ```bash
-curl -X POST "http://<host>:<port>/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "/home/models/internVL2",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "image_url",
-            "image_url": {
-              "url": "file:/home/test.jpg"
-            }
-          },
-          {
-            "type": "text",
-            "text": "describe the image"
-          }
-        ]
-      }
-    ],
-    "max_tokens": 100,
-    "temperature": 0.1,
-    "top_p": 0.1,
-    "stream": false
-  }'
+MM_SCC_RATE=0.5 \
+MM_SCC_TAU=0.95 \
+MM_SCC_EPSILON=0.05 \
+MM_SCC_MAX_TOKENS_PER_ITEM=8192 \
+MM_PREPROCESSOR=true \
+MM_MEDIA_IO=true \
+vllm serve /models/Qwen3-VL-8B-Instruct \
+    --host 0.0.0.0 \
+    --port 9000
 ```
 
-**Key Parameters**
+### Verifying That Patches Are Active
 
-| Parameter | Description |
-| --------- | ----------- |
-| `model` | Model path loaded when the vLLM service starts. Must match the `--model` startup parameter. |
-| `messages` | List of conversation messages. `role` is typically `user`, and `content` is an array of text and multimodal content. |
-| `content[].type` | Multimodal content type. Use `image_url` for image requests and `text` for text prompts. |
-| `content[].image_url.url` | Local image path with the `file:` protocol prefix. |
-| `content[].text` | Text prompt for the image. |
-| `max_tokens` | Maximum number of tokens to generate in the response. |
-| `temperature` / `top_p` | Sampling parameters that control output randomness. |
-| `stream` | Specifies whether to return the result in streaming mode. `false` means that the complete response is returned at once. |
+In the early portion of the startup log, the presence of any of the following lines indicates that the corresponding patch has been loaded:
+
+| Log Keyword | Meaning |
+| --- | --- |
+| `patch scc rate=<value>` | SCC visual token compression injected (`MM_SCC_RATE < 1.0`) |
+| `patch MultimodalSDK preprocessor` | Image/video preprocessing acceleration injected (`MM_PREPROCESSOR=true`) |
+| `patch vLLM media IO to SDK decoders` | Media decoding acceleration injected (`MM_MEDIA_IO=true`) |
+
+As shown in the figure below, the startup log contains the line indicating that SCC visual token compression has been injected (`MM_SCC_RATE < 1.0`).
+
+![scc_patch_log](../figures/patch_apply.png)
+
+---
+
+## File Requirements and Request Examples for Media Decoding Acceleration
+
+With `MM_MEDIA_IO=true` enabled, vLLM's video/image decoding uniformly goes through the SDK decoders (replacing `VideoMediaIO` / `ImageMediaIO`), which imposes the following requirements on media files in requests:
+
+| Media Type | Supported Formats | Notes |
+| --- | --- | --- |
+| Image | jpg / jpeg | Other formats (png / bmp / webp, etc.) are not supported by the SDK decoders; such requests will return an error. |
+| Video | mp4 | Other containers (avi / mkv / mov, etc.) are not supported by the SDK decoders; such requests will return an error. |
+
+Additional notes:
+
+- Using `file://` requires specifying `--allowed-local-media-path` when starting vLLM to add the media file directory to the whitelist; otherwise vLLM will refuse to access local files. For example, if media files are stored under `/data`: `--allowed-local-media-path /data`.
+- Media file permissions should not be more permissive than 640.
+- The patch layer validates file existence; if the file does not exist, an error is raised directly without falling back to native decoding.
+
+### Image Request Example
+
+Send an image request via the OpenAI-compatible API, with `image_url` using the `file://` protocol pointing to a server-side local jpg/jpeg file:
+
+```bash
+curl http://localhost:9000/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "/models/Qwen3-VL-8B-Instruct",
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image_url", "image_url": {"url": "file:///data/images/dog.jpg"}},
+                    {"type": "text", "text": "Describe the content of this image"}
+                ]
+            }
+        ]
+    }'
+```
+
+### Video Request Example
+
+Video requests use the `video_url` type, likewise pointing to a server-side local mp4 file via the `file://` protocol:
+
+```bash
+curl http://localhost:9000/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "/models/Qwen3-VL-8B-Instruct",
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "video_url", "video_url": {"url": "file:///data/videos/demo.mp4"}},
+                    {"type": "text", "text": "Describe the content of this video"}
+                ]
+            }
+        ]
+    }'
+```
+
+---
+
+## Common Tuning Tips
+
+| Scenario | Recommended Adjustment |
+| --- | --- |
+| Noticeable accuracy drop | Tighten `MM_SCC_TAU` (e.g., `0.98`), or increase `MM_SCC_RATE` moderately (e.g., `0.7`). |
+| More aggressive compression desired | Lower `MM_SCC_RATE` (e.g., `0.3`). |
+
+---
+
+## References
+
+- `MultimodalSDK/source/mm/patcher/vllm/__init__.py` — plugin entry point and switch logic
+- `MultimodalSDK/source/mm/patcher/vllm/constants.py` — environment variable definitions and validation
+- `MultimodalSDK/source/mm/patcher/vllm/patch_media_io.py` — media decoding acceleration patch (`VideoMediaIO` / `ImageMediaIO`)
+- `MultimodalSDK/source/mm/core/scc/compressor.py` — SCC visual token compression algorithm
+- `MultimodalSDK/source/mm/core/processor.py` — `resize_and_normalize` implementation

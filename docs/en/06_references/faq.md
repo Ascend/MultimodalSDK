@@ -51,7 +51,7 @@ source /home/work/Mind_SDK/multimodal/script/set_env.sh
 
 **Solution**:
 
-1. Ensure that Ascend HDK 26.1.0 and CANN 9.1.0 (or compatible patch versions) are installed.
+1. Ensure that Ascend HDK 26.2.0 and CANN 9.2.0 (or compatible patch versions) are installed.
 2. Load the CANN environment variables: `source /usr/local/Ascend/ascend-toolkit/set_env.sh` (modify the path according to the actual installation).
 3. Run `npu-smi info` again. If the issue persists, restart the host machine and retry.
 
