@@ -29,7 +29,6 @@ This module defines:
 
 from __future__ import annotations
 
-import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, fields
 from typing import Any, ClassVar
@@ -62,7 +61,7 @@ class LoadedFrames:
     def __len__(self) -> int:
         return len(self.frames)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> np.ndarray:
         return self.frames[idx]
 
 
@@ -98,12 +97,14 @@ class VideoQualityReport:
         metrics: ``{scorer_name: MetricResult}`` mapping.
         frame_indices: Sampled frame indices (reproducible).
         device: Actual device string used.
+        elapsed_ms: Wall-clock elapsed time of the whole scoring pass, in ms.
     """
 
     video_path: str
     metrics: dict[str, MetricResult] = field(default_factory=dict)
     frame_indices: list[int] = field(default_factory=list)
     device: str = ""
+    elapsed_ms: float = 0.0
 
     @property
     def all_scores(self) -> dict[str, Any]:
@@ -189,25 +190,26 @@ class BaseQualityScorer(ABC):
         """Convenience entry: decode *video_path* then call ``score_frames``.
 
         Keyword args override config values for this call only (e.g.
-        ``sample_frames=16``).
+        ``sample_frames=16``).  Scorers that need fixed-fps decoding
+        (``requires_continuous_frames``) use the continuous decode path and
+        read ``extra["target_fps"]``.
 
-        The default implementation raises ``NotImplementedError`` until the
-        frame_loader module is delivered.  Subclasses that need custom
-        decode logic (e.g. streaming, continuous-frame-only scorers) may
-        override this method.
-
-        .. note::
-
-           Video frame decoding relies on ``FrameLoader`` (delivered in
-           a companion PR).  Until then ``score_frames`` is the primary
-           entry point — callers should decode frames externally and pass
-           a ``LoadedFrames`` object.
+        Subclasses that need custom decode logic may override this method.
         """
-        raise NotImplementedError(
-            f"{type(self).__name__}.score() requires the frame_loader module "
-            f"(delivered in a companion PR).  Use {type(self).__name__}."
-            f"score_frames() instead."
-        )
+        cfg = self._effective_config(**kwargs)
+        # Imported lazily (and by name, not via a static import): frame_loader
+        # imports ``LoadedFrames`` from this module, so a top-level import here
+        # would close a dependency cycle.
+        from importlib import import_module
+
+        loader_cls = import_module(".frame_loader", __package__).FrameLoader
+        loader = loader_cls(device=cfg.device)
+
+        if self.requires_continuous_frames:
+            loaded = loader.load_continuous(video_path, fps=cfg.extra.get("target_fps", 4.0))
+        else:
+            loaded = loader.load(video_path, sample_frames=cfg.sample_frames)
+        return self.score_frames(loaded)
 
     # -- model lifecycle helpers ------------------------------------------
 
@@ -235,9 +237,9 @@ class BaseQualityScorer(ABC):
         # ``extra`` needs special handling (dict merge, not replacement), so it
         # is popped before the generic field loop below.
         extra_override = kwargs.pop("extra", None)
-        for key in _CONFIG_FIELDS:
-            if key in kwargs:
-                setattr(cfg, key, kwargs.pop(key))
+        for f in fields(ScorerConfig):
+            if f.name in kwargs:
+                setattr(cfg, f.name, kwargs.pop(f.name))
         cfg.extra.update(self._extra_kwargs)
         cfg.extra.update(kwargs)
         if extra_override:
@@ -256,27 +258,6 @@ class BaseQualityScorer(ABC):
     @property
     def config(self) -> ScorerConfig:
         return self._config
-
-    # -- timing helper -----------------------------------------------------
-
-    @staticmethod
-    def _timed():
-        """Return a context manager exposing ``elapsed_ms`` (wall-clock, in ms)."""
-
-        class _Timer:
-            def __init__(self):
-                self.start = 0.0
-                self.elapsed_ms = 0.0
-
-            def __enter__(self):
-                self.start = time.perf_counter()
-                return self
-
-            def __exit__(self, *exc):
-                self.elapsed_ms = (time.perf_counter() - self.start) * 1000
-                return False
-
-        return _Timer()
 
 
 # ---------------------------------------------------------------------------
@@ -319,23 +300,30 @@ class QualityScorerRegistry:
         """
         flat = dict(config or {})
         scorer_cls = cls.get(name)
-        cfg = ScorerConfig(**_filter_config_kwargs(flat))
-        return scorer_cls(config=cfg, **_filter_extra_kwargs(flat))
+        config_kwargs, extra_kwargs = _split_config_kwargs(flat)
+        cfg = ScorerConfig(**config_kwargs)
+        return scorer_cls(config=cfg, **extra_kwargs)
 
 
 # Single source of truth for the ``ScorerConfig`` fields, derived from the
 # dataclass itself so the two can never drift apart.
-_CONFIG_FIELDS = tuple(f.name for f in fields(ScorerConfig))
+_CONFIG_FIELDS = frozenset(f.name for f in fields(ScorerConfig))
 
 
-def _filter_config_kwargs(config: dict[str, Any]) -> dict[str, Any]:
-    """Extract ScorerConfig-compatible kwargs from a flat dict."""
-    return {k: v for k, v in config.items() if k in _CONFIG_FIELDS}
+def _split_config_kwargs(
+    config: dict[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Split a flat dict into ``ScorerConfig`` kwargs and scorer-specific extras.
 
-
-def _filter_extra_kwargs(config: dict[str, Any]) -> dict[str, Any]:
-    """Extract scorer-specific kwargs (everything not in ScorerConfig)."""
-    return {k: v for k, v in config.items() if k not in _CONFIG_FIELDS}
+    Both halves come from one pass over the same predicate, so they cannot
+    drift apart.
+    """
+    config_kwargs: dict[str, Any] = {}
+    extra_kwargs: dict[str, Any] = {}
+    for key, value in config.items():
+        target = config_kwargs if key in _CONFIG_FIELDS else extra_kwargs
+        target[key] = value
+    return config_kwargs, extra_kwargs
 
 
 # Convenience module-level functions
