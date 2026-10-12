@@ -8,7 +8,7 @@
   - [Issue Feedback](https://gitcode.com/Ascend/MultimodalSDK/issues)
   - [MultimodalSDK Code](https://gitcode.com/Ascend/MultimodalSDK)
   - [MultimodalSDK Documentation](https://gitcode.com/Ascend/MultimodalSDK/blob/master/README.md)
-  - [Community](https://www.hiascend.com/)
+  - [Community](https://www.hiascend.com/en/)
 
 ## MultimodalSDK Overview
 
@@ -51,7 +51,7 @@ Tags follow this pattern:
 
 #### Install Driver
 
-An NPU driver compatible with the container's CANN version must be installed on the host. See the [CANN Compatibility Matrix](https://www.hiascend.com/document) for driver ↔ CANN version mapping.
+An NPU driver compatible with the container's CANN version must be installed on the host. See the [CANN Compatibility Matrix](https://www.hiascend.com/en/document) for driver ↔ CANN version mapping.
 
 ---
 
@@ -88,7 +88,7 @@ docker exec -it multimodal_container bash
 
 MultimodalSDK provides sample code to help developers get started quickly. You can access the examples through the following link:
 
-- [MultimodalSDK Samples](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docs/zh/02_quickstart/quickstart.md)
+- [MultimodalSDK Samples](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docs/en/02_quickstart/quickstart.md)
 
 ### Development
 
