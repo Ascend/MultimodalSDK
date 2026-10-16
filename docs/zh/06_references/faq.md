@@ -9,11 +9,11 @@
 **处理**：
 
 ```bash
-pip3 show mm
+pip3 show multimodalsdk
 python3 -c "import mm; print('mm import: OK')"
 ```
 
-若 `pip3 show mm` 无输出，请先按[`run` 包安装](../03_installation_guide/installation_guide.md#方式一run-包安装)或[`Wheel` 包安装](../03_installation_guide/installation_guide.md#方式二wheel-包安装)完成安装。
+若 `pip3 show multimodalsdk` 无输出，请先按[`run` 包安装](../03_installation_guide/installation_guide.md#方式一run-包安装)或[`Wheel` 包安装](../03_installation_guide/installation_guide.md#方式二wheel-包安装)完成安装。
 
 ### Q: 导入 `mm` 失败，提示 `libcore.so` 或 `libascendcl.so` 找不到？
 
@@ -26,7 +26,7 @@ python3 -c "import mm; print('mm import: OK')"
 
 ```bash
 source /usr/local/Ascend/ascend-toolkit/set_env.sh   # 默认CANN安装路径，请按实际安装路径修改
-pip3 install --force-reinstall --no-deps /path/to/mm-*.whl
+pip3 install --force-reinstall --no-deps /path/to/multimodalsdk-*.whl
 python3 -c "import mm; print('mm import: OK')"
 ```
 

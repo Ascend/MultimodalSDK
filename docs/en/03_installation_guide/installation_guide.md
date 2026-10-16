@@ -221,32 +221,32 @@ If you only need to use the `mm` package in a Python environment, you can skip t
 
 **Preparing for Installation**
 
-You can obtain the `mm-*.whl` compatible with the SDK version in any of the following ways:
+You can obtain the `multimodalsdk-*.whl` compatible with the SDK version in any of the following ways:
 
 1. **Downloading from the Release page**: Obtain the `Wheel` file corresponding to the same version as the `run` package from [Multimodal SDK Releases](https://gitcode.com/Ascend/MultimodalSDK/releases), if one is provided with the release.
 2. **Extracting from the `run` package**:
 
    ```bash
    ./${MMSDK_PACKAGE} --noexec --extract=/tmp/mmsdk_extract
-   find /tmp/mmsdk_extract -name 'mm-*.whl'
+   find /tmp/mmsdk_extract -name 'multimodalsdk-*.whl'
    ```
 
-3. **Building from source**: Follow [CONTRIBUTING.md](../../../CONTRIBUTING.md) to prepare the build environment and build the source code. Then obtain the generated `mm-*.whl` from the `MultimodalSDK/dist/` directory.
+3. **Building from source**: Follow [CONTRIBUTING.md](../../../CONTRIBUTING.md) to prepare the build environment and build the source code. Then obtain the generated `multimodalsdk-*.whl` from the `MultimodalSDK/dist/` directory.
 
 **Installing the `Wheel` Package**
 
 1. Confirm that the CANN environment variables have been loaded as described above.
 2. Confirm that the Python dependencies listed in [Installing Dependencies](#installing-dependencies) have been installed.
-3. Install the `Wheel` package. Replace `mm-1.0.0-py3-none-any.whl` with the actual filename:
+3. Install the `Wheel` package. Replace `multimodalsdk-1.0.0-py3-none-any.whl` with the actual filename:
 
    ```bash
-   pip3 install /path/to/mm-1.0.0-py3-none-any.whl
+   pip3 install /path/to/multimodalsdk-1.0.0-py3-none-any.whl
    ```
 
    If an old version already exists in the environment, force a reinstall:
 
    ```bash
-   pip3 install --force-reinstall --no-deps /path/to/mm-1.0.0-py3-none-any.whl
+   pip3 install --force-reinstall --no-deps /path/to/multimodalsdk-1.0.0-py3-none-any.whl
    ```
 
    > [!NOTE]
@@ -258,7 +258,7 @@ You can obtain the `mm-*.whl` compatible with the SDK version in any of the foll
 
 If you need to build Multimodal SDK from source, refer to [CONTRIBUTING.md](../../../CONTRIBUTING.md) to prepare the build environment and build the source code. After the build is complete:
 
-- If `mm-*.whl` is generated, follow the steps in [Offline Installation: Installing the `Wheel` Package](#installing-the-wheel-package) to install it.
+- If `multimodalsdk-*.whl` is generated, follow the steps in [Offline Installation: Installing the `Wheel` Package](#installing-the-wheel-package) to install it.
 - If a `run` package is generated, follow the steps in [Offline Installation: Installing the `run` Package](#installing-the-run-package) to install it.
 
 ### Image Installation
@@ -326,16 +326,16 @@ Before upgrading, make sure that a complete Multimodal SDK installation exists a
 
 1. Obtain the new `Wheel` package from [Multimodal SDK Releases](https://gitcode.com/Ascend/MultimodalSDK/releases).
 2. Load the CANN environment variables.
-3. Run the upgrade command. Replace `mm-x.x.x-py3-none-any.whl` with the actual filename:
+3. Run the upgrade command. Replace `multimodalsdk-x.x.x-py3-none-any.whl` with the actual filename:
 
    ```bash
-   pip3 install --upgrade /path/to/mm-x.x.x-py3-none-any.whl
+   pip3 install --upgrade /path/to/multimodalsdk-x.x.x-py3-none-any.whl
    ```
 
    If you need to force a reinstall without updating dependencies:
 
    ```bash
-   pip3 install --force-reinstall --no-deps /path/to/mm-x.x.x-py3-none-any.whl
+   pip3 install --force-reinstall --no-deps /path/to/multimodalsdk-x.x.x-py3-none-any.whl
    ```
 
 4. Follow the steps in [Verifying the Installation](#installation-verification) to verify that the upgrade was successful.
@@ -343,7 +343,7 @@ Before upgrading, make sure that a complete Multimodal SDK installation exists a
 > [!NOTE]
 >
 > - It is recommended to use `--no-deps` to prevent pip from automatically upgrading or downgrading the fixed dependency versions.
-> - To roll back, use `pip3 install --force-reinstall /path/to/mm-old-version.whl` to reinstall the old version.
+> - To roll back, use `pip3 install --force-reinstall /path/to/multimodalsdk-old-version.whl` to reinstall the old version.
 
 ## Uninstalling
 
@@ -379,17 +379,17 @@ The default Multimodal SDK installation directory is `{install-path}/multimodal/
 ls ${MULTIMODAL_SDK_HOME} 2>/dev/null && echo "Directory still exists" || echo "Directory has been deleted"
 
 # Confirm that the Python package has been uninstalled.
-pip3 show mm 2>/dev/null && echo "mm still exists" || echo "mm has been uninstalled"
+pip3 show multimodalsdk 2>/dev/null && echo "multimodalsdk still exists" || echo "multimodalsdk has been uninstalled"
 ```
 
 > [!NOTE]
-> `uninstall.sh` is applicable only to normal installations whose directory structure has not been modified after installation. If the installation is abnormal, manually delete all `multimodal`-related folders in the installation directory and run `pip3 uninstall mm -y` to uninstall the Python package.
+> `uninstall.sh` is applicable only to normal installations whose directory structure has not been modified after installation. If the installation is abnormal, manually delete all `multimodal`-related folders in the installation directory and run `pip3 uninstall multimodalsdk -y` to uninstall the Python package.
 
 ### Uninstalling the `Wheel` Package
 
 ```bash
-pip3 uninstall -y mm
-pip3 show mm 2>/dev/null && echo "mm still exists" || echo "mm has been uninstalled"
+pip3 uninstall -y multimodalsdk
+pip3 show multimodalsdk 2>/dev/null && echo "multimodalsdk still exists" || echo "multimodalsdk has been uninstalled"
 ```
 
 ## FAQ
@@ -397,7 +397,7 @@ pip3 show mm 2>/dev/null && echo "mm still exists" || echo "mm has been uninstal
 | Symptom | Solution |
 | ------- | -------- |
 | Failed to import `mm` (`run` installation) | Make sure that `source ${MULTIMODAL_SDK_HOME}/script/set_env.sh` has been executed. |
-| Failed to import `mm` (`Wheel` installation) | Make sure that the CANN environment variables have been sourced. Run `pip3 show mm` to confirm that the `whl` package is installed. If necessary, run `pip3 install --force-reinstall --no-deps mm-*.whl` to reinstall it. |
+| Failed to import `mm` (`Wheel` installation) | Make sure that the CANN environment variables have been sourced. Run `pip3 show multimodalsdk` to confirm that the `whl` package is installed. If necessary, run `pip3 install --force-reinstall --no-deps multimodalsdk-*.whl` to reinstall it. |
 | `libcore.so`/`libascendcl.so` not found | For `Wheel` installation, make sure that a compatible version of the `whl` package is used and that CANN has been sourced. For `run` installation, make sure that `set_env.sh` has been sourced. |
 | `npu-smi info` has no output | Check whether the NPU driver and firmware are installed correctly. Restart the host and try again if necessary. |
 | CANN environment variables do not take effect | Make sure that the CANN `set_env.sh` script has been sourced. The path depends on the actual installation. |
