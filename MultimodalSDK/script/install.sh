@@ -109,7 +109,7 @@ function print_usage() {
 
 ### 脚本入参的相关处理函数
 function check_script_args() {
-  ######################  check params confilct ###################
+  ######################  check params conflict ###################
   if [ "${invalid_param_flag}" = y ]; then
     ms_log "ERROR: check script para failed"
     print_usage
@@ -143,7 +143,7 @@ function check_script_args() {
 
   if [ "${upgrade_flag}" = y ]; then
     if [ "${install_flag}" = y ] || [ "${print_version_flag}" = "y" ]; then
-      ms_log "ERROR: --install and --upgrade para cannot be configed together."
+      ms_log "ERROR: --install and --upgrade para cannot be configured together."
       exit 1
     fi
   fi
@@ -333,7 +333,7 @@ function install_whl()
 {
   cd "${self_dir}/multimodal"
 
-  whl_file_name=$(find ./ -maxdepth 1 -type f -name 'mm*.whl')
+  whl_file_name=$(find ./ -maxdepth 1 -type f -name 'multimodalsdk*.whl')
   if test x"${quiet_flag}" = xn; then
     ms_log "INFO: Begin to install wheel package(${whl_file_name##*/})."
   fi

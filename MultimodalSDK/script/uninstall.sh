@@ -109,7 +109,7 @@ real_delete() {
     find "$log_file" -type f -exec chmod 640 {} +
     log "$(cat "${version_info}")"
 
-    python3 -m pip uninstall mm -y
+    python3 -m pip uninstall multimodalsdk -y
 
     chmod u+w -R "$del_path"
     del_real_path=$(realpath "$del_path")
