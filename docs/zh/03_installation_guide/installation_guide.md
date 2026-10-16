@@ -221,32 +221,32 @@ resize output shape: (500, 500, 3)
 
 **安装准备**
 
-可通过以下任一方式获取与 SDK 版本配套的 `mm-*.whl`：
+可通过以下任一方式获取与 SDK 版本配套的 `multimodalsdk-*.whl`：
 
 1. **从 Release 页面下载**：在 [Multimodal SDK Releases](https://gitcode.com/Ascend/MultimodalSDK/releases) 获取与 `run` 包同版本的 `Wheel` 文件（若已随发布提供）。
 2. **从 `run` 包中提取**：
 
    ```bash
    ./${MMSDK_PACKAGE} --noexec --extract=/tmp/mmsdk_extract
-   find /tmp/mmsdk_extract -name 'mm-*.whl'
+   find /tmp/mmsdk_extract -name 'multimodalsdk-*.whl'
    ```
 
-3. **自行构建**：按 [CONTRIBUTING.md](../../../CONTRIBUTING.md) 完成源码构建后，在 `MultimodalSDK/dist/` 目录获取生成的 `mm-*.whl`。
+3. **自行构建**：按 [CONTRIBUTING.md](../../../CONTRIBUTING.md) 完成源码构建后，在 `MultimodalSDK/dist/` 目录获取生成的 `multimodalsdk-*.whl`。
 
 **安装步骤**
 
 1. 确认 CANN 环境变量已加载（见上方说明）。
 2. 确认[安装依赖说明](#安装依赖说明)所列 Python 依赖已安装。
-3. 安装 `Wheel` 包（将 `mm-1.0.0-py3-none-any.whl` 替换为实际文件名）：
+3. 安装 `Wheel` 包（将 `multimodalsdk-1.0.0-py3-none-any.whl` 替换为实际文件名）：
 
    ```bash
-   pip3 install /path/to/mm-1.0.0-py3-none-any.whl
+   pip3 install /path/to/multimodalsdk-1.0.0-py3-none-any.whl
    ```
 
    若环境中已存在旧版本，可强制重装：
 
    ```bash
-   pip3 install --force-reinstall --no-deps /path/to/mm-1.0.0-py3-none-any.whl
+   pip3 install --force-reinstall --no-deps /path/to/multimodalsdk-1.0.0-py3-none-any.whl
    ```
 
    > [!NOTE]
@@ -258,7 +258,7 @@ resize output shape: (500, 500, 3)
 
 如需从源码构建 Multimodal SDK，请参考 [CONTRIBUTING.md](../../../CONTRIBUTING.md) 完成编译环境准备与源码构建。构建完成后：
 
-- 若生成 `mm-*.whl`，可按 [离线安装：`Wheel` 包安装](#方式二wheel-包安装) 中的步骤完成安装。
+- 若生成 `multimodalsdk-*.whl`，可按 [离线安装：`Wheel` 包安装](#方式二wheel-包安装) 中的步骤完成安装。
 - 若生成 `run` 安装包，可按 [离线安装：`run` 包安装](#方式一run-包安装) 中的步骤完成安装。
 
 ### 镜像安装
@@ -326,16 +326,16 @@ python3 -c "import mm; print('mm import: OK')"
 
 1. 获取新版 `Wheel` 包（[Multimodal SDK Releases](https://gitcode.com/Ascend/MultimodalSDK/releases)）。
 2. 加载 CANN 环境变量。
-3. 执行升级命令（将 `mm-x.x.x-py3-none-any.whl` 替换为实际文件名）：
+3. 执行升级命令（将 `multimodalsdk-x.x.x-py3-none-any.whl` 替换为实际文件名）：
 
    ```bash
-   pip3 install --upgrade /path/to/mm-x.x.x-py3-none-any.whl
+   pip3 install --upgrade /path/to/multimodalsdk-x.x.x-py3-none-any.whl
    ```
 
    若需强制覆盖且不更新依赖：
 
    ```bash
-   pip3 install --force-reinstall --no-deps /path/to/mm-x.x.x-py3-none-any.whl
+   pip3 install --force-reinstall --no-deps /path/to/multimodalsdk-x.x.x-py3-none-any.whl
    ```
 
 4. 执行[安装验证](#安装验证)中的命令确认升级成功。
@@ -343,7 +343,7 @@ python3 -c "import mm; print('mm import: OK')"
 > [!NOTE]
 >
 > - 建议使用 `--no-deps` 避免 pip 自动升级或降级已固定的依赖版本。
-> - 若需回退，可使用 `pip3 install --force-reinstall /path/to/mm-旧版本.whl` 重新安装旧版本。
+> - 若需回退，可使用 `pip3 install --force-reinstall /path/to/multimodalsdk-旧版本.whl` 重新安装旧版本。
 
 ## 卸载
 
@@ -379,17 +379,17 @@ Multimodal SDK 默认安装目录结构为 `{install-path}/multimodal/`，卸载
 ls ${MULTIMODAL_SDK_HOME} 2>/dev/null && echo "目录仍存在" || echo "目录已删除"
 
 # 确认 Python 包已卸载
-pip3 show mm 2>/dev/null && echo "mm 仍存在" || echo "mm 已卸载"
+pip3 show multimodalsdk 2>/dev/null && echo "multimodalsdk 仍存在" || echo "multimodalsdk 已卸载"
 ```
 
 > [!NOTE]
-> `uninstall.sh` 仅适用于正常安装途径且安装后未修改目录结构的情况。若安装异常，请手动删除安装目录下所有 `multimodal` 相关文件夹，并执行 `pip3 uninstall mm -y` 卸载 Python 包。
+> `uninstall.sh` 仅适用于正常安装途径且安装后未修改目录结构的情况。若安装异常，请手动删除安装目录下所有 `multimodal` 相关文件夹，并执行 `pip3 uninstall multimodalsdk -y` 卸载 Python 包。
 
 ### `Wheel` 包安装卸载
 
 ```bash
-pip3 uninstall -y mm
-pip3 show mm 2>/dev/null && echo "mm 仍存在" || echo "mm 已卸载"
+pip3 uninstall -y multimodalsdk
+pip3 show multimodalsdk 2>/dev/null && echo "multimodalsdk 仍存在" || echo "multimodalsdk 已卸载"
 ```
 
 ## 常见问题
@@ -397,7 +397,7 @@ pip3 show mm 2>/dev/null && echo "mm 仍存在" || echo "mm 已卸载"
 | 现象                        | 处理方式                                                        |
 | ------------------------- | ----------------------------------------------------------- |
 | 导入 `mm` 失败（`run` 安装）      | 确认已执行 `source ${MULTIMODAL_SDK_HOME}/script/set_env.sh`     |
-| 导入 `mm` 失败（`Wheel` 安装）       | 确认已 source CANN 环境变量；执行 `pip3 show mm` 确认 whl 已安装；必要时 `pip3 install --force-reinstall --no-deps mm-*.whl` 重装 |
+| 导入 `mm` 失败（`Wheel` 安装）       | 确认已 source CANN 环境变量；执行 `pip3 show multimodalsdk` 确认 whl 已安装；必要时 `pip3 install --force-reinstall --no-deps multimodalsdk-*.whl` 重装 |
 | `libcore.so` / `libascendcl.so` 找不到 | `Wheel` 安装：确认使用配套版本 whl 并 source CANN；`.run` 安装：确认已 source `set_env.sh` |
 | `npu-smi info` 无输出        | 检查 NPU 驱动/固件是否安装成功，必要时重启后重试                                 |
 | CANN 环境变量未生效              | 确认已 source CANN 的 `set_env.sh`，路径以实际安装为准                    |
