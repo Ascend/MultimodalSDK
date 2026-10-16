@@ -9,11 +9,11 @@
 **Solution**:
 
 ```bash
-pip3 show mm
+pip3 show multimodalsdk
 python3 -c "import mm; print('mm import: OK')"
 ```
 
-If `pip3 show mm` produces no output, complete the installation by following the [`run` package installation](../03_installation_guide/installation_guide.md#installing-the-run-package) or [`Wheel` package installation](../03_installation_guide/installation_guide.md#installing-the-wheel-package) procedure.
+If `pip3 show multimodalsdk` produces no output, complete the installation by following the [`run` package installation](../03_installation_guide/installation_guide.md#installing-the-run-package) or [`Wheel` package installation](../03_installation_guide/installation_guide.md#installing-the-wheel-package) procedure.
 
 ### Q: Why does `import mm` fail when `libcore.so` or `libascendcl.so` cannot be found?
 
@@ -26,7 +26,7 @@ If `pip3 show mm` produces no output, complete the installation by following the
 
 ```bash
 source /usr/local/Ascend/ascend-toolkit/set_env.sh   # Default CANN installation path; modify it according to the actual installation path
-pip3 install --force-reinstall --no-deps /path/to/mm-*.whl
+pip3 install --force-reinstall --no-deps /path/to/multimodalsdk-*.whl
 python3 -c "import mm; print('mm import: OK')"
 ```
 
