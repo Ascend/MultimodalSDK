@@ -95,6 +95,9 @@ jobs:
           ls -al ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/output
           find ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/ -name *.run
           cp -p -f -r ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/output/Ascend*_linux-aarch64.run "${artifact_directory}/"
+          echo "上传whl包"
+          ls -al ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/${{ inputs.servicename }}/output
+          cp -p -f -r ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/${{ inputs.servicename }}/output/*.whl "${artifact_directory}/"
           ls -al "${artifact_directory}"
 
           echo '执行clangtidy检测'
@@ -106,5 +109,5 @@ jobs:
         with:
           name: ${{ atomgit.repository }}-${{ inputs.runs_on_arch }}
           path: |
-            artifacts/*.run
+            artifacts/
           overwrite: true
