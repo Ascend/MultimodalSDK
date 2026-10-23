@@ -36,12 +36,14 @@ Tags follow this pattern:
 | `os`             | `ubuntu22.04`, `openeuler24.03` | Base operating system     |
 | `python_version` | `py3.12`    | Python version            |
 
-### Tags and Dockerfile
+### Latest Version
+
+The following table shows all the supported tags for MultimodalSDK 26.2.0. For a complete list of all tags, including historical versions, please refer to [Supported Tags](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/supported_tags.md).
 
 | Tag                                | Dockerfile                                                   |
 | ---------------------------------- | ------------------------------------------------------------ |
-| `26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-openeuler24.03-py3.12-aarch64`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
-| `26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
+| `26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-openeuler24.03-py3.12-aarch64`   | [Dockerfile.910b.openEuler](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/Dockerfile.910b.openEuler) |
+| `26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64`    | [Dockerfile.910b.ubuntu](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/Dockerfile.910b.ubuntu)      |
 
 ---
 
