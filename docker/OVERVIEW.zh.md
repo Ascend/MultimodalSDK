@@ -36,12 +36,14 @@ Tag 遵循以下格式：
 | `操作系统`   | `ubuntu22.04`、`openeuler24.03` | 基础操作系统     |
 | `python版本` | `py3.12`    | Python 版本      |
 
-### 支持的tags及Dockerfile
+### 最新版本
+
+如下所示是MultimodalSDK最新发布的26.2.0版本的所有镜像。历史版本的完整Tags请参考[Supported Tags](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/supported_tags.md)。
 
 | Tag                                | Dockerfile                                                   |
 | ---------------------------------- | ------------------------------------------------------------ |
-| `26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-openeuler24.03-py3.12-aarch64`   | [Dockerfile.910b.openEuler](./Dockerfile.910b.openEuler) |
-| `26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64`    | [Dockerfile.910b.ubuntu](./Dockerfile.910b.ubuntu)      |
+| `26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-openeuler24.03-py3.12-aarch64`   | [Dockerfile.910b.openEuler](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/Dockerfile.910b.openEuler) |
+| `26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64`    | [Dockerfile.910b.ubuntu](https://gitcode.com/Ascend/MultimodalSDK/blob/master/docker/Dockerfile.910b.ubuntu)      |
 
 ---
 

@@ -8,20 +8,20 @@ RUN cp -a /etc/yum.repos.d/openEuler.repo /etc/yum.repos.d/openEuler.repo.bak &&
     ARCH=$(uname -m | sed 's/x86_64/x86_64/; s/aarch64/aarch64/') && \
     echo "[openEuler-everything]" > /etc/yum.repos.d/openEuler.repo && \
     echo "name=openEuler-everything" >> /etc/yum.repos.d/openEuler.repo && \
-    echo "baseurl=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/everything/${ARCH}/" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "baseurl=https://repo.huaweicloud.com/openeuler/openEuler-24.03-LTS/everything/${ARCH}/" >> /etc/yum.repos.d/openEuler.repo && \
     echo "enabled=1" >> /etc/yum.repos.d/openEuler.repo && \
     echo "gpgcheck=0" >> /etc/yum.repos.d/openEuler.repo && \
-    echo "gpgkey=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/everything/${ARCH}/RPM-GPG-KEY-openEuler" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "gpgkey=https://repo.huaweicloud.com/openeuler/openEuler-24.03-LTS/everything/${ARCH}/RPM-GPG-KEY-openEuler" >> /etc/yum.repos.d/openEuler.repo && \
     echo "" >> /etc/yum.repos.d/openEuler.repo && \
     echo "[openEuler-EPOL]" >> /etc/yum.repos.d/openEuler.repo && \
     echo "name=openEuler-epol" >> /etc/yum.repos.d/openEuler.repo && \
-    echo "baseurl=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/EPOL/main/${ARCH}/" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "baseurl=https://repo.huaweicloud.com/openeuler/openEuler-24.03-LTS/EPOL/main/${ARCH}/" >> /etc/yum.repos.d/openEuler.repo && \
     echo "enabled=1" >> /etc/yum.repos.d/openEuler.repo && \
     echo "gpgcheck=0" >> /etc/yum.repos.d/openEuler.repo && \
     echo "" >> /etc/yum.repos.d/openEuler.repo && \
     echo "[openEuler-update]" >> /etc/yum.repos.d/openEuler.repo && \
     echo "name=openEuler-update" >> /etc/yum.repos.d/openEuler.repo && \
-    echo "baseurl=https://mirrors.huaweicloud.com/openeuler/openEuler-24.03-LTS/update/${ARCH}/" >> /etc/yum.repos.d/openEuler.repo && \
+    echo "baseurl=https://repo.huaweicloud.com/openeuler/openEuler-24.03-LTS/update/${ARCH}/" >> /etc/yum.repos.d/openEuler.repo && \
     echo "enabled=1" >> /etc/yum.repos.d/openEuler.repo && \
     echo "gpgcheck=0" >> /etc/yum.repos.d/openEuler.repo
 
