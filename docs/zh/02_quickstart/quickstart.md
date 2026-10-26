@@ -32,13 +32,13 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 
    镜像 Tag 格式为 `{version}-{cann}-{torch_npu}-910b-{os}-{python}-aarch64`，各变量含义如下：
 
-   | 变量 | 含义 | 示例值 |
-   |------|------|--------|
-   | `{version}` | Multimodal SDK 版本 | `26.2.0` |
-   | `{cann}` | cann 版本 | `9.2.0` |
-   | `{torch_npu}` | torch_npu 版本 | `2.10.0.post4` |
-   | `{os}` | 基础操作系统 | `ubuntu22.04` / `openeuler24.03` |
-   | `{python}` | Python 版本 | `py3.12` |
+   | 变量            | 含义                | 示例值                               |
+   | --------------- | ------------------- | ------------------------------------ |
+   | `{version}`   | Multimodal SDK 版本 | `26.2.0`                           |
+   | `{cann}`      | cann 版本           | `cann9.2.0`                            |
+   | `{torch_npu}` | torch_npu 版本      | `torch_npu2.10.0.post4`                     |
+   | `{os}`        | 基础操作系统        | `ubuntu22.04` / `openeuler24.03` |
+   | `{python}`    | Python 版本         | `py3.12`                           |
 
    ```bash
    TAG={version}-{cann}-{torch_npu}-910b-{os}-{python}-aarch64
@@ -61,7 +61,13 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 >
 > - `--device /dev/davinci0` 中的设备编号需按宿主机实际 NPU 编号调整（如 `davinci1`）。
 
-先检查是否已经存在同名容器，若存在则先删除：
+启动容器前，先检查是否已存在同名容器：
+
+```bash
+docker ps -a | grep multimodal_container
+```
+
+若查询到同名容器，执行以下命令停止并删除该容器：
 
 ```bash
 docker stop multimodal_container

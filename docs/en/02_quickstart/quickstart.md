@@ -32,13 +32,13 @@ Before you begin, ensure that:
 
    The image tag format is `{version}-{cann}-{torch_npu}-910b-{os}-{python}-aarch64`. The variables are described as follows:
 
-   | Variable | Description | Example Value |
-   |------|------|--------|
-   | `{version}` | Multimodal SDK version | `26.2.0` |
-   | `{cann}` | CANN version | `9.2.0` |
-   | `{torch_npu}` | torch_npu version | `2.10.0.post4` |
-   | `{os}` | Base operating system | `ubuntu22.04`/`openeuler24.03` |
-   | `{python}` | Python version | `py3.12` |
+   | Variable        | Description            | Example Value                      |
+   | --------------- | ---------------------- | ---------------------------------- |
+   | `{version}`   | Multimodal SDK version | `26.2.0`                         |
+   | `{cann}`      | CANN version           | `cann9.2.0`                      |
+   | `{torch_npu}` | torch_npu version      | `torch_npu2.10.0.post4`          |
+   | `{os}`        | Base operating system  | `ubuntu22.04`/`openeuler24.03` |
+   | `{python}`    | Python version         | `py3.12`                         |
 
    ```bash
    TAG={version}-{cann}-{torch_npu}-910b-{os}-{python}-aarch64
@@ -61,7 +61,13 @@ Before you begin, ensure that:
 >
 > - Adjust the device number in `--device /dev/davinci0` according to the actual NPU number on the host machine (for example, `davinci1`).
 
-First check whether a container with the same name already exists. If one exists, delete it:
+Before starting the container, check whether a container with the same name already exists:
+
+```bash
+docker ps -a | grep multimodal_container
+```
+
+If `multimodal_container` is found, stop and remove it by running the following commands:
 
 ```bash
 docker stop multimodal_container
