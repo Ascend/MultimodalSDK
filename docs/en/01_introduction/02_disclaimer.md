@@ -1,4 +1,4 @@
 # Disclaimer
 
-- This repository contains multiple development branches, which may include incomplete, experimental, or untested features. Before an official release, these branches must not be used in production environments or in projects that support critical business operations. Always use our official releases to ensure code stability and security. This project and its contributors are not responsible for any issues, losses, or data corruption caused by the use of development branches.
-- For official releases, see the [release page](https://gitcode.com/ascend/MultimodalSDK/releases).
+- The code in this repository contains multiple development branches, which may contain unfinished, experimental, or untested features. Before an official release, you must not apply these branches to any production environment or to any project that depends on critical services. Ensure that you use our official release versions to guarantee the stability and security of the code. The project and its contributors assume no responsibility for any problems, losses, or data corruption caused by the use of development branches.
+- For official versions, refer to the [release page](https://atomgit.com/ascend/MultimodalSDK/releases).
