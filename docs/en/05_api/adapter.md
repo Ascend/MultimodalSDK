@@ -2,11 +2,11 @@
 
 ## `MultimodalQwen2VLImageProcessor`
 
-This class is officially supported. It inherits from `Qwen2VLImageProcessor` in the `transformers` library and uses the Multimodal SDK's internal acceleration capabilities to accelerate image and video preprocessing for the `Qwen2VL` model. It returns a `BatchFeature` type that is compatible with `transformers`.
+Officially supported. This class inherits from `Qwen2VLImageProcessor` in the `transformers` library. It uses the in-house acceleration capabilities of Multimodal SDK to accelerate image and video preprocessing for the Qwen2VL model, and returns a `BatchFeature` type consistent with that of `transformers`.
 
 **Basic Usage**
 
-For image and video preprocessing, the Multimodal SDK currently supports only the processing capabilities of `transformers` 4.51.3.
+For the preprocessing of image and video data, Multimodal SDK currently supports only the processing capabilities provided by `transformers` 4.51.3.
 
 ### `__init__`
 
@@ -39,37 +39,37 @@ def __init__(
 
 **Parameters**
 
-| Parameter | Type | Description | Required (Yes/No) | Configurable in Current Version |
-| -- | -- | -- | -- | -- |
-| `do_resize` | `bool` | Resizes the input image. The default is `True`. | No | ✗ |
-| `size` | `Dict[str, int]` | Specifies the minimum and maximum sizes of the input image. The format must be `{"shortest_edge": int, "longest_edge": int}`. If this parameter is set, it overrides `min_pixels` and `max_pixels`. The default is `None`. | No | ✓ |
-| `resample` | `Resampling` | Specifies the interpolation method for image resizing. The default is `Resampling.BICUBIC`. | No | ✗ |
-| `do_rescale` | `bool` | Rescales pixel values to a specific range. The default is `True`. | No | ✗ |
-| `rescale_factor` | `Union[int, float]` | Specifies the pixel rescaling factor. The default is `1 / 255`. | No | ✗ |
-| `do_normalize` | `bool` | Normalizes the image. The default is `True`. | No | ✗ |
-| `image_mean` | `Optional[Union[float, List[float]]]` | Specifies the mean value for image normalization. If `None`, the default value is used. Default value: `[0.48145466, 0.4578275, 0.40821073]`. | No | ✓ |
-| `image_std` | `Optional[Union[float, List[float]]]` | Specifies the standard deviation for image normalization. If `None`, the default value is used. Default value: `[0.26862954, 0.26130258, 0.27577711]`. | No | ✓ |
-| `do_convert_rgb` | `bool` | Converts the input image to RGB. The default is `True`. | No | ✗ |
-| `min_pixels` | `Optional[int]` | Specifies the minimum number of pixels in the input image. The default is `56 * 56`. If `size` is set, this value is overridden. | No | ✓ |
-| `max_pixels` | `Optional[int]` | Specifies the maximum number of pixels in the input image. Downsampling is triggered when this value is exceeded. The default is `28 * 28 * 1280`. If `size` is set, this value is overridden. | No | ✓ |
-| `patch_size` | `int` | Specifies the patch size for slicing along the spatial dimensions, in pixels. The default is `14`. A patch is the smallest unit processed by the vision encoder when processing an image. | No | ✓ |
-| `temporal_patch_size` | `int` | Specifies the patch size for slicing along the temporal dimension, in frames. The `Qwen2-VL` model requires this value to be `2`; passing any other value results in an error. The default is `2`. | No | ✗ |
-| `merge_size` | `int` | Specifies the size used when merging patches. The default is `2`. | No | ✓ |
-| `kwargs` | `dict` | Specifies other extended parameters. | No | ✗ |
+|Parameter|Type|Description|Optional/Required|Whether Configurable in Current Version|
+|--|--|--|--|--|
+|do_resize|bool|Whether to resize the input image. The default is `True`.|Optional|✗|
+|size|Dict[str, int]|Minimum and maximum sizes of the input image. The format must be `{"shortest_edge": int, "longest_edge": int}`. If you set this parameter, it overrides `min_pixels` and `max_pixels`. The default is `None`.|Optional|✓|
+|resample|Resampling|Interpolation method for image resizing. The default is `Resampling.BICUBIC`.|Optional|✗|
+|do_rescale|bool|Whether to perform rescale, that is, scale pixel values to a specific range. The default is `True`.|Optional|✗|
+|rescale_factor|Union[int, float]|Pixel scaling factor. The default is `1 / 255`.|Optional|✗|
+|do_normalize|bool|Whether to normalize the image. The default is `True`.|Optional|✗|
+|image_mean|Optional[Union[float, List[float]]]|Mean for image normalization. If this parameter is `None`, the default value is used. The default value is [0.48145466, 0.4578275, 0.40821073].|Optional|✓|
+|image_std|Optional[Union[float, List[float]]]|Standard deviation for image normalization. If this parameter is `None`, the default value is used. The default value is [0.26862954, 0.26130258, 0.27577711].|Optional|✓|
+|do_convert_rgb|bool|Whether to convert the input image to RGB. The default is `True`.|Optional|✗|
+|min_pixels|Optional[int]|Minimum number of pixels in the input image. The default is `56 * 56`. If you set the `size` parameter, this value is overridden.|Optional|✓|
+|max_pixels|Optional[int]|Maximum number of pixels in the input image. Exceeding this value triggers downsampling. The default is `28 * 28 * 1280`. If you set the `size` parameter, this value is overridden.|Optional|✓|
+|patch_size|int|Size of the patch for slicing along the spatial dimension, in pixels. The default is 14. A patch is the smallest unit used by the vision encoder to process an image.|Optional|✓|
+|temporal_patch_size|int|Size of the patch for slicing along the temporal dimension, in frames. The Qwen2-VL model requires this value to be 2, and passing any other value causes an error. The default is 2.|Optional|✗|
+|merge_size|int|Size used when merging patches. The default is 2.|Optional|✓|
+|kwargs|dict|Other extended parameters.|Optional|✗|
 
-> [!NOTE]
-> When you initialize this preprocessing module, you can pass values for the following parameters, but this version applies the following restrictions:
+>[!NOTE]
+>When you initialize this preprocessing module, you can pass values for the following parameters, but this version applies the following restrictions:
 >
-> - **Always-on parameters** (not configurable):
+>- **Always-on parameters** (not configurable):
 >   - `do_resize`: This parameter is always enabled and cannot be disabled.
 >   - `do_rescale`: This parameter is always enabled and cannot be disabled.
 >   - `do_normalize`: This parameter is always enabled and cannot be disabled.
-> - **Unsupported parameters**:
->   - `do_convert_rgb`: This parameter is not supported. Only RGB images are allowed.
->   - `data_format`: This parameter is not supported. The output data format is fixed to channel-first `(C, H, W)`.
->   - `resample`: This parameter is not supported. The interpolation method is fixed to bicubic interpolation `(BICUBIC)`.
+>- **Unsupported parameters**:
+>   - `do_convert_rgb`: This parameter is not supported. Only RGB images are allowed as input.
+>   - `data_format`: This parameter is not supported. The output data format is fixed to channel-first (C, H, W).
+>   - `resample`: This parameter is not supported. The interpolation method is fixed to bicubic interpolation (`BICUBIC`).
 >   - `rescale_factor`: This parameter is not supported. The scaling factor is fixed to `1 / 255`.
->   - `input_data_format`: This parameter is not supported. Only RGB format is supported, with the channel order fixed to HWC.
+>   - `input_data_format`: This parameter is not supported. Only the RGB format is supported, and the channel order is HWC.
 >   - `kwargs`: Other extended parameters.
 
 **Example**
@@ -91,7 +91,7 @@ processor = MultimodalQwen2VLImageProcessor(
 
 **Description**
 
-Preprocesses the input images and videos according to specific hyperparameters and returns them in the generic `BatchFeature` format.
+This function preprocesses the input images and videos according to specific hyperparameters and returns the results in the generic `BatchFeature` format.
 
 **Function Prototype**
 
@@ -120,68 +120,68 @@ def preprocess(self,
 
 **Parameters**
 
-| Parameter | Type | Description | Required (Yes/No) | Configurable in Current Version |
-| -- | -- | -- | -- | -- |
-| `images` | `ImageInput` | Specifies the input images, either a single image or multiple images. See [ImageInput and VideoInput Type Descriptions](#imageinput-and-videoinput-type-descriptions) for supported types. An empty list can be passed to process videos only. | Yes | ✓ |
-| `videos` | `Optional[VideoInput]` | Specifies the input videos. The default is `None`. See [ImageInput and VideoInput Type Descriptions](#imageinput-and-videoinput-type-descriptions) for supported types. | No | ✓ |
-| `do_resize` | `Optional[bool]` | Resizes the images. This parameter cannot be configured. | No | ✗ |
-| `size` | `Dict[str, int]` | Specifies the minimum and maximum sizes of the input image. The format must be `{"shortest_edge": int, "longest_edge": int}`. If this parameter is set, it overrides `min_pixels` and `max_pixels`. The default is `None`. | No | ✓ |
-| `min_pixels` | `Optional[int]` | Specifies the minimum number of pixels in the input image. An error may occur or the request may be rejected if the value is below this threshold. The value range is `[10 * 10, max_pixels)`. If `size` is set, this value is overridden. | No | ✓ |
-| `max_pixels` | `Optional[int]` | Specifies the maximum number of pixels in the input image. Downsampling is triggered when this value is exceeded. The value range is `(min_pixels, 4096 * 4096]`. If `size` is set, this value is overridden. | No | ✓ |
-| `resample` | `Optional[Resampling]` | Specifies the interpolation method. Bicubic interpolation `(BICUBIC)` is used. | No | ✗ |
-| `do_rescale` | `Optional[bool]` | Rescales pixel values. | No | ✗ |
-| `rescale_factor` | `Optional[float]` | Specifies the scaling factor. The factor is fixed at `1 / 255`. | No | ✗ |
-| `do_normalize` | `Optional[bool]` | Normalizes the image. | No | ✗ |
-| `image_mean` | `Optional[Union[float, List[float]]]` | Specifies the normalization mean. If `None`, the initialization value is used. The value range is `[0, 1]`. | No | ✓ |
-| `image_std` | `Optional[Union[float, List[float]]]` | Specifies the normalization standard deviation. If `None`, the initialization value is used. The value range is `(0, FLOAT32_MAX)`. | No | ✓ |
-| `patch_size` | `Optional[int]` | Specifies the patch size for slicing along the spatial dimensions, in pixels. If `None`, the initialization value is used. | No | ✓ |
-| `temporal_patch_size` | `Optional[int]` | Specifies the patch size for slicing along the temporal dimension, in frames. The `Qwen2-VL` model requires this value to be `2`; passing any other value results in an error. The default is `2`. | No | ✗ |
-| `merge_size` | `Optional[int]` | Specifies the size used when merging patches. If `None`, the initialization value is used. | No | ✓ |
-| `do_convert_rgb` | `Optional[bool]` | The input must be an RGB image. | No | ✗ |
-| `return_tensors` | `Optional[str]` | Specifies the returned tensor format. Supports `"np"`, `"pt"`, and similar values. | No | ✓ |
-| `data_format` | `Optional[str]` | Uses a fixed output data format of channel-first `(C, H, W)`. | No | ✗ |
-| `input_data_format` | `Optional[str]` | Uses a fixed input data format of RGB with HWC layout. | No | ✗ |
+|Parameter|Type|Description|Optional/Required|Whether Configurable in Current Version|
+|--|--|--|--|--|
+|images|ImageInput|Input image (single or multiple). For the types, see [ImageInput description](#imageinput-and-videoinput-type-description). You can pass an empty list to process videos only.|Required|✓|
+|videos|Optional[VideoInput]|Input video. The default is `None`. For the types, see [VideoInput description](#imageinput-and-videoinput-type-description).|Optional|✓|
+|do_resize|Optional[bool]|Whether to resize the image. This parameter is not configurable.|Optional|✗|
+|size|Dict[str, int]|Minimum and maximum sizes of the input image. The format must be `{"shortest_edge": int, "longest_edge": int}`. If you set this parameter, it overrides `min_pixels` and `max_pixels`. The default is `None`.|Optional|✓|
+|min_pixels|Optional[int]|Minimum number of pixels in the input image. If the number of pixels is below this value, an error may be raised or the input may be rejected. The `min_pixels` range is [10 × 10, `max_pixels`). If you set the `size` parameter, this value is overridden.|Optional|✓|
+|max_pixels|Optional[int]|Maximum number of pixels in the input image. Exceeding this value triggers downsampling. The `max_pixels` range is (`min_pixels`, 4096 × 4096]. If you set the `size` parameter, this value is overridden.|Optional|✓|
+|resample|Optional[Resampling]|The interpolation method is fixed to `BICUBIC`.|Optional|✗|
+|do_rescale|Optional[bool]|Whether to rescale pixel values.|Optional|✗|
+|rescale_factor|Optional[float]|The scaling factor is fixed to `1 / 255`.|Optional|✗|
+|do_normalize|Optional[bool]|Whether to normalize the image.|Optional|✗|
+|image_mean|Optional[Union[float, List[float]]]|Normalization mean. If this parameter is `None`, the initialization value is used. The value range is [0, 1].|Optional|✓|
+|image_std|Optional[Union[float, List[float]]]|Normalization standard deviation. If this parameter is `None`, the initialization value is used. The value range is (0, `FLOAT32_MAX`).|Optional|✓|
+|patch_size|Optional[int]|Size of the patch for slicing along the spatial dimension, in pixels. If this parameter is `None`, the initialization value is used.|Optional|✓|
+|temporal_patch_size|Optional[int]|Size of the patch for slicing along the temporal dimension, in frames. The Qwen2-VL model requires this value to be 2, and passing any other value causes an error. The default is 2.|Optional|✗|
+|merge_size|Optional[int]|Size used when merging patches. If this parameter is `None`, the initialization value is used.|Optional|✓|
+|do_convert_rgb|Optional[bool]|The input must be an RGB image.|Optional|✗|
+|return_tensors|Optional[str]|Format of the returned tensor. It supports `"np"`, `"pt"`, and similar values.|Optional|✓|
+|data_format|Optional[str]|The output data format is fixed to channel-first (C, H, W).|Optional|✗|
+|input_data_format|Optional[str]|The input data format is fixed to RGB with the HWC layout.|Optional|✗|
 
-#### ImageInput and VideoInput Type Descriptions
+#### `ImageInput` and `VideoInput` Type Description
 
 `ImageInput` supports the following forms:
 
 - **Single image** (any one of the following):
-  - `Image`: Multimodal SDK image object.
-  - `PIL.Image.Image`: PIL image object.
-  - `np.ndarray`: NumPy array in HWC layout (height × width × channels).
-- **Multiple images**: A `List[...]` containing any of the preceding types.
+  - `Image`: An image object provided by Multimodal SDK.
+  - `PIL.Image.Image`: A PIL image object.
+  - `np.ndarray`: A NumPy array with the HWC layout (height × width × channels).
+- **Multiple images**: A `List[...]` composed of any of the preceding types.
 
 `VideoInput` supports the following forms:
 
-- **Single-frame video**: A single image is treated as a one-frame video, using any of the image types described above.
-- **Single video** (`SingleVideoInput`):
-  - `np.ndarray`: A 4D tensor with the shape `[T, H, W, C]`, representing a `T`-frame video.
-  - `List[Union[np.ndarray, PIL.Image.Image, Image]]`: A list of frames. Each frame can be an `np.ndarray`, `PIL.Image.Image`, or Multimodal SDK `Image` object.
-- **Multiple videos**: A `List[SingleVideoInput]`, where each element is a video.
+- **Single-frame video**: One image is considered a 1-frame video, and the types are the same as those for a single image.
+- **Single video** `SingleVideoInput`:
+  - `np.ndarray`: A 4-dimensional tensor with the shape [T, H, W, C], representing a T-frame video.
+  - `List[Union[np.ndarray, PIL.Image.Image, Image]]`: A list composed of frames, where each frame supports `np.ndarray`, PIL, or a Multimodal `Image`.
+- **Multiple videos**: `List[SingleVideoInput]`, where each element is a video.
 
-**General constraints**: The size of each image or video frame must be from `10 × 10` to `4096 × 4096`, and both the width and height must be greater than `patch_size * merge_size`. The width, height, and data layout of all frames in the same video must be consistent.
+**General Constraints**: The size of an image or video frame is limited to `10×10` to `4096×4096`, and both the width and height must be greater than `patch_size * merge_size`. For the same video, the width, height, and data layout format of each frame must be consistent.
 
-> [!NOTE]
-> When you use this function, the following constraints apply regardless of whether these parameters were initialized:
+>[!NOTE]
+>When you use this function, the following constraints apply regardless of whether you initialized the following parameters:
 >
-> - **Always-on parameters** (not configurable):
+>- **Always-on parameters** (not configurable):
 >   - `do_resize`: This parameter is always enabled and cannot be disabled.
 >   - `do_rescale`: This parameter is always enabled and cannot be disabled.
 >   - `do_normalize`: This parameter is always enabled and cannot be disabled.
-> - **Unsupported parameters**:
->   - `do_convert_rgb`: This parameter is not supported. Only RGB images are allowed.
->   - `data_format`: This parameter is not supported. The output data format is fixed to channel-first `(C, H, W)`.
->   - `resample`: This parameter is not supported. The interpolation method is fixed to bicubic interpolation `(BICUBIC)`.
+>- **Unsupported parameters**:
+>   - `do_convert_rgb`: This parameter is not supported. Only RGB images are allowed as input.
+>   - `data_format`: This parameter is not supported. The output data format is fixed to channel-first (C, H, W).
+>   - `resample`: This parameter is not supported. The interpolation method is fixed to bicubic interpolation (`BICUBIC`).
 >   - `rescale_factor`: This parameter is not supported. The scaling factor is fixed to `1 / 255`.
->   - `input_data_format`: This parameter is not supported. Only RGB format is supported, with the channel order fixed to HWC.
-> - **Additional constraints that must also be met at runtime are as follows:**
->   - The input image or video frame must be an RGB image of U8 type, with HWC layout and a size from `10 * 10` to `4096 * 4096`.
->   - The input `min_pixels` range is `[10 * 10, max_pixels)`.
->   - The input `max_pixels` range is `(min_pixels, 4096 * 4096]`.
->   - Both the width and height of the input image must be greater than `patch_size * merge_size`.
->   - For each input image or video frame, if its width and height are `w` and `h`, respectively, `min_pixels < max_pixels`, `max_pixels >= (patch_size * merge_size)^2 * w / h`, and `patch_size * merge_size <= h, w` must be satisfied.
->   - For an input video, the width, height, and data layout of each video frame must be consistent.
+>   - `input_data_format`: This parameter is not supported. Only the RGB format is supported, and the channel order is HWC.
+>- **The following additional constraints must also be satisfied at runtime**:
+>   - The input image or video frame must be an RGB image of the U8 type. The data layout is limited to HWC, and the size is limited to 10 × 10 to 4096 × 4096.
+>   - The input `min_pixels` range is [10 × 10, `max_pixels`).
+>   - The input `max_pixels` range is (`min_pixels`, 4096 × 4096].
+>   - Both the width and height of the input `Image` are greater than `patch_size * merge_size`.
+>   - For each input image or each video frame, if its width and height are w and h, respectively, the following must be satisfied: `min_pixels < max_pixels`, `max_pixels >= (patch_size * merge_size)^2 * w / h`, and `patch_size * merge_size <= h, w`.
+>   - For an input video, the width, height, and data layout format of each video frame must be consistent.
 
 **Example**
 
@@ -213,13 +213,13 @@ result = processor.preprocess(images=[], videos=video)
 
 ## `InternVL2PreProcessor`
 
-This class has no custom `__init__` parameters. `preprocess_image` is a static method and can be called directly through either the class or an instance.
+This class has no custom `__init__` parameters. `preprocess_image` is a static method that you can call directly through the class or an instance.
 
 ### `preprocess_image`
 
 **Description**
 
-Preprocesses the input image using the InternVL preprocessing pipeline.
+This function processes the input image using the InternVL preprocessing process.
 
 **Function Prototype**
 
@@ -235,16 +235,16 @@ def preprocess_image(
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| -- | -- | -- | -- |
-| `image` | `Union[PIL.Image.Image, Image]` | Yes | Accepts a single image. Supported types are the Multimodal SDK `Image` object and `PIL.Image.Image` object. |
-| `input_size` | `int` | Yes | Specifies the size to which each cropped image is resized in the InternVL preprocessing pipeline. The value ranges from 10 to 8192. |
-| `min_num` | `int` | Yes | Specifies the minimum value used to calculate the target scaling ratio. The value range is `[1, 4]`, and the value must be smaller than `max_num`. |
-| `max_num` | `int` | Yes | Specifies the maximum value used to calculate the target scaling ratio. The value range is `(min_num, 32]`. |
-| `use_thumbnail` | `bool` | Yes | Adds a thumbnail of the original image. |
+|Parameter|Type|Optional/Required|Description|
+|--|--|--|--|
+|image|[PIL.Image.Image, Image]|Required|`Image` supports a single image: a Multimodal `Image` object or a `PIL.Image.Image` object.|
+|input_size|int|Required|The size to which each cropped image is resized in the InternVL process (limited to 10 to 8192).|
+|min_num|int|Required|The minimum number used to calculate the target scaling ratio. The value range is limited to [1, 4], and the value must be smaller than `max_num`.|
+|max_num|int|Required|The maximum number used to calculate the target scaling ratio. The value range is limited to (`min_num`, 32].|
+|use_thumbnail|bool|Required|Whether to add a thumbnail of the original image.|
 
-> [!NOTE]
-> When you use this function, note that the `input_size` scaling limit is 8192. However, because of how the scaling ratio is calculated, the final size to which the original image needs to be resized may exceed 8192. In this case, the underlying interface blocks the request and returns an error.
+>[!NOTE]
+>When you use this function, note that the scaling ratio limit for `input_size` is 8192. However, due to how the scaling ratio is calculated, the size to which the original image needs to be scaled may exceed 8192. In that case, the underlying interface blocks the operation and returns an error.
 
 **Example**
 
