@@ -31,12 +31,14 @@ the fallback is transparent to callers.
 
 from __future__ import annotations
 
-from contextlib import suppress
+import logging
 from typing import Any
 
 import numpy as np
 
 from .base import LoadedFrames
+
+logger = logging.getLogger(__name__)
 
 
 def _acc_video_decode_available() -> bool:
@@ -104,6 +106,24 @@ def _realised_fps(num_frames: int, duration: float) -> float:
     return round(num_frames / duration, 4)
 
 
+def _resize_frame(frame: np.ndarray, resize_short: int | None) -> np.ndarray:
+    """Downscale *frame* so its shorter side equals *resize_short*."""
+    if resize_short is None:
+        return frame
+
+    import cv2 as cv
+
+    h, w = frame.shape[:2]
+    if min(h, w) <= resize_short:
+        return frame
+    scale = resize_short / min(h, w)
+    return cv.resize(
+        frame,
+        (int(w * scale + 0.5), int(h * scale + 0.5)),
+        interpolation=cv.INTER_AREA,
+    )
+
+
 def _acc_load(video_path: str, sample_frames: int, device: str) -> LoadedFrames:
     """Uniform-sampling decode via ``mm.acc.video_decode`` (``sample_num``)."""
     from mm.acc import video_decode, video_info
@@ -147,8 +167,11 @@ def _acc_load(video_path: str, sample_frames: int, device: str) -> LoadedFrames:
 
 
 def _acc_load_continuous(video_path: str, fps: float, resize_short: int | None, device: str) -> LoadedFrames:
-    """Continuous-fps decode via ``mm.acc.video_decode`` / ``frame_indices``."""
-    import cv2 as cv
+    """Continuous-fps decode via ``mm.acc.video_decode`` / ``frame_indices``.
+
+    The decoder does not report which frames it actually returned, so
+    ``indices`` is an approximation based on the requested index list.
+    """
     from mm.acc import video_decode, video_info
 
     info = video_info(video_path)
@@ -165,19 +188,15 @@ def _acc_load_continuous(video_path: str, fps: float, resize_short: int | None, 
 
     images = video_decode(video_path, "cpu", frame_indices=set(target_indices))
 
-    frames = [np.array(img.numpy()) for img in images]
+    frames = [_resize_frame(np.array(img.numpy()), resize_short) for img in images]
     _require_frames(frames, video_path)
-
-    if resize_short is not None:
-        for i, frame in enumerate(frames):
-            h, w = frame.shape[:2]
-            if min(h, w) > resize_short:
-                scale = resize_short / min(h, w)
-                frames[i] = cv.resize(
-                    frame,
-                    (int(w * scale + 0.5), int(h * scale + 0.5)),
-                    interpolation=cv.INTER_AREA,
-                )
+    if len(frames) != len(target_indices):
+        logger.warning(
+            "mm.acc returned %d/%d requested frames for %s; reported frame indices are approximate",
+            len(frames),
+            len(target_indices),
+            video_path,
+        )
 
     actual_indices = target_indices[: len(frames)]
 
@@ -279,16 +298,7 @@ def _cv2_load_continuous(video_path: str, fps: float, resize_short: int | None, 
             ok, frame = cap.read()
             if not ok:
                 break
-            if resize_short is not None:
-                h, w = frame.shape[:2]
-                if min(h, w) > resize_short:
-                    scale = resize_short / min(h, w)
-                    frame = cv.resize(
-                        frame,
-                        (int(w * scale + 0.5), int(h * scale + 0.5)),
-                        interpolation=cv.INTER_AREA,
-                    )
-            frames.append(frame)
+            frames.append(_resize_frame(frame, resize_short))
             indices.append(idx)
             next_target += step
         else:
@@ -340,9 +350,15 @@ class FrameLoader:
     ) -> LoadedFrames:
         """Uniformly sample *sample_frames* frames (``continuous=False``)."""
         if self._use_acc:
-            # Unsupported codec etc. — fall back to the cv2 path.
-            with suppress(Exception):
+            try:
                 return _acc_load(video_path, sample_frames, self._device)
+            except Exception as exc:
+                logger.warning(
+                    "mm.acc decode failed for %s; falling back to cv2: %s: %s",
+                    video_path,
+                    type(exc).__name__,
+                    exc,
+                )
         return _cv2_load(video_path, sample_frames, self._device)
 
     def load_continuous(
@@ -354,9 +370,15 @@ class FrameLoader:
     ) -> LoadedFrames:
         """Decode at a fixed *fps* (``continuous=True``), for optical-flow scorers."""
         if self._use_acc:
-            # Unsupported codec etc. — fall back to the cv2 path.
-            with suppress(Exception):
+            try:
                 return _acc_load_continuous(video_path, fps, resize_short, self._device)
+            except Exception as exc:
+                logger.warning(
+                    "mm.acc continuous decode failed for %s; falling back to cv2: %s: %s",
+                    video_path,
+                    type(exc).__name__,
+                    exc,
+                )
         return _cv2_load_continuous(video_path, fps, resize_short, self._device)
 
 

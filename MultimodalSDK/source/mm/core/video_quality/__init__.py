@@ -38,10 +38,9 @@ Public API:
 
 .. note::
 
-   Concrete scorer implementations (motion, naturalness, aesthetics, etc.)
-   will be provided in subsequent versions.  In this release
-   ``create_scorer`` returns a ``KeyError`` for any unknown name; it is
-   prepared for registration from future scorer packages.
+   This release ships the ``image_quality`` scorer and the CLIP consistency
+   family (subject/background/overall/scene/appearance-style/temporal-style).
+   Importing this package registers them with ``QualityScorerRegistry``.
 """
 
 from .base import (
@@ -60,6 +59,15 @@ from .frame_loader import FrameLoader, load_frames
 from .backbones import SharedClipBackbone, get_cache_info
 from .backbones import clear_cache as clear_backbone_cache
 from .pipeline import VideoQualityPipeline
+from .scorers import (
+    AppearanceStyleScorer,
+    BackgroundConsistencyScorer,
+    ImageQualityScorer,
+    OverallConsistencyScorer,
+    SceneConsistencyScorer,
+    SubjectConsistencyScorer,
+    TemporalStyleScorer,
+)
 
 __all__ = [
     # Data contracts
@@ -81,4 +89,11 @@ __all__ = [
     "clear_backbone_cache",
     "get_cache_info",
     "VideoQualityPipeline",
+    "AppearanceStyleScorer",
+    "BackgroundConsistencyScorer",
+    "ImageQualityScorer",
+    "OverallConsistencyScorer",
+    "SceneConsistencyScorer",
+    "SubjectConsistencyScorer",
+    "TemporalStyleScorer",
 ]
