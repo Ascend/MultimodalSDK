@@ -2,27 +2,27 @@
 
 ## `mm.Tensor`
 
-This document applies to the latest released version of the Multimodal SDK. Interface exceptions are typically thrown as `ValueError`, `TypeError`, `RuntimeError`, or `ImportError`. For recommended error code handling, see [Appendix - Error Codes](../06_references/appendix.md#error-codes).
+This document applies to the latest release of Multimodal SDK. Interface exceptions are usually thrown as `ValueError`, `TypeError`, `RuntimeError`, or `ImportError`. For guidance on handling error codes, see [Appendix > Error Codes](../06_references/appendix.md#error-codes).
 
-The `Tensor` class is used to hold general-purpose data of any modality and provides operations for creating, managing, and copying general-purpose data.
+The Tensor class serves as a container for general-purpose data of any modality. It supports data creation, management, and copy operations.
 
-### Tensor Attributes
+### Tensor Properties
 
-| Attribute | Type         | Description                                  | Remarks                            |
-| --------- | ------------ | -------------------------------------------- | ---------------------------------- |
-| device    | str          | Device where the Tensor is located.          | Default value: `"cpu"`.            |
-| dtype     | DataType     | Data type of the Tensor.                     | Default value: `DataType.FLOAT32`. |
-| shape     | list         | Shape of the Tensor.                         | Default value: an empty list.      |
-| format    | TensorFormat | Data layout of the Tensor.                   | Default value: `TensorFormat.ND`.  |
-| nbytes    | int          | Number of bytes occupied by the Tensor data. | Default value: `0`.                |
+|Property|Type|Description|Remarks|
+|--|--|--|--|
+|device|str|Device where the Tensor resides.|The default is `"cpu"`.|
+|dtype|DataType|Tensor data type.|The default is `DataType.FLOAT32`.|
+|shape|list|Tensor dimension information.|The default is an empty list.|
+|format|TensorFormat|Tensor data layout type.|The default is `TensorFormat.ND`.|
+|nbytes|int|Number of bytes occupied by the Tensor data.|The default is 0.|
 
 ### `Tensor.set_format`
 
 **Description**
 
-Sets the data layout.
+Set the data layout format.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 set_format(tensor_format: TensorFormat)
@@ -30,9 +30,9 @@ set_format(tensor_format: TensorFormat)
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| -- | -- | -- | -- |
-| tensor_format | TensorFormat | Yes | Layout to set. `ND`, `NHWC`, and `NCHW` are supported. If `NHWC` or `NCHW` is specified, the Tensor must have a four-dimensional shape. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|tensor_format|TensorFormat|Required|Layout format to set. It supports ND, NHWC, and NCHW. If you set NHWC or NCHW, ensure that the Tensor shape has four dimensions.|
 
 **Example**
 
@@ -46,19 +46,19 @@ tensor.set_format(TensorFormat.ND)
 
 **Description**
 
-Creates a deep copy of the `Tensor` instance.
+Deep copy the Tensor instance into a new Tensor instance.
 
-**Prototype**
+**Function Prototype**
 
 ```python
-clone() -> Tensor
+clone()-> Tensor
 ```
 
-**Return Values**
+**Returns**
 
-| Type   | Description                |
-| ------ | -------------------------- |
-| Tensor | The new `Tensor` instance. |
+|Data Type|Description|
+|--|--|
+|Tensor|New Tensor instance.|
 
 **Example**
 
@@ -72,9 +72,9 @@ tensor_new = tensor.clone()
 
 **Description**
 
-Creates a `Tensor` object from a NumPy array.
+Convert a NumPy array into a Tensor object.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 def from_numpy(nd_array: numpy.ndarray) -> Tensor:
@@ -82,18 +82,18 @@ def from_numpy(nd_array: numpy.ndarray) -> Tensor:
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
+|Parameter|Data Type|Optional/Required|Description|
 |--|--|--|--|
-| nd_array | numpy.ndarray | Yes | The input dtype must be `int8`, `uint8`, or `float32`. The input `numpy.ndarray` must be in row-major order and have contiguous memory. |
+|nd_array|numpy.ndarray|Required|The input dtype supports int8, uint8, and float32 data types. The input `numpy.ndarray` must be row-major, and its memory must be contiguous.|
 
-**Return Values**
+**Returns**
 
-| Type   | Description                                             |
-| ------ | ------------------------------------------------------- |
-| Tensor | The `Tensor` instance created from the `numpy.ndarray`. |
+|Data Type|Description|
+|--|--|
+|Tensor|Tensor instance created from `numpy.ndarray`.|
 
-> [!NOTE]
-> The created `Tensor` object shares data with the `numpy.ndarray`. The data lifetime is managed by the `numpy.ndarray` object.
+>[!NOTE]
+>The constructed Tensor object shares data with the `numpy.ndarray`, and the `numpy.ndarray` object manages the lifetime of the data.
 
 **Example**
 
@@ -109,24 +109,24 @@ tensor = Tensor.from_numpy(arr)
 
 **Description**
 
-Converts the `Tensor` object to a NumPy array.
+Convert a Tensor object into a NumPy array.
 
-**Prototype**
+**Function Prototype**
 
 ```python
-numpy() -> np.ndarray
+numpy()-> np.ndarray
 ```
 
-**Return Values**
+**Returns**
 
-| Type          | Description                |
-| ------------- | -------------------------- |
-| numpy.ndarray | The resulting NumPy array. |
+|Data Type|Description|
+|--|--|
+|numpy.ndarray|Converted NumPy array.|
 
-> [!NOTE]
+>[!NOTE]
 >
->- The converted `numpy.ndarray` shares data with the `Tensor` object. The data lifetime is managed by the `Tensor` object.
->- The `Tensor` must be located on the CPU.
+>- The Tensor object is converted into a `numpy.ndarray` object. The converted `numpy.ndarray` shares data with the Tensor, and the Tensor object manages the lifetime of the data.
+>- The device on which the Tensor resides must be the CPU.
 
 **Example**
 
@@ -143,9 +143,9 @@ arr_new = tensor.numpy()
 
 **Description**
 
-Creates a `Tensor` object from a `torch.Tensor`.
+Convert a `torch.Tensor` tensor into a Tensor object.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 def from_torch(torch_tensor: torch.Tensor) -> Tensor:
@@ -153,18 +153,18 @@ def from_torch(torch_tensor: torch.Tensor) -> Tensor:
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| -- | -- | -- | -- |
-| torch_tensor | torch.Tensor | Yes | The input dtype must be `int8`, `uint8`, or `float32`. The input `torch.Tensor` must be in row-major order and have contiguous memory. The input `torch.Tensor` must be located on the CPU. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|torch_tensor|torch.Tensor|Required|The input dtype supports int8, uint8, and float32 data types. The input `torch.Tensor` must be row-major, and its memory must be contiguous. The input `torch.Tensor` must be on the CPU.|
 
-**Return Values**
+**Returns**
 
-| Type   | Description                                          |
-| ------ | ---------------------------------------------------- |
-| Tensor | The `Tensor` object created from the `torch.Tensor`. |
+|Data Type|Description|
+|--|--|
+|Tensor|Tensor object created from `torch.Tensor`.|
 
-> [!NOTE]
-> The created `Tensor` object shares data with the `torch.Tensor`. The data lifetime is managed by the `torch.Tensor` object.
+>[!NOTE]
+>The constructed Tensor object shares data with the `torch.Tensor`, and the `torch.Tensor` object manages the lifetime of the data.
 
 **Example**
 
@@ -180,24 +180,24 @@ mm_tensor = Tensor.from_torch(tensor)
 
 **Description**
 
-Converts the `Tensor` object to a `torch.Tensor`.
+Convert a Tensor object into a `torch.Tensor` tensor.
 
-**Prototype**
+**Function Prototype**
 
 ```python
-torch() -> torch.Tensor
+torch()-> torch.Tensor
 ```
 
-**Return Values**
+**Returns**
 
-| Type         | Description                   |
-| ------------ | ----------------------------- |
-| torch.Tensor | The resulting `torch.Tensor`. |
+|Data Type|Description|
+|--|--|
+|torch.Tensor|Converted `torch.Tensor` tensor.|
 
-> [!NOTE]
+>[!NOTE]
 >
->- The converted `torch.Tensor` shares data with the `Tensor` object. The data lifetime is managed by the `Tensor` object.
->- The `Tensor` must be located on the CPU.
+>- The Tensor object is converted into a `torch.Tensor` object. The converted `torch.Tensor` shares data with the Tensor, and the Tensor object manages the lifetime of the data.
+>- The device on which the Tensor resides must be the CPU.
 
 **Example**
 
@@ -214,33 +214,33 @@ torch_tensor = mm_tensor.torch()
 
 **Description**
 
-Normalizes the current `Tensor` object using the mean and standard deviation. Given the mean values `mean[1], ..., mean[n]` and standard deviation values `std[1], ..., std[n]` for `n` channels, this operation normalizes each channel of the current tensor object as follows: `output[channel] = (src[channel] - mean[channel]) / std[channel]`, where `src` is the current `Tensor` object.
+A member function of the Tensor class that uses the mean and standard deviation to normalize the current object. Given the mean values of `n` channels, `mean[1], ..., mean[n]`, and the standard deviation values, `std[1], ..., std[n]`, this transform normalizes each channel of the current object. That is, `output[channel] = (src[channel] - mean[channel]) / std[channel]`, where `src` is the current Tensor object.
 
-**Prototype**
+**Function Prototype**
 
 ```python
-def normalize(mean: list[float], std: list[float], device_mode: DeviceMode = DeviceMode.CPU) -> Tensor
+def normalize(mean: list[float], std: list[float], device_mode: DeviceMode = DeviceMode.CPU)-> Tensor
 ```
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| -- | -- | -- | -- |
-| mean | list[float] | Yes | Array of mean values. The array must contain three values, each in the range [0, 1]. |
-| std | list[float] | Yes | Array of standard deviation values. The array must contain three values, each in the range (0, 3.4028235e38]. |
-| device_mode | DeviceMode | No | Execution mode. Currently, only `CPU` is supported. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|mean|list[float]|Required|Mean array. Its length must be 3, and the valid range is [0, 1].|
+|std|list[float]|Required|Standard deviation array. Its length must be 3, and the valid range is (0, 3.4028235e38].|
+|device_mode|DeviceMode|Optional|Runtime mode. Currently only CPU is supported.|
 
-**Return Values**
+**Returns**
 
-| Type   | Description                    |
-| ------ | ------------------------------ |
-| Tensor | The resulting `Tensor` object. |
+|Data Type|Description|
+|--|--|
+|Tensor|Converted Tensor object.|
 
-> [!NOTE]
+>[!NOTE]
 >
->- The `format` of the `Tensor` object must be `NCHW` or `NHWC`. `N` must be 1 and `C` must be 3.
->- The data type of the `Tensor` object must be `Float32`.
->- The `Tensor` must be located on the CPU.
+>- The format of the Tensor object supports only NCHW or NHWC. N supports only 1, and C supports only 3.
+>- The data type of the Tensor object supports only Float32.
+>- The device on which the Tensor object resides must be the CPU.
 
 **Example**
 
@@ -258,44 +258,44 @@ dst_mm_tensor = mm_tensor.normalize(mean, std)
 
 ## `mm.Image`
 
-The `Image` class is used to hold image data and provides operations for creating, managing, and copying image data.
+The Image class serves as a container for general-purpose image data. It supports image creation, management, and copy operations.
 
-### Image Attributes
+### Image Properties
 
-| Attribute | Type        | Description                                                 |
-| --------- | ----------- | ----------------------------------------------------------- |
-| device    | str         | Device where the Image is located. Only `cpu` is supported. |
-| dtype     | DataType    | Data type of the Image. Only `DataType.UINT8` is supported. |
-| size      | list        | Size of the Image.                                          |
-| format    | ImageFormat | Image format.                                               |
-| nbytes    | int         | Number of bytes occupied by the Image data.                 |
-| height    | int         | Height of the Image.                                        |
-| width     | int         | Width of the Image.                                         |
+|Property|Type|Description|
+|--|--|--|
+|device|str|Device where the Image resides. Only `cpu` is supported.|
+|dtype|DataType|Image data type. Only `DataType.UINT8` is supported.|
+|size|list|Image size.|
+|format|ImageFormat|Image format of the Image data.|
+|nbytes|int|Number of bytes occupied by the Image data.|
+|height|int|Image height.|
+|width|int|Image width.|
 
 ### `Image.open`
 
 **Description**
 
-Creates an `Image` from the specified path.
+Create an Image from a specified path.
 
-**Prototype**
+**Function Prototype**
 
 ```python
-open(path: str | bytes, device: str | bytes = b'cpu')
+open(path:str | bytes, device:str | bytes = b'cpu')
 ```
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| path | str \| bytes | Yes | The input path must be valid and no longer than 4096 characters. The path must not contain symbolic links. The file size must not exceed 1 GB, and the file permissions must not be more permissive than `640`, with the permissions for User/Group/Others not exceeding 6/4/0, respectively. The file extension must be `jpg` or `jpeg`. The input image must be in JPG or JPEG format, and both its width and height must be in the range [10, 8192]. Currently, `Image.open` creates only RGB images. |
-| device | str \| bytes | No | Device type. Currently, only `cpu` is supported. Default value: `cpu`. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|path|str \| bytes|Required|The input path must be valid, no longer than 4096 characters, contain no symbolic links, and be no larger than 1 GB. The file permissions must not exceed 640, and the User, Group, and Others permissions must not exceed 6, 4, and 0, respectively. The file suffix must be jpg or jpeg. The input image must be jpg or jpeg, and both the width and height must be within [10, 8192]. Currently, only RGB images can be created by `Image.open`.|
+|device|str \| bytes|Optional|Device type. Currently only `cpu` is supported, and the default is `cpu`.|
 
-**Return Values**
+**Returns**
 
-| Type  | Description                                               |
-| ----- | --------------------------------------------------------- |
-| Image | The new `Image` instance created from the specified path. |
+|Data Type|Description|
+|--|--|
+|Image|New Image instance created from the path.|
 
 **Example**
 
@@ -308,9 +308,9 @@ img = Image.open("/home/test.jpg", "cpu")
 
 **Description**
 
-Creates an `Image` instance from a NumPy array.
+Convert a NumPy array into an Image instance.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 from_numpy(
@@ -322,20 +322,20 @@ from_numpy(
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| nd_array | numpy.ndarray | Yes | The input NumPy array must have a dtype of `uint8`, be three-dimensional, and not be empty. For RGB and BGR image formats, the shape of the three-dimensional array must be [H, W, 3]. For BGR_PLANAR and RGB_PLANAR image formats, the shape must be [3, H, W]. The values of all elements in the NumPy array must be in the range [0, 255]. The array must be in row-major order and have contiguous memory. Both the width and height must be in the range [10, 8192]. |
-| image_format | ImageFormat | Yes | Image format. `RGB`, `BGR`, `BGR_PLANAR`, and `RGB_PLANAR` are supported. The specified format must match the dimensions of the NumPy array. |
-| device | str \| bytes | No | Device type. Currently, only `cpu` is supported. Default value: `cpu`. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|nd_array|numpy.ndarray|Required|Input NumPy array. It must meet the following conditions: the input dtype supports only the uint8 data type, and the input NumPy array must have 3 dimensions and cannot be empty. For a 3D array, the shape for the RGB and BGR image formats must be [H, W, 3], and the shape for the BGR_PLANAR and RGB_PLANAR image formats must be [3, H, W]. Each element of the input NumPy array must be in the range [0, 255], the array must be row-major with contiguous memory, and both the width and height must be within [10, 8192].|
+|image_format|ImageFormat|Required|Image format. It supports RGB, BGR, BGR_PLANAR, and RGB_PLANAR. The input type must correspond to the NumPy data dimensions.|
+|device|str \| bytes|Optional|Device type. Currently only `cpu` is supported, and the default is `cpu`.|
 
-**Return Values**
+**Returns**
 
-| Type  | Description                                        |
-| ----- | -------------------------------------------------- |
-| Image | The `Image` instance created from the NumPy array. |
+|Data Type|Description|
+|--|--|
+|Image|Image instance created from `numpy.ndarray`.|
 
-> [!NOTE]
-> The created `Image` object shares data with the NumPy array. The data lifetime is managed by the NumPy array.
+>[!NOTE]
+>The constructed Image object shares data with the `numpy.ndarray`, and the `numpy.ndarray` object manages the lifetime of the data.
 
 **Example**
 
@@ -351,25 +351,25 @@ img = Image.from_numpy(arr, ImageFormat.RGB, "cpu")
 
 **Description**
 
-Converts the `Image` instance to a NumPy array.
+Convert an Image instance into a NumPy array.
 
-**Prototype**
+**Function Prototype**
 
 ```python
-numpy() -> numpy.ndarray
+numpy()-> numpy.ndarray
 ```
 
-**Return Values**
+**Returns**
 
-| Type          | Description                |
-| ------------- | -------------------------- |
-| numpy.ndarray | The resulting NumPy array. |
+|Data Type|Description|
+|--|--|
+|numpy.ndarray|Converted NumPy array.|
 
-> [!NOTE]
+>[!NOTE]
 >
->- The shape of the output `ndarray` depends on the image format.
->- For an `Image` with the `RGB` or `BGR` format, the shape is [H, W, 3]. For an `Image` with the `RGB_PLANAR` or `BGR_PLANAR` format, the shape is [3, H, W].
->- The `Image` must be located on the CPU.
+>- The output ndarray shape depends on the image format:
+> When the Image instance format is RGB or BGR, the shape is [H, W, 3]. When `format` is RGB_PLANAR or BGR_PLANAR, the shape is [3, H, W].
+>- The device on which the Image resides must be the CPU.
 
 **Example**
 
@@ -385,9 +385,9 @@ arr = img.numpy()
 
 **Description**
 
-Creates an `Image` instance from a `torch.Tensor`.
+Convert a `torch.Tensor` into an Image instance.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 from_torch(
@@ -399,20 +399,20 @@ from_torch(
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| torch_tensor | torch.Tensor | Yes | The input PyTorch tensor must have a dtype of `uint8`, be three-dimensional, and have a shape of [H, W, 3] for the RGB/BGR formats or [3, H, W] for the PLANAR formats. Its values must be in the range [0, 255]. The tensor must be in row-major order, have contiguous memory, and be located on the CPU. Both the width and height must be in the range [10, 8192]. |
-| image_format | ImageFormat | Yes | Image format. `RGB`, `BGR`, `BGR_PLANAR`, and `RGB_PLANAR` are supported. The specified format must match the dimensions of the `torch.Tensor`. |
-| device | str \| bytes | No | Device type. Currently, only `cpu` is supported. Default value: `cpu`. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|torch_tensor|torch.Tensor|Required|Input PyTorch tensor. It must meet the following conditions: the dtype supports only uint8, and the number of dimensions must be 3. The shape is [H, W, 3] for the RGB and BGR formats and [3, H, W] for the PLANAR formats. The value range is [0, 255], the tensor must be row-major with contiguous memory and reside on the CPU, and both the width and height must be within [10, 8192].|
+|image_format|ImageFormat|Required|It supports RGB, BGR, BGR_PLANAR, and RGB_PLANAR, and must correspond to the data dimensions of the `torch.Tensor`.|
+|device|str \| bytes|Optional|Device type. Currently only `cpu` is supported, and the default is `cpu`.|
 
-> [!NOTE]
-> The created `Image` object shares data with the `torch.Tensor`. The data lifetime is managed by the `torch.Tensor` object.
+>[!NOTE]
+>The constructed Image object shares data with the `torch.Tensor`, and the `torch.Tensor` object manages the lifetime of the data.
 
-**Return Values**
+**Returns**
 
-| Type  | Description                                           |
-| ----- | ----------------------------------------------------- |
-| Image | The `Image` instance created from the `torch.Tensor`. |
+|Data Type|Description|
+|--|--|
+|Image|Image instance created from `torch.Tensor`.|
 
 **Example**
 
@@ -428,25 +428,25 @@ img = Image.from_torch(tensor, ImageFormat.RGB, "cpu")
 
 **Description**
 
-Converts the `Image` instance to a `torch.Tensor`.
+Convert an Image instance into a `torch.Tensor` tensor.
 
-**Prototype**
+**Function Prototype**
 
 ```python
-torch() -> torch.Tensor
+torch()-> torch.Tensor
 ```
 
-**Return Values**
+**Returns**
 
-| Type         | Description                   |
-| ------------ | ----------------------------- |
-| torch.Tensor | The resulting `torch.Tensor`. |
+|Data Type|Description|
+|--|--|
+|torch.Tensor|Converted torch tensor.|
 
-> [!NOTE]
+>[!NOTE]
 >
->- The shape of the output `Tensor` depends on the image format.
->- For an `Image` with the `RGB` or `BGR` format, the shape is [H, W, 3]. For an `Image` with the `BGR_PLANAR` or `RGB_PLANAR` format, the shape is [3, H, W].
->- The `Image` must be located on the CPU.
+>- The output Tensor shape depends on the image format:
+> When the Image instance `format` is RGB or BGR, the shape is [H, W, 3]. When `format` is BGR_PLANAR or RGB_PLANAR, the shape is [3, H, W].
+>- The device on which the Image resides must be the CPU.
 
 **Example**
 
@@ -462,9 +462,9 @@ tensor = img.torch()
 
 **Description**
 
-Creates an `Image` object from a PIL image object.
+Convert a PIL image object into an Image object.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 from_pillow(pillow_image: PIL.Image.Image) -> Image
@@ -472,15 +472,15 @@ from_pillow(pillow_image: PIL.Image.Image) -> Image
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| pillow_image | PIL.Image.Image | Yes | The input Pillow Image object must have a `mode` of `"L"` (grayscale), `"RGB"` (RGB image), or `"RGBA"` (RGB image with transparency). |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|pillow_image|PIL.Image.Image|Required|Input Pillow Image object. Its `mode` attribute supports only `"L"` (grayscale image), `"RGB"` (RGB image), and `"RGBA"` (RGB image with an alpha channel).|
 
-**Return Values**
+**Returns**
 
-| Type  | Description                 |
-| ----- | --------------------------- |
-| Image | The created `Image` object. |
+|Data Type|Description|
+|--|--|
+|Image|Constructed Image object.|
 
 **Example**
 
@@ -498,25 +498,25 @@ img_mm = Image.from_pillow(img_pil)
 
 **Description**
 
-Converts the `Image` object to a PIL image object.
+Convert an Image object into a PIL image object.
 
-**Prototype**
+**Function Prototype**
 
 ```python
-pillow() -> PIL.Image.Image
+pillow()-> PIL.Image.Image
 ```
 
-**Return Values**
+**Returns**
 
-| Type            | Description                          |
-| --------------- | ------------------------------------ |
-| PIL.Image.Image | The resulting Pillow image instance. |
+|Data Type|Description|
+|--|--|
+|PIL.Image.Image|Converted Pillow image instance.|
 
-> [!NOTE]
+>[!NOTE]
 >
->- The dtype of the output `PIL.Image.Image` must be consistent with that of the `Image` instance. Currently, only `uint8` is supported.
->- The mode of the output PIL Image instance is `"RGB"`.
->- The `Image` must be located on the CPU.
+>- The dtype of the output `PIL.Image.Image` must be the same as that of the Image instance. Currently, only uint8 is supported.
+>- The `mode` of the output PIL Image instance is `"RGB"`.
+>- The device on which the Image resides must be the CPU.
 
 **Example**
 
@@ -533,19 +533,19 @@ pillow_image_new = img.pillow()
 
 **Description**
 
-Creates a deep copy of the `Image` instance.
+Deep copy the Image instance into a new Image instance.
 
-**Prototype**
+**Function Prototype**
 
 ```python
-clone() -> Image
+clone()-> Image
 ```
 
-**Return Values**
+**Returns**
 
-| Type  | Description                                                             |
-| ----- | ----------------------------------------------------------------------- |
-| Image | The new `Image` instance created by deep copying the original instance. |
+|Data Type|Description|
+|--|--|
+|Image|New Image instance created by a deep copy.|
 
 **Example**
 
@@ -559,9 +559,9 @@ img_copy = img.clone()
 
 **Description**
 
-Resizes the `Image` instance.
+Resize an Image instance.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 resize(size: Tuple[int, int], interpolation: Interpolation, device_mode: DeviceMode = DeviceMode.CPU) -> "Image"
@@ -569,20 +569,20 @@ resize(size: Tuple[int, int], interpolation: Interpolation, device_mode: DeviceM
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| size | Tuple[int, int] | Yes | Width and height of the resized image. `size` must have two dimensions. The first dimension is `width`, and the second dimension is `height`. Both the width and height must be in the range [10, 8192]. |
-| interpolation | Interpolation | Yes | Interpolation algorithm used for resizing. Currently, only `BICUBIC` is supported. |
-| device_mode | DeviceMode | No | Execution mode for resizing. Currently, only `CPU` is supported. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|size|Tuple[int, int]|Required|Image width and height after resize. `size` must have two dimensions. The first dimension is `width`, and the second dimension is `height`. Both the width and height must be within [10, 8192].|
+|interpolation|Interpolation|Required|Interpolation algorithm for resize. Currently only BICUBIC is supported.|
+|device_mode|DeviceMode|Optional|Runtime mode for resize. Currently only CPU is supported.|
 
-**Return Values**
+**Returns**
 
-| Type  | Description                                       |
-| ----- | ------------------------------------------------- |
-| Image | The new `Image` instance obtained after resizing. |
+|Data Type|Description|
+|--|--|
+|Image|New Image instance obtained after the resize operation.|
 
-> [!NOTE]
-> Currently, only images with the `RGB` or `BGR` format, a data type of `UINT8`, and element values in the range [0, 255] are supported.
+>[!NOTE]
+>Currently, only the RGB or BGR image formats are supported, the data type is UINT8, and each element value is within [0, 255].
 
 **Example**
 
@@ -596,9 +596,9 @@ img_resize = img.resize((10, 10), Interpolation.BICUBIC, DeviceMode.CPU)
 
 **Description**
 
-Crops the `Image` instance.
+Crop an Image instance.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 crop(top: int, left: int, height: int, width: int, device_mode: DeviceMode = DeviceMode.CPU) -> "Image"
@@ -606,22 +606,22 @@ crop(top: int, left: int, height: int, width: int, device_mode: DeviceMode = Dev
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| top | int | Yes | Top starting coordinate of the crop region. The value must be greater than or equal to 0. `top + height` must not exceed the height of the original image. |
-| left | int | Yes | Left starting coordinate of the crop region. The value must be greater than or equal to 0. `left + width` must not exceed the width of the original image. |
-| height | int | Yes | Height of the crop region. The value must be in the range [10, original image height - `top`]. |
-| width | int | Yes | Width of the crop region. The value must be in the range [10, original image width - `left`]. |
-| device_mode | DeviceMode | No | Execution mode for cropping. Currently, only `CPU` is supported. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|top|int|Required|Top starting coordinate of the crop. It starts from 0, and `(top+height)` must not exceed the original image height.|
+|left|int|Required|Left starting coordinate of the crop. It starts from 0, and `(left+width)` must not exceed the original image width.|
+|height|int|Required|Height of the crop area. The range is [10, original image height - top].|
+|width|int|Required|Width of the crop area. The range is [10, original image width - left].|
+|device_mode|DeviceMode|Optional|Runtime mode for crop. Currently only CPU is supported.|
 
-**Return Values**
+**Returns**
 
-| Type  | Description                                       |
-| ----- | ------------------------------------------------- |
-| Image | The new `Image` instance obtained after cropping. |
+|Data Type|Description|
+|--|--|
+|Image|New Image instance obtained after the crop operation.|
 
-> [!NOTE]
-> Currently, only images with the `RGB` or `BGR` format, a data type of `UINT8`, and element values in the range [0, 255] are supported.
+>[!NOTE]
+>Currently, only the RGB or BGR image formats are supported, the data type is UINT8, and each element value is within [0, 255].
 
 **Example**
 
@@ -635,12 +635,13 @@ img_crop = img.crop(10, 10, 10, 10, DeviceMode.CPU)
 
 **Description**
 
-Converts the `Image` instance from the [0, 255] range to the [0.0, 1.0] range and converts the data layout from HWC to CHW.
+Scale an Image instance from [0, 255] to [0.0, 1.0] and convert its format from HWC to CHW.
 
-> [!NOTE]
-> Currently, only images with the `RGB` or `BGR` format, a data type of `UINT8`, and element values in the range [0, 255] are supported. The data type of the output `Tensor` instance is `DataType.FLOAT32` by default.
+>[!NOTE]
+>Currently, only the RGB or BGR image formats are supported, the data type is UINT8, and each element value is within [0, 255].
+>The data type of the output Tensor instance defaults to `DataType.FLOAT32`.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 def to_tensor(target_format: TensorFormat = TensorFormat.NCHW, device_mode: DeviceMode = DeviceMode.CPU) -> "Tensor":
@@ -648,35 +649,34 @@ def to_tensor(target_format: TensorFormat = TensorFormat.NCHW, device_mode: Devi
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| target_format | TensorFormat | No | Layout of the resulting `Tensor` instance. `NHWC` and `NCHW` are supported. Default value: `NCHW`. |
-| device_mode | DeviceMode | No | Execution mode. Currently, only `CPU` is supported. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|target_format|TensorFormat|Optional|Format of the converted Tensor instance. It supports NHWC and NCHW. The default value is NCHW.|
+|device_mode|DeviceMode|Optional|Runtime mode. Currently only CPU is supported.|
 
-**Return Values**
+**Returns**
 
-| Type   | Description                      |
-| ------ | -------------------------------- |
-| Tensor | The resulting `Tensor` instance. |
+|Data Type|Description|
+|--|--|
+|Tensor|Tensor instance obtained after the operation.|
 
 **Example**
 
 ```python
 from mm import Image, TensorFormat, DeviceMode
-
 img = Image.open("/home/test.jpg", "cpu")
 dst_tensor = img.to_tensor(TensorFormat.NCHW, DeviceMode.CPU)
 ```
 
 ## Log Registration
 
-Registers the log level and log callback function.
+You can register the log level and the log callback function.
 
 ### `register_log_conf`
 
-Registers logging configuration.
+Log registration function.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 register_log_conf(min_level: LogLevel, callback: Callable[[LogLevel, str, str, int, str], None])
@@ -684,13 +684,13 @@ register_log_conf(min_level: LogLevel, callback: Callable[[LogLevel, str, str, i
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| min_level | LogLevel | Yes | Minimum log level. Only logs at or above this level are output. `None` is not allowed. |
-| callback | Callable[[LogLevel, str, str, int, str], None] | Yes | Log callback function. If `None` is passed, the internal default log output function is used. |
+|Parameter|Type|Optional/Required|Description|
+|--|--|--|--|
+|min_level|LogLevel|Required|Minimum log level. Only logs at this level or higher are output. `None` is not allowed.|
+|callback|Callable[[LogLevel, str, str, int, str], None]|Required|Log callback function. When `None` is passed, the built-in default log output function is used.|
 
-> [!NOTE]
-> Raising an exception in the log callback function causes an exception to be thrown on the C++ side, which may cause the program to coredump. It is recommended that you catch and handle exceptions in the callback.
+>[!NOTE]
+>Throwing an exception in the log callback function triggers an exception on the C++ side and causes the program to core dump. You are advised to catch and handle exceptions in the callback.
 
 **Example**
 
@@ -705,9 +705,9 @@ register_log_conf(LogLevel.ERROR, custom_log_handler)
 
 **Description**
 
-Decodes the specified video file and returns a list of `Image` objects.
+Decode the input video file and return a list of Image objects.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 def video_decode(video_path: str | bytes, device: str | bytes, frame_indices: set = None, sample_num: int = -1) -> list:
@@ -715,26 +715,26 @@ def video_decode(video_path: str | bytes, device: str | bytes, frame_indices: se
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| video_path | str \| bytes | Yes | Path of the video to decode. Currently, only MP4 files are supported. Resolutions from 480P to 4K are supported. |
-| device | str \| bytes | Yes | Device used for decoding. Currently, only `cpu` is supported. |
-| frame_indices | set | No | IDs of the video frames to decode. |
-| sample_num | int | No | Total number of frames to obtain after decoding. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|video_path|str \| bytes|Required|Path of the video to decode. Currently only mp4 files are supported, and the resolution supports 480P to 4K.|
+|device|str \| bytes|Required|Decoding device. Currently only `cpu` is supported.|
+|frame_indices|set|Optional|Video frame IDs expected to be decoded.|
+|sample_num|int|Optional|Total number of frames expected after decoding.|
 
-**Return Values**
+**Returns**
 
-| Type        | Description                                                                                      |
-| ----------- | ------------------------------------------------------------------------------------------------ |
-| list[Image] | A list of decoded `Image` objects. The images are in RGB format and have a data type of `uint8`. |
+|Data Type|Description|
+|--|--|
+|list[Image]|List of decoded Image objects. The format is RGB, and the data type is uint8.|
 
-> [!NOTE]
+>[!NOTE]
 >
->- The IDs of the video frames to decode must be in the range [0, `total number of video frames - 1`). Default value: an empty set. This parameter takes precedence over `sample_num`. The specified frame IDs are the target frame IDs to decode.
->- `sample_num` must be in the range (0, total number of video frames]. Default value: `-1`. The frame IDs are generated by sampling frames at equal intervals based on the total number of video frames.
->- Decoding fails if neither `frame_indices` nor `sample_num` is specified.
->- Supported video frame dimensions range from [480, 480] to [4096, 4096].
->- The input path must be valid and no longer than 4096 characters. The path must not contain symbolic links, and the file permissions must not be more permissive than `640`, with the permissions for User/Group/Others not exceeding `6`/`4`/`0`, respectively.
+>- The value range of the video frame IDs expected to be decoded is [0, total number of video frames - 1). The default is an empty set. This parameter has a higher priority than the total number of frames expected after decoding. It indicates the set of frame IDs to decode.
+>- The total number of frames expected after decoding is in the range (0, total number of video frames]. The default value is -1. The final decoded ID set is obtained by sampling at equal intervals based on the total number of video frames.
+>- If neither `frame_indices` nor `sample_num` is specified, the call fails.
+>- Resolution: the currently supported video frame width and height are [480, 480] to [4096, 4096].
+>- The input path must be valid, no longer than 4096 characters, contain no symbolic links, and have file permissions no greater than 640. The User, Group, and Others permissions must not exceed 6, 4, and 0, respectively.
 
 **Example**
 
@@ -751,34 +751,34 @@ mm_images = video_decode(file_path, "cpu", set(), 32)
 
 **Description**
 
-Normalizes a `Tensor` object using the mean and standard deviation. Given the mean values `mean[1], ..., mean[n]` and standard deviation values `std[1], ..., std[n]` for `n` channels, this operation normalizes each channel of the input `Tensor` object as follows: `output[channel] = (src[channel] - mean[channel]) / std[channel]`.
+Normalize a Tensor object using the mean and standard deviation. Given the mean values of `n` channels, `mean[1], ..., mean[n]`, and the standard deviation values, `std[1], ..., std[n]`, this transform normalizes each channel of the input Tensor object. That is, `output[channel] = (src[channel] - mean[channel]) / std[channel]`.
 
-**Prototype**
+**Function Prototype**
 
 ```python
-def normalize(src: Tensor, mean: list[float], std: list[float], device_mode: DeviceMode = DeviceMode.CPU) -> Tensor
+def normalize(src: Tensor, mean: list[float], std: list[float], device_mode: DeviceMode = DeviceMode.CPU)-> Tensor
 ```
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| src | Tensor | Yes | Input `Tensor` instance. |
-| mean | list[float] | Yes | Array of mean values. The array must contain three values, each in the range [0, 1]. |
-| std | list[float] | Yes | Array of standard deviation values. The array must contain three values, each in the range (0, 3.4028235e38]. |
-| device_mode | DeviceMode | No | Execution mode. Currently, only `CPU` is supported. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|src|Tensor|Required|Input Tensor instance.|
+|mean|list[float]|Required|Mean array. Its length must be 3, and the valid range is [0, 1].|
+|std|list[float]|Required|Standard deviation array. Its length must be 3, and the valid range is (0, 3.4028235e38].|
+|device_mode|DeviceMode|Optional|Runtime mode. Currently only CPU is supported.|
 
-**Return Values**
+**Returns**
 
-| Type   | Description                    |
-| ------ | ------------------------------ |
-| Tensor | The resulting `Tensor` object. |
+|Data Type|Description|
+|--|--|
+|Tensor|Converted Tensor object.|
 
-> [!NOTE]
+>[!NOTE]
 >
->- The `format` of the input `Tensor` object must be `NCHW` or `NHWC`. `N` must be 1 and `C` must be 3.
->- The data type of the input `Tensor` object must be `Float32`.
->- The `Tensor` must be located on the CPU.
+>- The format of the input Tensor object supports only NCHW or NHWC. N supports only 1, and C supports only 3.
+>- The data type of the input Tensor object supports only Float32.
+>- The device on which the Tensor object resides must be the CPU.
 
 **Example**
 
@@ -800,9 +800,9 @@ dst_mm_tensor = normalize(mm_tensor, mean, std, DeviceMode.CPU)
 
 **Description**
 
-Loads audio using the audio loading interface. Both individual audio files and batches of audio files can be loaded in parallel, and resampling can be enabled or disabled.
+Use the audio loading API to load the given audio. It supports loading a single audio file and parallel loading of a batch of audio files, and it supports toggling resampling.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 def load_audio(audio_inputs: Union[str, List[str]], sr: Optional[int] = None)
@@ -811,23 +811,23 @@ def load_audio(audio_inputs: Union[str, List[str]], sr: Optional[int] = None)
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| audio_inputs | Union[str, List[str]] | Yes | Path to a single audio file, a directory containing multiple audio files, or a list of audio file paths. |
-| sr | Optional[int] | No | If a resampling rate is specified, the audio is resampled to that rate. Otherwise, no resampling is performed. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|audio_inputs|Union[str, List[str]]|Required|Input single audio path, the directory that contains multiple audio files, or an audio file list.|
+|sr|Optional[int]|Optional|If you specify a resampling rate, the audio is resampled at that rate. Otherwise, resampling is not performed.|
 
-**Return Values**
+**Returns**
 
-| Type | Description |
-| ---- | ----------- |
-| Union[Tuple[Tensor, int], List[Tuple[Tensor, int]]] | For a single audio file, returns the audio Tensor data and sampling rate. For multiple audio files, returns a list of audio Tensor data and sampling rate pairs. |
+|Data Type|Description|
+|--|--|
+|Union[Tuple[Tensor, int], List[Tuple[Tensor, int]]]|A single audio file returns (audio tensor data, sample rate). Multiple audio files return a list of (audio tensor data, sample rate).|
 
-> [!NOTE]
+>[!NOTE]
 >
->- Only WAV audio files are supported.
->- The number of audio files that can be loaded must be in the range [1, 128].
->- The specified sampling rate must be a positive integer in the range [1, 64000].
->- Multi-channel audio is automatically converted to single-channel (mono).
+>- Input audio supports only wav files.
+>- The number of audio files that can be loaded ranges from [1, 128].
+>- The sample rate that you input must be a positive integer in the range [1, 64000].
+>- Multichannel audio is automatically converted to mono audio.
 
 **Example**
 
@@ -846,27 +846,27 @@ batch_from_directory = load_audio(audio_directory)
 
 ## `mm.BaseFrameSelector`
 
-An abstract base class for selecting keyframes based on text-image matching. It encapsulates common capabilities such as model initialization, feature extraction, boundary localization, input validation, and similarity calculation. This class cannot be instantiated directly. Use the `KRangFrameSelector` or `KFrameSelector` subclass instead.
+An abstract base class for keyframe selectors based on text-image matching. It encapsulates common capabilities such as model initialization, feature extraction, boundary location, input validation, and similarity calculation. This class cannot be instantiated directly. Use it through the `KRangFrameSelector` or `KFrameSelector` subclass.
 
-### `BaseFrameSelector` Attributes
+### BaseFrameSelector Properties
 
-| Attribute | Type | Description |
-| --------- | ---- | ----------- |
-| model_path | str | Path to the CLIP model weights. |
-| device_id | int | NPU device index. |
-| model_type | str | Model type. The value can be `"clip"` (English) or `"cn_clip"` (Chinese). |
-| batch_size | int | Batch size for image feature extraction. Default value: 64. |
-| similar_threshold | float | Text-image similarity decay threshold. Frames with similarity lower than the maximum similarity minus this value are filtered out. Default value: 0.025. |
-| image_similar_threshold | float | Image similarity gradient threshold used for scene boundary detection. A scene switch is identified when the cosine similarity gradient between adjacent frames exceeds this value. Default value: 0.015. |
-| image_size | tuple | Image size for input resizing. The size must match the model training size. Default value: `(672, 672)`. |
+|Property|Type|Description|
+|--|--|--|
+|model_path|str|Path of the CLIP model weights.|
+|device_id|int|NPU device index.|
+|model_type|str|Model type. The value is `"clip"` for English or `"cn_clip"` for Chinese.|
+|batch_size|int|Batch size for image feature extraction. The default is 64.|
+|similar_threshold|float|Text-image similarity decay threshold. Frames whose similarity is lower than (maximum similarity - this value) are filtered out. The default is 0.025.|
+|image_similar_threshold|float|Image similarity gradient threshold, used for scene boundary detection. When the cosine similarity gradient between adjacent frames exceeds this value, a scene switch is determined. The default is 0.015.|
+|image_size|tuple|Resize size of the input image. It must be the same as the model training size. The default is (672, 672).|
 
 ### `BaseFrameSelector.__init__`
 
 **Description**
 
-Initializes the keyframe selector, loads the specified model, and validates the parameters.
+Initialize the keyframe selector, load the specified model, and complete parameter validation.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 __init__(model_path: str, device_id: int, model_type: str = "clip", similar_threshold: float = 0.025, image_similar_threshold: float = 0.015, image_size: tuple = (672, 672))
@@ -874,27 +874,27 @@ __init__(model_path: str, device_id: int, model_type: str = "clip", similar_thre
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| model_path | str | Yes | Path to the CLIP model weights. The value must be a non-empty string and must point to a valid directory. |
-| device_id | int | Yes | NPU device index. The value must be an integer. |
-| model_type | str | No | Model type. The value can be `"clip"` (English) or `"cn_clip"` (Chinese). Default value: `"clip"`. |
-| similar_threshold | float | No | Text-image similarity decay threshold. The value must be in the range [0, 1]. Default value: 0.025. |
-| image_similar_threshold | float | No | Image similarity gradient threshold used for scene boundary detection. The value must be in the range [0, 1]. Default value: 0.015. |
-| image_size | tuple | No | Input image size in the form (width, height). Both the width and height must be in the range [10, 8192]. Default value: (672, 672). |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|model_path|str|Required|Path of the CLIP model weights. It must be a non-empty string and point to a valid directory.|
+|device_id|int|Required|NPU device index. It must be an integer.|
+|model_type|str|Optional|Model type. The value is `"clip"` for English or `"cn_clip"` for Chinese. The default is `"clip"`.|
+|similar_threshold|float|Optional|Text-image similarity decay threshold. The valid range is [0, 1]. The default is 0.025.|
+|image_similar_threshold|float|Optional|Image similarity gradient threshold, used for scene boundary detection. The valid range is [0, 1]. The default is 0.015.|
+|image_size|tuple|Optional|Resize size of the input image, in the form of (width, height). The width and height must be within [10, 8192]. The default is (672, 672).|
 
-> [!NOTE]
+>[!NOTE]
 >
->- `BaseFrameSelector` is an abstract class and cannot be instantiated directly. Create an instance through the `KRangFrameSelector` or `KFrameSelector` subclass.
->- The directory specified by `model_path` must exist. Its permissions must not be more permissive than `750`, and its owner must be the current user.
+>- `BaseFrameSelector` is an abstract class and cannot be instantiated directly. Create instances through the `KRangFrameSelector` or `KFrameSelector` subclass.
+>- The directory pointed to by `model_path` must exist, its permissions must not be higher than 750, and its owner must be the current user.
 
 ### `BaseFrameSelector.select_keyframes`
 
 **Description**
 
-Selects keyframes related to the query text from a sequence of video frames. This is an abstract method, and the specific selection strategy is implemented by subclasses.
+Select keyframes related to the query text from a video frame sequence. This is an abstract method, and the subclass implements the specific selection strategy.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resample: bool) -> Tuple[List[int], List[np.ndarray]]
@@ -902,30 +902,30 @@ select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resam
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| query | str | Yes | Query text describing the target visual content. The value must be a non-empty string. |
-| frames | List[np.ndarray] | Yes | List of video frames. |
-| sample_num | int | Yes | Maximum number of keyframes. The value must be a positive integer. |
-| do_resample | bool | Yes | Whether to perform adaptive resampling within the interval. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|query|str|Required|Query text that describes the target visual content. It must be a non-empty string.|
+|frames|List[np.ndarray]|Required|List of video frames.|
+|sample_num|int|Required|Maximum number of keyframes. It must be a positive integer.|
+|do_resample|bool|Required|Whether to perform adaptive resampling within the interval.|
 
-**Return Values**
+**Returns**
 
-| Type | Description |
-| ---- | ----------- |
-| Tuple[List[int], List[np.ndarray]] | A tuple containing a list of keyframe indices and a list of keyframe images. |
+|Data Type|Description|
+|--|--|
+|Tuple[List[int], List[np.ndarray]]|A tuple that contains the list of keyframe indices and the list of keyframe images.|
 
 ## `mm.KRangFrameSelector`
 
-A keyframe selector based on interval merging that inherits from `BaseFrameSelector`. It identifies continuous scene intervals related to the query text and adaptively samples keyframes within the intervals. It is suitable for tasks that require temporal context.
+A keyframe selector based on interval merging that inherits from `BaseFrameSelector`. It locates contiguous scene intervals related to the query text and adaptively samples keyframes within those intervals. It applies to tasks that require temporal context.
 
 ### `KRangFrameSelector.select_keyframes`
 
 **Description**
 
-Runs the interval-based keyframe selection workflow. After extracting features and calculating similarities, it greedily selects candidate frames and expands them into scene intervals, merges adjacent semantically similar intervals, and finally performs adaptive resampling within the intervals.
+Main process for interval keyframe selection: after feature extraction and similarity calculation, greedily select candidate frames and expand them into scene intervals, merge adjacent semantically similar intervals, and finally perform adaptive resampling within the intervals.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resample: bool) -> Tuple[List[int], List[np.ndarray]]
@@ -933,18 +933,18 @@ select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resam
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| query | str | Yes | Query text describing the target visual content. The value must be a non-empty string. |
-| frames | List[np.ndarray] | Yes | List of video frames. |
-| sample_num | int | Yes | Maximum number of keyframes. The value must be a positive integer. |
-| do_resample | bool | Yes | Whether to perform adaptive resampling within the merged intervals. When set to `True`, keyframes are resampled within the intervals using a combination of top-k selection based on similarity and uniform filling. When set to `False`, only the endpoints of the merged intervals are returned. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|query|str|Required|Query text that describes the target visual content. It must be a non-empty string.|
+|frames|List[np.ndarray]|Required|List of video frames.|
+|sample_num|int|Required|Maximum number of keyframes. It must be a positive integer.|
+|do_resample|bool|Required|Whether to perform adaptive resampling within the merged intervals. When it is True, resampling is performed within the intervals by using the top-k similarity and uniform filling strategy. When it is False, only the endpoints of the merged intervals are returned.|
 
-**Return Values**
+**Returns**
 
-| Type | Description |
-| ---- | ----------- |
-| Tuple[List[int], List[np.ndarray]] | A tuple containing a list of keyframe indices, which are deduplicated and sorted, and a list of keyframe images. |
+|Data Type|Description|
+|--|--|
+|Tuple[List[int], List[np.ndarray]]|A tuple that contains the list of keyframe indices (deduplicated and sorted) and the list of keyframe images.|
 
 **Example**
 
@@ -959,15 +959,15 @@ indices, key_frames = selector.select_keyframes(query="a cat sitting on a sofa",
 
 ## `mm.KFrameSelector`
 
-A discrete keyframe selector that inherits from `BaseFrameSelector`. It selects discrete keyframes that are relevant to the query text and visually diverse. It is suitable for tasks that require visual diversity.
+A discrete keyframe selector that inherits from `BaseFrameSelector`. It selects discrete keyframes that are related to the query text and visually diverse. It applies to tasks that require visual diversity.
 
 ### `KFrameSelector.select_keyframes`
 
 **Description**
 
-Runs the discrete keyframe selection workflow. After extracting features and calculating similarities, it greedily selects candidate frames and removes duplicates based on feature distance to ensure visual diversity.
+Main process for discrete keyframe selection: after feature extraction and similarity calculation, greedily select candidate frames and deduplicate them by feature distance to ensure visual diversity.
 
-**Prototype**
+**Function Prototype**
 
 ```python
 select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resample: bool = False) -> Tuple[List[int], List[np.ndarray]]
@@ -975,18 +975,18 @@ select_keyframes(query: str, frames: List[np.ndarray], sample_num: int, do_resam
 
 **Parameters**
 
-| Parameter | Type | Required (Yes/No) | Description |
-| --------- | ---- | ----------------- | ----------- |
-| query | str | Yes | Query text describing the target visual content. The value must be a non-empty string. |
-| frames | List[np.ndarray] | Yes | List of video frames. |
-| sample_num | int | Yes | Maximum number of keyframes. The value must be a positive integer. |
-| do_resample | bool | No | This parameter is not used by `KFrameSelector`. Default value: `False`. |
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|query|str|Required|Query text that describes the target visual content. It must be a non-empty string.|
+|frames|List[np.ndarray]|Required|List of video frames.|
+|sample_num|int|Required|Maximum number of keyframes. It must be a positive integer.|
+|do_resample|bool|Optional|This parameter is not used in KFrameSelector. The default is False.|
 
-**Return Values**
+**Returns**
 
-| Type | Description |
-| ---- | ----------- |
-| Tuple[List[int], List[np.ndarray]] | A tuple containing a list of keyframe indices, which are deduplicated and sorted, and a list of keyframe images. |
+|Data Type|Description|
+|--|--|
+|Tuple[List[int], List[np.ndarray]]|A tuple that contains the list of keyframe indices (deduplicated and sorted) and the list of keyframe images.|
 
 **Example**
 
@@ -997,4 +997,242 @@ import numpy as np
 selector = KFrameSelector(model_path="/path/to/clip_model", device_id=0, model_type="clip")
 frames = [np.random.randint(0, 255, (720, 1280, 3), dtype=np.uint8) for _ in range(100)]
 indices, key_frames = selector.select_keyframes(query="a dog running in the park", frames=frames, sample_num=8)
+```
+
+## `mm.core.processor.resize_and_normalize`
+
+**Description**
+
+Resize a batch of images or video frames and normalize their pixel values on the NPU, and return a `torch.Tensor`. Internally, it calls `acc.Qwen2VLProcessor.PreprocessTensor` and stays consistent with the preprocessing path in the Qwen2-VL and Qwen3-VL processors.
+
+**Function Prototype**
+
+```python
+from typing import List
+import torch
+
+def resize_and_normalize(
+    frames: torch.Tensor,
+    height: int,
+    width: int,
+    image_mean: List[float],
+    image_std: List[float],
+) -> torch.Tensor
+```
+
+**Parameters**
+
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|frames|torch.Tensor|Required|Input 4D tensor. Its `shape` must be (N, 3, H, W) or (N, H, W, 3) (NCHW or NHWC), and its `dtype` must be `torch.uint8`.|
+|height|int|Required|Target resize height in pixels. It must be > 0.|
+|width|int|Required|Target resize width in pixels. It must be > 0.|
+|image_mean|List[float]|Required|Per-channel normalization mean. Its length must be 3, each element must be in the range [0.0, 1.0], and a `ValueError` is thrown when an element is out of range.|
+|image_std|List[float]|Required|Per-channel normalization standard deviation. Its length must be 3, and all elements must be > 0.|
+
+**Returns**
+
+|Data Type|Description|
+|--|--|
+|torch.Tensor|Tensor after resize and normalize. The shape is (N, 3, height, width).|
+
+**Exceptions**
+
+- `ValueError`: `frames` is not a 4D tensor or is not of the `uint8` type, height or width is not positive, the length of `image_mean` or `image_std` is not 3, an element of `image_mean` is outside [0.0, 1.0], an element of `image_std` is not positive, or the shape is neither NCHW nor NHWC.
+
+**Example**
+
+```python
+import torch
+from mm.core.processor import resize_and_normalize
+
+frames = torch.zeros((4, 3, 480, 640), dtype=torch.uint8)  # 4 frames in the NHWC layout are also supported
+out = resize_and_normalize(
+    frames,
+    height=224,
+    width=224,
+    image_mean=[0.5, 0.5, 0.5],
+    image_std=[0.5, 0.5, 0.5],
+)
+assert tuple(out.shape) == (4, 3, 224, 224)
+```
+
+## `mm.core.scc.scc_should_run`
+
+**Description**
+
+Determine whether SCC compression is worth applying to the current sample. The per-item computation cost of SCC grows with the number of input tokens. Beyond a certain scale, the compression time instead exceeds the savings on the LLM side. When the number of tokens exceeds the heuristic threshold (8192 tokens by default), compression is skipped.
+
+**Function Prototype**
+
+```python
+def scc_should_run(n: int, max_tokens_per_item: int = 8192) -> bool
+```
+
+**Parameters**
+
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|n|int|Required|Number of input tokens of the current sample (a single image or a single video). It must be > 0.|
+|max_tokens_per_item|int|Optional|Heuristic threshold. When the number of tokens is less than or equal to this value, True is returned. A value of `<= 0` disables the check, and compression always runs. The default is 8192.|
+
+**Returns**
+
+|Data Type|Description|
+|--|--|
+|bool|True is returned when `n <= max_tokens_per_item` (or the threshold is disabled). Otherwise, False is returned.|
+
+**Exceptions**
+
+- `ValueError`: `n <= 0`.
+
+**Example**
+
+```python
+from mm.core.scc import scc_should_run
+
+scc_should_run(1024)              # True  -- default threshold 8192
+scc_should_run(20000)             # False -- exceeds the default threshold
+scc_should_run(20000, max_tokens_per_item=0)  # True -- threshold disabled
+```
+
+## `mm.core.scc.scc_shrink`
+
+**Description**
+
+Calculate the target number of tokens after SCC compression (that is, the placeholder or feature length) based on the given compression ratio.
+
+**Function Prototype**
+
+```python
+def scc_shrink(tokens_per_frame: int, ratio: float) -> int
+```
+
+**Parameters**
+
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|tokens_per_frame|int|Required|Number of tokens of each frame before compression.|
+|ratio|float|Required|Compression ratio. It must be in (0, 1]. A value of 1.0 indicates no compression.|
+
+**Returns**
+
+|Data Type|Description|
+|--|--|
+|int|`max(1, ceil(tokens_per_frame * ratio))`, which ensures that at least 1 is returned.|
+
+**Exceptions**
+
+- `ValueError`: `ratio` is not in (0, 1].
+
+**Example**
+
+```python
+from mm.core.scc import scc_shrink
+
+scc_shrink(1024, 0.5)  # 512
+scc_shrink(7,    0.1)  # 1
+scc_shrink(1024, 1.0)  # 1024
+```
+
+## `mm.core.scc.scc_compress_to_target`
+
+**Description**
+
+Compress a set of visual tokens to exactly `k_target` tokens. In the video scenario, SCC runs independently on each frame and then concatenates the results, without feature fusion across frames. Then the number is adjusted to `k_target` (the centers with the lowest connectivity are removed, or the mean is used for padding).
+
+**Function Prototype**
+
+```python
+def scc_compress_to_target(
+    features: torch.Tensor,
+    k_target: int,
+    num_frames: int = 1,
+    tokens_per_frame: int = 0,
+    tau: float = 0.98,
+    epsilon: float = 0.05,
+) -> torch.Tensor
+```
+
+**Parameters**
+
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|features|torch.Tensor|Required|Input token features. `shape=(N, D)`, and `dtype` must be one of `bfloat16`, `float16`, or `float32`.|
+|k_target|int|Required|Target number of tokens after compression. It must satisfy `1 <= k_target <= N`, and when `num_frames > 1`, `k_target >= num_frames`.|
+|num_frames|int|Optional|Number of video frames. `1` indicates an image, and `>1` indicates a video that is compressed independently by frame. The default is 1.|
+|tokens_per_frame|int|Optional|Number of original tokens of each frame. It takes effect only when `num_frames > 1` and `tokens_per_frame > 0`. In this case, an error is thrown if `num_frames * tokens_per_frame != N`. The default is 0.|
+|tau|float|Optional|Cosine similarity threshold. Tokens with `cos > tau` are considered the same component. The value must be in (0, 1]. The default is 0.98.|
+|epsilon|float|Optional|Error tolerance of the approximate Union-Find sampling. It is used only in the CPU fallback path, and its value is in (0, 1). The default is 0.05.|
+
+**Returns**
+
+|Data Type|Description|
+|--|--|
+|torch.Tensor|Compressed features with the shape (k_target, D). The `dtype` is the same as that of the input.|
+
+**Exceptions**
+
+- `ValueError`: The input `dtype` is not supported, `num_frames < 1`, `k_target` is out of range, or in video mode `N != num_frames * tokens_per_frame`.
+
+**Example**
+
+```python
+import torch
+from mm.core.scc import scc_compress_to_target
+
+# Single-frame image: compress 1024 tokens to 256
+features = torch.randn(1024, 128, dtype=torch.float32)
+compressed = scc_compress_to_target(features, k_target=256)
+assert compressed.shape == (256, 128)
+
+# Video: compress 8 frames × 256 tokens per frame to 128 tokens
+video_features = torch.randn(8 * 256, 128, dtype=torch.float32)
+compressed = scc_compress_to_target(
+    video_features,
+    k_target=128,
+    num_frames=8,
+    tokens_per_frame=256,
+)
+assert compressed.shape == (128, 128)
+```
+
+## `mm.core.scc.set_uniform_true`
+
+**Description**
+
+Generate a bool tensor of length `n` that contains exactly `k` evenly distributed `True` positions. Use it to manually construct a sparse sampling mask when you do not call `scc_compress_to_target`.
+
+**Function Prototype**
+
+```python
+def set_uniform_true(n: int, k: int) -> torch.Tensor
+```
+
+**Parameters**
+
+|Parameter|Data Type|Optional/Required|Description|
+|--|--|--|--|
+|n|int|Required|Length of the output tensor. It must be > 0.|
+|k|int|Required|Number of `True` values. It must satisfy `0 < k <= n`.|
+
+**Returns**
+
+|Data Type|Description|
+|--|--|
+|torch.Tensor|Tensor with the shape (n,) and `dtype=bool` that contains `k` `True` values. When multiple sampling points are rounded to the same index, that position is recorded only once.|
+
+**Exceptions**
+
+- `ValueError`: `n <= 0`, or `k` is not in (0, `n`].
+
+**Example**
+
+```python
+import torch
+from mm.core.scc import set_uniform_true
+
+mask = set_uniform_true(10, 3)
+# tensor([ True, False, False, False,  True, False, False, False, False,  True])
+assert mask.sum().item() == 3
 ```

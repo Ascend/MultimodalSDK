@@ -2,7 +2,7 @@
 
 ## 安装说明
 
-本文档适用于 Multimodal SDK 最新版本的安装，仅支持硬件为 Atlas 800I A2 推理服务器，操作系统为 Ubuntu 22.04 或 openEuler 24.03，建议预留不少于 16GB 可用磁盘空间和不少于 8GB 可用内存。Multimodal SDK 当前为正式支持版本，搭配 9.1.0 版本的 CANN 和相关配套。
+本文档适用于 Multimodal SDK 最新版本的安装，仅支持硬件为 Atlas 800I A2 推理服务器，操作系统为 Ubuntu 22.04 或 openEuler 24.03，建议预留不少于 16GB 可用磁盘空间和不少于 8GB 可用内存。Multimodal SDK 当前为正式支持版本，搭配 9.2.0 版本的 CANN 和相关配套。
 
 Multimodal SDK 支持[离线安装](#离线安装)（`run` 包 / `Wheel` 包）、[源码安装](#源码安装)、[镜像安装](#镜像安装)三种方式。`run` 包：自解压安装脚本，含完整依赖；`Wheel` 包：Python 二进制分发包；镜像安装：基于容器化镜像部署。
 
