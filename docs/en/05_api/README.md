@@ -2,13 +2,12 @@
 
 > [!NOTE]
 >
-> - The classes and APIs identified in the documentation are public and available for users to call. APIs of other classes are for internal use only and are not recommended for direct use. If necessary, you can inspect the source code.
-> - When you import Multimodal SDK, it explicitly sets the `HF_DATASETS_OFFLINE` and `HF_HUB_OFFLINE` environment variables to `1`, enabling Hugging Face offline mode and preventing data from being retrieved over the network.
-> - This document applies to the latest release of Multimodal SDK. Python 3.10 or 3.11 and Ubuntu 22.04 or openEuler 24.03 are recommended.
+> - The classes and APIs marked as public in the documentation are available for you to call. The APIs of other classes are for internal use only, and you are advised not to call them directly. If you have special requirements, you can inspect the source code.
+> - This document applies to the latest release of Multimodal SDK. You are advised to use Python 3.12 with Ubuntu 22.04 or openEuler 24.03.
 
-**Source Code Lookup**
+**How to View the Source Code**
 
-You can use the following sample code to locate the installation directory and then access the source files.
+You can use the following sample code to view the installation path of the source code, and then open that path to view the source files.
 
 ```python
 import mm
@@ -33,73 +32,78 @@ The printed output is the path to the source file.
   - [mm.video_decode](./function_reference.md#mmvideo_decode)
   - [mm.normalize](./function_reference.md#mmnormalize)
   - [mm.load_audio](./function_reference.md#mmload_audio)
-  - [Key Frame Extraction](./function_reference.md#mmbaseframeselector)
+  - [Keyframe Extraction](./function_reference.md#mmbaseframeselector)
+  - [mm.core.processor.resize_and_normalize](./function_reference.md#mmcoreprocessorresize_and_normalize)
+  - [mm.core.scc.scc_should_run](./function_reference.md#mmcoresccscc_should_run)
+  - [mm.core.scc.scc_shrink](./function_reference.md#mmcoresccscc_shrink)
+  - [mm.core.scc.scc_compress_to_target](./function_reference.md#mmcoresccscc_compress_to_target)
+  - [mm.core.scc.set_uniform_true](./function_reference.md#mmcoresccset_uniform_true)
 - [Adapter](./adapter.md)
   - [MultimodalQwen2VLImageProcessor](./adapter.md#multimodalqwen2vlimageprocessor)
   - [InternVL2PreProcessor](./adapter.md#internvl2preprocessor)
 - [patcher](./patcher.md)
-  - [video_patcher](./patcher.md#video_patcher)
-  - [qwen2_vl_image_processor_patcher](./patcher.md#qwen2_vl_image_processor_patcher)
-  - [image_patcher](./patcher.md#image_patcher)
-  - [internvl2_image_processor_patcher](./patcher.md#internvl2_image_processor_patcher)
+  - [Environment Variables](./patcher.md#environment-variables)
+  - [Applicable Models](./patcher.md#applicable-models)
+  - [Version and Branch Mapping](./patcher.md#version-and-branch-mapping)
+  - [Starting vLLM](./patcher.md#starting-vllm)
 
 ## Data Types
 
-### `DataType`
+### DataType
 
 Enumeration of data types.
 
-| Property           | Description  |
-| ------------------ | ------------ |
-| `DataType.INT8`    | int8 type    |
-| `DataType.UINT8`   | uint8 type   |
-| `DataType.FLOAT32` | float32 type |
+|Property|Description|
+| -- | -- |
+|DataType.INT8|The int8 type.|
+|DataType.UINT8|The uint8 type.|
+|DataType.FLOAT32|The float32 type.|
 
-### `TensorFormat`
+### TensorFormat
 
 Enumeration of tensor data layout formats.
 
-| Property | Description |
-| -------- | ----------- |
-| `TensorFormat.ND` | ND layout, indicating a general N-dimensional array. |
-| `TensorFormat.NHWC` | NHWC layout, indicating that the tensor layout is batch, height, width, channel. |
-| `TensorFormat.NCHW` | NCHW layout, indicating that the tensor layout is batch, channel, height, width. |
+|Property|Description|
+| -- | -- |
+|TensorFormat.ND|The ND format, indicating a general N-dimensional array.|
+|TensorFormat.NHWC|The NHWC format, indicating that the tensor layout is Batch, Height, Width, Channel.|
+|TensorFormat.NCHW|The NCHW format, indicating that the tensor layout is Batch, Channel, Height, Width.|
 
-### `ImageFormat`
+### ImageFormat
 
 Enumeration of image formats.
 
-| Property | Description |
-| -------- | ----------- |
-| `ImageFormat.RGB` | RGB format, with an array channel order of `[H, W, 3]` and channels representing R/G/B. |
-| `ImageFormat.BGR` | BGR format, with an array channel order of `[H, W, 3]` and channels representing B/G/R. |
-| `ImageFormat.RGB_PLANAR` | RGB_PLANAR format, with an array channel order of `[3, H, W]` and channels representing R/G/B. |
-| `ImageFormat.BGR_PLANAR` | BGR_PLANAR format, with an array channel order of `[3, H, W]` and channels representing B/G/R. |
+|Property|Description|
+| -- | -- |
+|ImageFormat.RGB|The RGB type. The array channel order is [H, W, 3], and the channels are R, G, and B.|
+|ImageFormat.BGR|The BGR type. The array channel order is [H, W, 3], and the channels are B, G, and R.|
+|ImageFormat.RGB_PLANAR|The RGB_PLANAR type. The array channel order is [3, H, W], and the channels are R, G, and B.|
+|ImageFormat.BGR_PLANAR|The BGR_PLANAR type. The array channel order is [3, H, W], and the channels are B, G, and R.|
 
-### `LogLevel`
+### LogLevel
 
 Enumeration of log levels.
 
-| Property         | Description       |
-| ---------------- | ----------------- |
-| `LogLevel.DEBUG` | Debug level       |
-| `LogLevel.INFO`  | Info level        |
-| `LogLevel.WARN`  | Warning level     |
-| `LogLevel.ERROR` | Error level       |
-| `LogLevel.FATAL` | Fatal error level |
+|Property|Description|
+| -- | -- |
+|LogLevel.DEBUG|Debug level.|
+|LogLevel.INFO|Info level.|
+|LogLevel.WARN|Warning level.|
+|LogLevel.ERROR|Error level.|
+|LogLevel.FATAL|Fatal error level.|
 
-### `DeviceMode`
+### DeviceMode
 
-Operation mode.
+Mode in which an operation runs.
 
-| Property         | Description                             |
-| ---------------- | --------------------------------------- |
-| `DeviceMode.CPU` | The current operation runs in CPU mode. |
+|Property|Description|
+| -- | -- |
+|DeviceMode.CPU|The current operation runs in CPU mode.|
 
-### `Interpolation`
+### Interpolation
 
-Interpolation algorithm used in `resize` operations.
+Interpolation algorithm used in resize operations.
 
-| Property                | Description                     |
-| ----------------------- | ------------------------------- |
-| `Interpolation.BICUBIC` | Bicubic interpolation algorithm |
+|Property|Description|
+| -- | -- |
+|Interpolation.BICUBIC|Bicubic interpolation algorithm.|

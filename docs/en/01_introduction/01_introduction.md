@@ -1,37 +1,37 @@
 # Introduction
 
-Multimodal foundation model inference workflows involve processing large volumes of complex data. The Multimodal SDK accelerates foundation model inference preprocessing by providing a set of high-performance APIs optimized for Ascend devices.
+The multimodal LLM inference process needs to handle large amounts of complex data. Multimodal SDK accelerates the LLM inference preprocessing process by providing a series of high-performance Ascend device affinity interfaces.
 
-- It includes common preprocessing operations such as image and video loading and decoding, resizing, and cropping.
-- It supports conversion between various open-source data structures and accelerator library data structures, facilitating rapid adoption and porting.
+- It includes common preprocessing operations such as image and video loading and decoding, resize, and crop.
+- It supports conversion between multiple open-source data structures and acceleration library data structures, which makes it easy to use and quick to port.
 
 ## Software Architecture
 
 <img src="../figures/mmsdk_arch.svg" alt="Multimodal SDK software architecture diagram" width="1200"/>
 
-**Modules in the Architecture**
+**Modules in the Architecture Diagram**
 
 | Module | Description |
 | -- | -- |
-| vLLM framework preprocessing plugin | Provides acceleration when you use vLLM for foundation model inference. For Qwen2VL, it provides accelerated image and video preprocessing when you use the Qwen2VL model, significantly reducing preprocessing latency compared with Transformers. For InternVL2, it provides accelerated image and video preprocessing when you use the InternVL2 model. |
-| Acceleration library | Provides a set of high-performance image and tensor processing APIs. |
+| vLLM framework preprocessing plugin | Provides acceleration when you use vLLM for LLM inference. Qwen2VL: Provides accelerated image and video preprocessing when you use the Qwen2VL model, and greatly shortens the preprocessing latency compared with transformers. InternVL2: Provides accelerated image and video preprocessing when you use the InternVL2 model. |
+| Acceleration library | Provides a series of high-performance image and tensor processing interfaces. |
 
-## Supported Hardware and Operating Systems
+## Supported Hardware and OSs
 
 > **Querying the Device Product Model**
 >
-> In Linux, you can use either of the following methods to query the device product model:
+> In the Linux system, you can query the device product model in the following ways:
 >
 > ```bash
-> # Use the `dmidecode` command:
+> # Use the dmidecode command:
 > dmidecode -s system-product-name
 >
 > # Read the sysfs file:
 > cat /sys/class/dmi/id/product_name
 > ```
 >
-> Both methods return the device product model. Use either method as needed.
+> Both methods can retrieve the product model information of the device. Choose one as needed.
 
-| Product Series | Product Model | Operating System Version |
+| Product Series | Product Model | OS Version |
 | -- | -- | -- |
-| Atlas A2 inference products | Atlas 800I A2 inference server | Ubuntu 22.04 / openEuler 24.03 |
+| Atlas A2 inference products | Atlas 800I A2 | Ubuntu 22.04/openEuler 24.03 |

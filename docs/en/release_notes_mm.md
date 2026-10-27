@@ -2,35 +2,35 @@
 
 ## Key Features
 
-- SCC visual token compression : The SDK aggregates visual embeddings by semantic similarity and adjusts the number of image/video placeholders accordingly, reducing visual token count and improving multimodal inference throughput while preserving model accuracy as much as possible.
-- Accelerated image and video decoding and preprocessing : The SDK delivers high-performance decoding and preprocessing for images and videos, reducing preprocessing latency for multimodal inference workloads.
-- Key frame selection : The SDK selects the discrete key frames most relevant to a given text query based on text-image similarity, and supports adaptive resampling within continuous scene intervals, improving context recall for video question answering and target occurrence localization.
-- Automatic optimization and multi-scale resampling : The SDK provides a Video RAG-based reference design for video understanding and question answering, covering frame extraction, audio extraction, ASR, OCR, object detection, semantic retrieval, re-ranking, and prompt assembly, which improves context recall and generation quality for long video question answering.
+- SCC visual token compression: Aggregates visual embeddings by semantic similarity and adjusts the number of image and video placeholders accordingly. This reduces the number of visual tokens and improves multimodal inference throughput while preserving model accuracy as much as possible.
+- Image and video decoding and preprocessing acceleration: The SDK provides high-performance image and video decoding and preprocessing, reducing the preprocessing latency of multimodal inference.
+- Keyframe filtering: Filters the discrete keyframes most relevant to the query based on text-image similarity and supports adaptive resampling within contiguous scene intervals, improving context recall for video question answering and target appearance time localization.
+- Automatic optimization and multi-scale resampling: Provides a Video RAG-based reference design for video understanding and question answering, covering frame extraction, audio extraction, ASR, OCR, object detection, semantic retrieval, reranking, and prompt assembly, improving context recall and generation quality for long video question answering.
 
-## Version Information
+## Version Mapping
 
-### Product Version Information
+### Product Version
 
-| Item            | Content        |
-| --------------- | -------------- |
-| Product name    | Multimodal SDK |
-| Product version | 26.2.0         |
-| Version type    | Release        |
+| Item | Content |
+| -- | -- |
+| Product Name | Multimodal SDK |
+| Product Version | 26.2.0 |
+| Version Type | Release version |
 
 ### Related Product Versions
 
 | Product Name | Version |
-| ------------ | ------- |
-| Ascend HDK   | 26.2.0  |
-| CANN         | 9.2.0   |
+| -- | -- |
+| Ascend HDK | 26.2.0 |
+| CANN | 9.2.0 |
 
 ## Version Compatibility
 
 > [!NOTE]
 >
-> In the tables in this section, "/" indicates that the versions are incompatible, and "Y" indicates that the versions are compatible.
+> In the tables in this section, "/" indicates that the versions cannot be paired and "Y" indicates that they can be paired.
 
-**Table 1** Multimodal SDK and CANN Version Compatibility
+**Table 1**  Multimodal SDK and CANN version compatibility
 
 <table style="table-layout: fixed; width: 345px"><colgroup>
 <col style="width: 156px">
@@ -47,7 +47,8 @@
     <th>9.0.0</th>
     <th>9.1.0</th>
     <th>9.2.0</th>
-  </tr></thead>
+  </tr>
+</thead>
 <tbody>
   <tr>
     <td>26.0.0</td>
@@ -70,7 +71,7 @@
 </tbody>
 </table>
 
-**Table 2** Multimodal SDK and Ascend HDK Version Compatibility
+**Table 2**  Multimodal SDK and Ascend HDK version compatibility
 
 <table style="table-layout: fixed; width: 345px"><colgroup>
 <col style="width: 156px">
@@ -120,9 +121,9 @@ None
 
 | Feature Name | Feature Description | Supported Product Model |
 | -- | -- | -- |
-| Token Compression for vllm-ascend with Qwen Models | Integrate the SCC (Semantic Connected Components) visual token compression capability from the reference design into the mainline code, making it directly available for Qwen-series VL models in vllm-ascend. This feature aggregates visual embeddings by semantic similarity and synchronously adjusts image/video placeholder counts, reducing the number of visual tokens and improving multimodal inference throughput while preserving model accuracy to the extent possible. The compression switch and parameters are configured via environment variables, with zero intrusion into existing business code. | Atlas 800I A2 inference server |
+| Token compression based on vllm-ascend and Qwen models | Moves the Semantic Connected Components (SCC) visual token compression capability from the reference design into the main code. Therefore, Qwen series VL models in vllm-ascend can use it directly. This feature aggregates visual embeddings by semantic similarity and adjusts the number of image and video placeholders accordingly, reducing the number of visual tokens and improving multimodal inference throughput while preserving model accuracy as much as possible. You configure the compression switch and parameters through environment variables, with no intrusion into existing service code. | Atlas 800I A2 |
 
-### Service API Changes
+### Service Interface Changes
 
 **Multimodal SDK**
 
@@ -144,25 +145,25 @@ None
 
 ## Upgrade Impact
 
-### Impact on the Existing System During the Upgrade
+### Impact on the System During the Upgrade
 
 None
 
-### Impact on the Existing System After the Upgrade
+### Impact on the System After the Upgrade
 
 None
 
-## Documentation for Version 26.2.0
+## 26.2.0 Documentation
 
-| Document Name | Content Description | Update Notes |
+| Document | Description | Update Notes |
 | -- | -- | -- |
-| [Multimodal SDK 26.2.0 User Guide](./04_user_guide/user_guide.md) | Provides usage examples and operation guidance for basic preprocessing interfaces in typical image, video, and audio processing scenarios using Multimodal SDK. | For details about the changes, see [Multimodal SDK 26.2.0 User Guide](./04_user_guide/user_guide.md). |
+| [Multimodal SDK 26.2.0 User Guide](./04_user_guide/user_guide.md) | Mainly includes usage examples and operation guidance for the basic preprocessing interfaces in typical image processing, video processing, and audio processing scenarios of Multimodal SDK. | For details about the changes, see the [Multimodal SDK 26.2.0 User Guide](./04_user_guide/user_guide.md). |
 
 ## Virus Scan Results
 
 Virus scan passed.
 
-## Vulnerability Fixes
+## Fixed Vulnerabilities
 
 None
 
@@ -170,6 +171,6 @@ None
 
 **Table 3**
 
-| Document Version | Release Date | Description of Change |
+| Document Version | Release Date | Change Description |
 | --- | --- | --- |
 | 01 | 2026-09-30 | First official release. |
