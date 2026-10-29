@@ -2,18 +2,16 @@
 # -*- coding: utf-8 -*-
 # -------------------------------------------------------------------------
 #  This file is part of the MultimodalSDK project.
-# Copyright (c) 2026 Huawei Technologies Co.,Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 #
 # MultimodalSDK is licensed under Mulan PSL v2.
-# You can use this software according to the terms and conditions of the Mulan PSL v2.
-# You may obtain a copy of Mulan PSL v2 at:
+# You can use this software according to the terms and conditions of the Mulan PSL v2 at:
 #
 #           http://license.coscl.org.cn/MulanPSL2
 #
 # THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
 # EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-# See the Mulan PSL v2 for more details.
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE. See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
 
 """mm.core.video_quality — video quality scoring infrastructure.
@@ -26,9 +24,7 @@ Public API:
     - ``ScorerConfig``, ``MetricResult``, ``VideoQualityReport``,
       ``LoadedFrames``: data contracts.
     - ``QualityScorerRegistry`` / ``create_scorer`` / ``list_scorers``:
-      registration & factory (scorer classes are registered via companion
-      sub-packages; the registry is populated once all scorer modules are
-      delivered).
+      registration & factory.
     - ``DeviceResolver``: unified device resolution (auto → NPU/CPU).
     - ``WeightResolver``: unified weight-path resolution.
     - ``FrameLoader`` / ``load_frames``: uniform-sampling and continuous-fps
@@ -38,8 +34,9 @@ Public API:
 
 .. note::
 
-   This release ships the ``image_quality`` scorer and the CLIP consistency
-   family (subject/background/overall/scene/appearance-style/temporal-style).
+   This release ships the ``image_quality`` scorer, the CLIP consistency
+   family (subject/background/overall/scene/appearance-style/temporal-style),
+   and the ``motion`` scorer (optical-flow based).
    Importing this package registers them with ``QualityScorerRegistry``.
 """
 
@@ -63,6 +60,7 @@ from .scorers import (
     AppearanceStyleScorer,
     BackgroundConsistencyScorer,
     ImageQualityScorer,
+    MotionScorer,
     OverallConsistencyScorer,
     SceneConsistencyScorer,
     SubjectConsistencyScorer,
@@ -89,9 +87,11 @@ __all__ = [
     "clear_backbone_cache",
     "get_cache_info",
     "VideoQualityPipeline",
+    # Scorers
     "AppearanceStyleScorer",
     "BackgroundConsistencyScorer",
     "ImageQualityScorer",
+    "MotionScorer",
     "OverallConsistencyScorer",
     "SceneConsistencyScorer",
     "SubjectConsistencyScorer",

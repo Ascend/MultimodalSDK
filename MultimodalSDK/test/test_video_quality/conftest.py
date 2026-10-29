@@ -2,93 +2,48 @@
 # -*- coding: utf-8 -*-
 # -------------------------------------------------------------------------
 #  This file is part of the MultimodalSDK project.
-# Copyright (c) 2026 Huawei Technologies Co.,Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 #
 # MultimodalSDK is licensed under Mulan PSL v2.
-# You can use this software according to the terms and conditions of the Mulan PSL v2.
-# You may obtain a copy of Mulan PSL v2 at:
+# You can use this software according to the terms and conditions of the Mulan PSL v2 at:
 #
 #           http://license.coscl.org.cn/MulanPSL2
 #
 # THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
 # EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-# See the Mulan PSL v2 for more details.
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE. See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
-
-"""Shared test fixtures and helpers for video_quality tests."""
-
-from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-import numpy as np
 import pytest
 import torch
 
+from mm.core.video_quality.base import BaseQualityScorer, LoadedFrames, MetricResult, QualityScorerRegistry
 from mm.core.video_quality.backbones import get_shared_clip_backbone
-from mm.core.video_quality.base import (
-    BaseQualityScorer,
-    LoadedFrames,
-    MetricResult,
-    QualityScorerRegistry,
-)
 
 
-# ---------------------------------------------------------------------------
-# Synthetic frame factory
-# ---------------------------------------------------------------------------
+def make_loaded_frames(num_frames, width, height, continuous=False, seed=42):
+    import numpy as np
 
-
-def make_frames(num_frames=8, height=224, width=224, seed=42):
-    """Return a list of BGR numpy frames (deterministic)."""
     rng = np.random.RandomState(seed)
-    return [rng.randint(0, 256, (height, width, 3), dtype=np.uint8) for _ in range(num_frames)]
-
-
-def make_uniform_frames(num_frames=8, height=224, width=224, base_val=128):
-    """Return frames of uniform colour (useful for consistency tests)."""
-    return [np.full((height, width, 3), base_val, dtype=np.uint8) for _ in range(num_frames)]
-
-
-def make_loaded_frames(num_frames=8, height=224, width=224, continuous=False, seed=42):
-    """Return a LoadedFrames object with synthetic frames."""
-    frames = make_frames(num_frames, height, width, seed)
-    indices = list(range(num_frames))
-    meta = {"fps": 30.0, "width": width, "height": height, "total_frames": 100, "device": "cpu"}
-    return LoadedFrames(frames=frames, indices=indices, meta=meta, continuous=continuous)
-
-
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
-
-@pytest.fixture
-def sample_frames():
-    """8 synthetic BGR frames (224×224)."""
-    return make_frames(8, 224, 224)
+    frames = rng.randint(0, 255, (num_frames, height, width, 3), dtype=np.uint8)
+    return LoadedFrames(
+        frames=frames,
+        indices=list(range(num_frames)),
+        continuous=continuous,
+    )
 
 
 @pytest.fixture
 def sample_loaded_frames():
-    """LoadedFrames with 8 synthetic frames."""
-    return make_loaded_frames(8, 224, 224)
-
-
-@pytest.fixture
-def uniform_loaded_frames():
     """LoadedFrames with uniform-colour frames (high consistency expected)."""
     return make_loaded_frames(8, 224, 224, continuous=False, seed=99)
 
 
 @pytest.fixture(autouse=True)
 def force_cpu_device():
-    """Force all scorers to CPU for testing.
-
-    NPU suppression is handled entirely by patching
-    ``device._npu_available`` below.
-    """
+    """Force all scorers to CPU for testing."""
     with patch("mm.core.video_quality.device._npu_available", return_value=False):
         yield
 
@@ -137,24 +92,12 @@ def mock_weight_resolver():
 # ---------------------------------------------------------------------------
 # Scorer stubs
 # ---------------------------------------------------------------------------
-# This release ships only the video-quality *infrastructure*; the concrete
-# scorers (motion, temporal_flickering, subject_consistency, ...) arrive in
-# follow-up changes and populate ``QualityScorerRegistry`` at import time.
-# The pipeline tests therefore stand in for them with lightweight stubs
-# registered under the real names, so the infrastructure can be tested without
-# depending on modules that are not part of this change.
-
-
 class _FrameScorerStub(BaseQualityScorer):
-    """Model-free, frame-level scorer stub (mirrors ``temporal_flickering``)."""
-
     def score_frames(self, frames: LoadedFrames) -> MetricResult:
         return MetricResult(name=self.name, scores={self.name: float(len(frames))})
 
 
 class _SharedBackboneScorerStub(BaseQualityScorer):
-    """Consistency-family stub that pulls the process-level shared backbone."""
-
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._backbone = None
@@ -197,7 +140,6 @@ _STUB_SCORERS = (
 
 @pytest.fixture(autouse=True)
 def register_stub_scorers():
-    """Register the scorer stubs for the duration of a test, then restore."""
     previous = {cls.name: QualityScorerRegistry._registry.get(cls.name) for cls in _STUB_SCORERS}
     for cls in _STUB_SCORERS:
         QualityScorerRegistry.register(cls)
