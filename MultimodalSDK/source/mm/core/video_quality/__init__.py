@@ -59,6 +59,7 @@ from .pipeline import VideoQualityPipeline
 from .scorers import (
     AppearanceStyleScorer,
     BackgroundConsistencyScorer,
+    ColorConsistencyScorer,
     ImageQualityScorer,
     MotionScorer,
     NaturalnessScorer,
@@ -88,6 +89,7 @@ __all__ = [
     "VideoQualityPipeline",
     "AppearanceStyleScorer",
     "BackgroundConsistencyScorer",
+    "ColorConsistencyScorer",
     "ImageQualityScorer",
     "MotionScorer",
     "NaturalnessScorer",

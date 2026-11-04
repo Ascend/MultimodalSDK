@@ -21,6 +21,7 @@ decorators and therefore populates the registry used by ``create_scorer``
 and ``VideoQualityPipeline``.
 """
 
+from .color_scorer import ColorConsistencyScorer
 from .consistency_scorer import (
     AppearanceStyleScorer,
     BackgroundConsistencyScorer,
@@ -35,9 +36,11 @@ from .motion_scorer import MotionScorer
 from .naturalness_scorer import NaturalnessScorer
 
 
+
 __all__ = [
     "AppearanceStyleScorer",
     "BackgroundConsistencyScorer",
+    "ColorConsistencyScorer",
     "ImageQualityScorer",
     "MotionScorer",
     "NaturalnessScorer",
