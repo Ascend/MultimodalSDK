@@ -29,9 +29,11 @@ from .consistency_scorer import (
     SubjectConsistencyScorer,
     TemporalStyleScorer,
 )
+from .flickering_scorer import TemporalFlickeringScorer
 from .image_quality_scorer import ImageQualityScorer
 from .motion_scorer import MotionScorer
 from .naturalness_scorer import NaturalnessScorer
+
 
 __all__ = [
     "AppearanceStyleScorer",
@@ -42,5 +44,6 @@ __all__ = [
     "OverallConsistencyScorer",
     "SceneConsistencyScorer",
     "SubjectConsistencyScorer",
+    "TemporalFlickeringScorer",
     "TemporalStyleScorer",
 ]
