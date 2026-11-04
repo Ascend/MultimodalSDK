@@ -193,9 +193,9 @@ SCORER_DEFAULTS: dict[str, ScorerDefaults] = {
     ),
     "color_consistency": ScorerDefaults(
         name="color_consistency",
-        sample_frames=8,
+        sample_frames=0,  # adjacent-frame metric uses continuous decode
         dtype="fp32",
-        extra={"hbins": 48, "sbins": 40},
+        extra={"hbins": 48, "sbins": 40, "target_fps": 4.0},
     ),
     "scene_consistency": ScorerDefaults(
         name="scene_consistency",
