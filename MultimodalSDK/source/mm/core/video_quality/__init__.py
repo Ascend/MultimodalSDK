@@ -65,21 +65,19 @@ from .scorers import (
     OverallConsistencyScorer,
     SceneConsistencyScorer,
     SubjectConsistencyScorer,
+    TemporalFlickeringScorer,
     TemporalStyleScorer,
 )
 
 __all__ = [
-    # Data contracts
     "LoadedFrames",
     "MetricResult",
     "VideoQualityReport",
     "ScorerConfig",
-    # Base & registry
     "BaseQualityScorer",
     "QualityScorerRegistry",
     "create_scorer",
     "list_scorers",
-    # Infrastructure
     "DeviceResolver",
     "WeightResolver",
     "FrameLoader",
@@ -88,7 +86,6 @@ __all__ = [
     "clear_backbone_cache",
     "get_cache_info",
     "VideoQualityPipeline",
-    # Scorers
     "AppearanceStyleScorer",
     "BackgroundConsistencyScorer",
     "ImageQualityScorer",
@@ -97,5 +94,6 @@ __all__ = [
     "OverallConsistencyScorer",
     "SceneConsistencyScorer",
     "SubjectConsistencyScorer",
+    "TemporalFlickeringScorer",
     "TemporalStyleScorer",
 ]
