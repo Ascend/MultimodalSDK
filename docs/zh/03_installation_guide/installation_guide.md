@@ -208,7 +208,7 @@ resize output shape: (500, 500, 3)
 
 **安装须知**
 
-若仅需在 Python 环境中使用 `mm` 包，可跳过 `run` 安装包，直接安装 `Wheel` 包。`Wheel` 内已捆绑 `libcore.so` 及 FFmpeg、libjpeg-turbo、soxr 等原生依赖，**无需**执行 `source ${MULTIMODAL_SDK_HOME}/script/set_env.sh` 或配置 `MULTIMODAL_SDK_HOME`。
+若仅需在 Python 环境中使用 Multimodal SDK，可直接从 Release 页面下载并安装 `Wheel` 包。`Wheel` 内已捆绑 `libcore.so` 及 FFmpeg、libjpeg-turbo、soxr 等原生依赖，**无需**执行 `source ${MULTIMODAL_SDK_HOME}/script/set_env.sh` 或配置 `MULTIMODAL_SDK_HOME`。
 
 > [!NOTE]
 >
@@ -221,17 +221,9 @@ resize output shape: (500, 500, 3)
 
 **安装准备**
 
-可通过以下任一方式获取与 SDK 版本配套的 `multimodalsdk-*.whl`：
+请从 [Multimodal SDK Releases](https://gitcode.com/Ascend/MultimodalSDK/releases) 页面直接下载所需 SDK 版本的 `Wheel` 包（`multimodalsdk-*.whl`），无需下载 `run` 包或从中提取。
 
-1. **从 Release 页面下载**：在 [Multimodal SDK Releases](https://gitcode.com/Ascend/MultimodalSDK/releases) 获取与 `run` 包同版本的 `Wheel` 文件（若已随发布提供）。
-2. **从 `run` 包中提取**：
-
-   ```bash
-   ./${MMSDK_PACKAGE} --noexec --extract=/tmp/mmsdk_extract
-   find /tmp/mmsdk_extract -name 'multimodalsdk-*.whl'
-   ```
-
-3. **自行构建**：按 [CONTRIBUTING.md](../../../CONTRIBUTING.md) 完成源码构建后，在 `MultimodalSDK/dist/` 目录获取生成的 `multimodalsdk-*.whl`。
+开发或需自行构建 `Wheel` 包时，请参阅 [CONTRIBUTING.md](../../../CONTRIBUTING.md)，构建后可从 `MultimodalSDK/dist/` 获取生成的 `multimodalsdk-*.whl`。离线使用前请准备好安装依赖；如需离线构建，还须提前准备源码和构建依赖。
 
 **安装步骤**
 
