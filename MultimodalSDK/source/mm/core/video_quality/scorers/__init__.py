@@ -31,12 +31,14 @@ from .consistency_scorer import (
 )
 from .image_quality_scorer import ImageQualityScorer
 from .motion_scorer import MotionScorer
+from .naturalness_scorer import NaturalnessScorer
 
 __all__ = [
     "AppearanceStyleScorer",
     "BackgroundConsistencyScorer",
     "ImageQualityScorer",
     "MotionScorer",
+    "NaturalnessScorer",
     "OverallConsistencyScorer",
     "SceneConsistencyScorer",
     "SubjectConsistencyScorer",

@@ -36,7 +36,7 @@ Public API:
 
    This release ships the ``image_quality`` scorer, the CLIP consistency
    family (subject/background/overall/scene/appearance-style/temporal-style),
-   and the ``motion`` scorer (optical-flow based).
+   the ``motion`` scorer (optical-flow based), and the ``naturalness`` scorer.
    Importing this package registers them with ``QualityScorerRegistry``.
 """
 
@@ -61,6 +61,7 @@ from .scorers import (
     BackgroundConsistencyScorer,
     ImageQualityScorer,
     MotionScorer,
+    NaturalnessScorer,
     OverallConsistencyScorer,
     SceneConsistencyScorer,
     SubjectConsistencyScorer,
@@ -92,6 +93,7 @@ __all__ = [
     "BackgroundConsistencyScorer",
     "ImageQualityScorer",
     "MotionScorer",
+    "NaturalnessScorer",
     "OverallConsistencyScorer",
     "SceneConsistencyScorer",
     "SubjectConsistencyScorer",
