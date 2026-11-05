@@ -35,7 +35,7 @@ setup(
         'quality': [
             'transformers>=4.51.3',
             'pyiqa>=0.1.15',
-            'ultralytics>=8.4.0',
+            'ultralytics>=8.4.126',
             'ptlflow>=0.4.2',
             'opencv-python>=4.8.0',
             'scipy>=1.10.0',

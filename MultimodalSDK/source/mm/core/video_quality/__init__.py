@@ -20,8 +20,8 @@
 This package provides the **infrastructure** for video quality scoring:
 
 Public API:
-    - ``BaseQualityScorer``: abstract base class — subclass to implement a
-      custom scorer (set ``name`` ClassVar and implement ``score_frames``).
+    - ``.base.BaseQualityScorer``: abstract extension point for custom scorers;
+      import it directly from ``mm.core.video_quality.base`` when subclassing.
     - ``ScorerConfig``, ``MetricResult``, ``VideoQualityReport``,
       ``LoadedFrames``: data contracts.
     - ``QualityScorerRegistry`` / ``create_scorer`` / ``list_scorers``:
@@ -42,8 +42,8 @@ Public API:
    Importing this package registers them with ``QualityScorerRegistry``.
 """
 
+from . import base as _base
 from .base import (
-    BaseQualityScorer,
     LoadedFrames,
     MetricResult,
     ScorerConfig,
@@ -52,6 +52,7 @@ from .base import (
     create_scorer,
     list_scorers,
 )
+
 from .device import DeviceResolver
 from .weights import WeightResolver
 from .frame_loader import FrameLoader, load_frames
@@ -71,14 +72,17 @@ from .scorers import (
     SubjectConsistencyScorer,
     TemporalFlickeringScorer,
     TemporalStyleScorer,
+    WatermarkDetector,
 )
+
+# Keep the abstract base accessible as a module attribute, but not in __all__.
+BaseQualityScorer = _base.BaseQualityScorer
 
 __all__ = [
     "LoadedFrames",
     "MetricResult",
     "VideoQualityReport",
     "ScorerConfig",
-    "BaseQualityScorer",
     "QualityScorerRegistry",
     "create_scorer",
     "list_scorers",
@@ -102,4 +106,5 @@ __all__ = [
     "SubjectConsistencyScorer",
     "TemporalFlickeringScorer",
     "TemporalStyleScorer",
+    "WatermarkDetector",
 ]

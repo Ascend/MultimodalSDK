@@ -14,6 +14,7 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE. See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
 
+from contextlib import ExitStack
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -38,7 +39,9 @@ def make_loaded_frames(num_frames, width, height, continuous=False, seed=42):
 @pytest.fixture
 def sample_loaded_frames():
     """LoadedFrames with uniform-colour frames (high consistency expected)."""
-    return make_loaded_frames(8, 224, 224, continuous=False, seed=99)
+    frames = make_loaded_frames(8, 224, 224, continuous=False, seed=99)
+    frames.frames[:] = 100
+    return frames
 
 
 @pytest.fixture(autouse=True)
@@ -80,12 +83,28 @@ def mock_clip_backbone():
 
 @pytest.fixture
 def mock_weight_resolver():
-    """Mock WeightResolver to return fake paths (no env var needed)."""
-    with patch("mm.core.video_quality.weights.WeightResolver") as MockCls:
-        resolver = MagicMock()
-        resolver.resolve_single.return_value = "/fake/weights"
-        resolver.resolve_multi.return_value = {"clip": "/fake/clip", "head": "/fake/head.json"}
-        MockCls.return_value = resolver
+    """Mock every imported WeightResolver binding to return fake paths."""
+    import importlib
+
+    resolver = MagicMock()
+    resolver.resolve_single.return_value = "/fake/weights"
+    resolver.resolve_multi.return_value = {"clip": "/fake/clip", "head": "/fake/head.json"}
+    module_names = (
+        "mm.core.video_quality.weights",
+        "mm.core.video_quality.scorers.watermark_scorer",
+        "mm.core.video_quality.scorers.image_quality_scorer",
+        "mm.core.video_quality.scorers.consistency_scorer",
+        "mm.core.video_quality.scorers.motion_scorer",
+    )
+    with ExitStack() as stack:
+        for module_name in module_names:
+            try:
+                module = importlib.import_module(module_name)
+            except ImportError:
+                continue
+            if hasattr(module, "WeightResolver"):
+                mock_cls = stack.enter_context(patch(f"{module_name}.WeightResolver"))
+                mock_cls.return_value = resolver
         yield resolver
 
 

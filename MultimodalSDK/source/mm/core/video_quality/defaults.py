@@ -72,7 +72,11 @@ WEIGHT_ROLES: dict[str, list[WeightRole]] = {
         WeightRole("predictor", "AESTHETIC_PREDICTOR_WEIGHTS_PATH", "AestheticPredictor v2.5 weights path"),
     ],
     "watermark": [
-        WeightRole("detector", "WATERMARK_YOLO_MODEL_PATH", "YOLO11x watermark detector .pt path"),
+        WeightRole(
+            "detector",
+            "WATERMARK_YOLO_MODEL_PATH",
+            "YOLO11x local .pt path; pin SHA-256 with WATERMARK_YOLO_MODEL_SHA256",
+        ),
     ],
     "image_quality": [
         WeightRole("liqe", "LIQE_WEIGHTS_PATH", "LIQE-mix weights path"),
