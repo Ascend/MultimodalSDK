@@ -5,7 +5,8 @@
 # Copyright (c) 2026 Huawei Technologies Co., Ltd.
 #
 # MultimodalSDK is licensed under Mulan PSL v2.
-# You can use this software according to the terms and conditions of the Mulan PSL v2 at:
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
 #
 #           http://license.coscl.org.cn/MulanPSL2
 #
@@ -36,7 +37,8 @@ Public API:
 
    This release ships the ``image_quality`` scorer, the CLIP consistency
    family (subject/background/overall/scene/appearance-style/temporal-style),
-   the ``motion`` scorer (optical-flow based), and the ``naturalness`` scorer.
+   the ``motion`` scorer (optical-flow based), the ``naturalness`` scorer,
+   and the ``distribution`` scorer (FVD/KVD, dataset-level).
    Importing this package registers them with ``QualityScorerRegistry``.
 """
 
@@ -60,6 +62,7 @@ from .scorers import (
     AppearanceStyleScorer,
     BackgroundConsistencyScorer,
     ColorConsistencyScorer,
+    DistributionConsistencyScorer,
     ImageQualityScorer,
     MotionScorer,
     NaturalnessScorer,
@@ -90,6 +93,7 @@ __all__ = [
     "AppearanceStyleScorer",
     "BackgroundConsistencyScorer",
     "ColorConsistencyScorer",
+    "DistributionConsistencyScorer",
     "ImageQualityScorer",
     "MotionScorer",
     "NaturalnessScorer",
