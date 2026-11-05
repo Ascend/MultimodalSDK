@@ -80,7 +80,12 @@ def _frechet_distance(feats_a: np.ndarray, feats_b: np.ndarray) -> float:
     s1 = np.cov(feats_a, rowvar=False)
     s2 = np.cov(feats_b, rowvar=False)
 
-    covmean, _ = linalg.sqrtm(s1.dot(s2), disp=False)
+    covariance_product = s1.dot(s2)
+    try:
+        covmean, _ = linalg.sqrtm(covariance_product, disp=False)
+    except TypeError:
+        # SciPy 1.18 removed the deprecated ``disp`` argument and tuple return.
+        covmean = linalg.sqrtm(covariance_product)
     if np.iscomplexobj(covmean):
         covmean = covmean.real
 
