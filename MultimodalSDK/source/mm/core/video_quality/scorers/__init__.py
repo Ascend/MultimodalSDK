@@ -23,6 +23,7 @@ and ``VideoQualityPipeline``.
 """
 
 from .color_scorer import ColorConsistencyScorer
+from .aesthetics_scorer import AestheticsScorer
 from .watermark_scorer import WatermarkDetector
 from .consistency_scorer import (
     AppearanceStyleScorer,
@@ -42,6 +43,7 @@ __all__ = [
     "AppearanceStyleScorer",
     "BackgroundConsistencyScorer",
     "ColorConsistencyScorer",
+    "AestheticsScorer",
     "WatermarkDetector",
     "DistributionConsistencyScorer",
     "ImageQualityScorer",
