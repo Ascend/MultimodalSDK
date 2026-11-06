@@ -1,0 +1,89 @@
+on:
+  workflow_call:
+    inputs:
+      REMOTE_URL:
+        required: false
+        type: string
+        default: ${{ atomgit.repositoryurl }}
+      IMAGE_FLAG:
+        required: true
+        type: string
+        description: "Full SWR image URL, e.g. swr.<region>.<org>/mindx_arm:tag"
+      TARGET_BRANCH:
+        required: false
+        type: string
+        default: "master"
+      runs_on_arch:
+        required: true
+        type: string
+        description: "x64 or arm64"
+      DEFAULT_BRANCH:
+        required: false
+        type: string
+        default: "master"
+      servicename:
+        required: false
+        type: string
+        default: $(echo "${{ atomgit.repository }}" | cut -d '/' -f 2)
+      Version:
+        required: false
+        type: string
+        default: "26.3.0"
+      obs_prefix:
+        required: false
+        type: string
+
+jobs:
+  JOB_compile:
+    name: JOB_compile
+    select: selected_by_default
+    runs-on: [ self-hosted, arm, cpu=8 ]
+    container:
+      image: ${{ inputs.IMAGE_FLAG }}
+      options: --user root
+    steps:
+      - name: set prefix
+        id: set_prefix
+        run: |
+          output_file="$(printenv ATOMGIT_OUTPUT)"
+          TZ=Asia/Shanghai
+          SNAPSHOT_PREFIX="actions_version_snapshot/${{ inputs.servicename }}-${{ inputs.Version }}-$(TZ=Asia/Shanghai date +%Y%m%d%H%M%S)/"
+          printf 'snapshot_prefix=%s\n' "$SNAPSHOT_PREFIX" >> "$output_file"
+          printf 'snapshot_prefix: %s\n' "$snapshot_prefix"
+
+      - name: Download build artifact
+        uses: download-artifact
+        with:
+          name: ${{ atomgit.repository }}-${{ inputs.runs_on_arch }}
+          path: ./
+
+      - name: compile
+        run: |
+          set -ex
+          echo 'start archive smoke-passed artifact'
+          ls -al ./
+
+          mkdir -p ${ATOMGIT_WORKSPACE}/artifacts_passed
+          unzip artifacts_$(uname -m).zip -d ${ATOMGIT_WORKSPACE}/artifacts_passed
+
+      - name: 上传制品
+        uses: obs-upload
+        with:
+          endpoint: "obs.cn-north-4.myhuaweicloud.com"
+          bucket: "mindcluster"
+          access-key: "${{ secrets.NIGHTLY_OBS_AK }}"
+          secret-key: "${{ secrets.NIGHTLY_OBS_SK }}"
+          artifact-path: "artifacts_passed/"
+          object-prefix: "${{ steps.set_prefix.outputs.snapshot_prefix }}"
+          if-no-files-found: error
+
+      - name: 上传制品latest
+        uses: obs-upload
+        with:
+          endpoint: "obs.cn-north-4.myhuaweicloud.com"
+          bucket: "mindcluster"
+          access-key: "${{ secrets.NIGHTLY_OBS_AK }}"
+          secret-key: "${{ secrets.NIGHTLY_OBS_SK }}"
+          artifact-path: "artifacts_passed/"
+          object-prefix: "actions_version_snapshot/latest/${{ inputs.servicename }}/"
+          if-no-files-found: error
