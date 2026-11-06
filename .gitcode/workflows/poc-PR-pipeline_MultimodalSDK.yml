@@ -34,7 +34,7 @@ stages:
     jobs:
       Detect_file_changes:
         name: Detect_file_changes
-        runs-on: [ self-hosted, x86, cpu=32 ]
+        runs-on: [ self-hosted, x86, cpu=2 ]
         container:
           image: swr.cn-north-4.myhuaweicloud.com/pytorch_images_x86/pytorchx86:v_03
         outputs:
@@ -86,7 +86,7 @@ stages:
       associate_pr_comment:
         name: associate_pr_comment
         select: selected_by_default
-        runs-on: [ self-hosted, x86, cpu=16 ]
+        runs-on: [ self-hosted, x86, cpu=2 ]
         container:
           image: swr.cn-north-4.myhuaweicloud.com/atlas-ci/common:latest
         steps:
@@ -109,7 +109,7 @@ stages:
     jobs:
       pre-commit:
         name: pre-commit
-        runs-on: [ self-hosted, x86, cpu=16 ]
+        runs-on: [ self-hosted, x86, cpu=2 ]
         container:
           image: swr.cn-north-4.myhuaweicloud.com/atlas-ci/common:latest
           options: --user root
@@ -133,7 +133,7 @@ stages:
 
       SCA:
         name: SCA
-        runs-on: [ self-hosted, x86, cpu=8 ]
+        runs-on: [ self-hosted, x86, cpu=2 ]
         container:
           image: swr.cn-north-4.myhuaweicloud.com/atlas-ci/common:latest
           options: --user root
@@ -149,7 +149,7 @@ stages:
 
       malicious-scan:
         name: antipoison
-        runs-on: [ self-hosted, x86, cpu=8 ]
+        runs-on: [ self-hosted, x86, cpu=2 ]
         container:
           image: swr.cn-north-4.myhuaweicloud.com/atlas-ci/common:latest
           options: --user root
@@ -166,7 +166,7 @@ stages:
 post:
   jobs:
     query_pipeline:
-      runs-on: [ self-hosted, x86, cpu=16 ]
+      runs-on: [ self-hosted, x86, cpu=2 ]
       container:
         image: swr.cn-north-4.myhuaweicloud.com/atlas-ci/common:latest
       steps:

@@ -1,0 +1,119 @@
+on:
+  workflow_call:
+    inputs:
+      REMOTE_URL:
+        required: false
+        type: string
+        default: ${{ atomgit.repositoryurl }}
+      IMAGE_FLAG:
+        required: true
+        type: string
+        description: "Full SWR image URL, e.g. swr.<region>.<org>/mindx_arm:tag"
+      TARGET_BRANCH:
+        required: false
+        type: string
+        default: "master"
+      runs_on_arch:
+        required: true
+        type: string
+        description: "x64 or arm64"
+      DEFAULT_BRANCH:
+        required: false
+        type: string
+        default: "master"
+      servicename:
+        required: false
+        type: string
+        default: $(echo "${{ atomgit.repository }}" | cut -d '/' -f 2)
+      Version:
+        required: false
+        type: string
+        default: "26.3.0"
+      obs_prefix:
+        required: false
+        type: string
+
+
+jobs:
+  JOB_compile:
+    name: JOB_compile
+    select: selected_by_default
+    runs-on: [ self-hosted, arm, cpu=16 ]
+    container:
+      image: ${{ inputs.IMAGE_FLAG }}
+      options: --user root
+    steps:
+      - name: prepare_dependency
+        run: |
+          set -e
+          echo "ATOMGIT_WORKSPACE=${ATOMGIT_WORKSPACE}"
+          echo "servicename=${{ inputs.servicename }}"
+          echo "REMOTE_URL=${{ inputs.REMOTE_URL }}"
+          echo "TARGET_BRANCH=${{ inputs.TARGET_BRANCH }}"
+          git clone -b ${{ inputs.TARGET_BRANCH }} ${{ inputs.REMOTE_URL }} ${{ inputs.servicename }}
+
+          if [ ! -d "${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/AccSDK/opensource/" ]; then
+              mkdir -p ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/AccSDK/opensource/
+          fi
+          cd ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/
+          git clone -b v2.5.0-h1 https://gitcode.com/cann-src-third-party/makeself.git makeself_patch
+          git clone -b release-2.5.0 https://gitcode.com/gh_mirrors/ma/makeself.git
+
+          cd ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/AccSDK/opensource/
+
+          git clone -b v2.13.6 https://gitcode.com/GitHub_Trending/py/pybind11.git ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/AccSDK/acc_data/3rdparty/pybind/pybind11
+          git clone -b release-1.11.0 https://gitcode.com/GitHub_Trending/go/googletest.git ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/AccSDK/acc_data/3rdparty/gtest/googletest
+
+      - name: compile
+        run: |
+          set -ex
+          echo "ATOMGIT_WORKSPACE=${ATOMGIT_WORKSPACE}"
+
+          wget --no-check-certificate -O ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/AccSDK/opensource.tar.gz https://mindcluster.obs.cn-north-4.myhuaweicloud.com/opensource.tar.gz
+          # ls /usr/local/Ascend/driver/lib64/common
+
+          cd ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/build_script && bash build_merge.sh
+          ls -al ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/output
+
+
+      - name: generate repoInfo
+        run: |
+          set -e
+          cd ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/output
+          bash -x ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/.gitcode/workflows/scripts/version_generate_repoInfo.sh ${{ inputs.servicename }}
+
+          cd ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/${{ inputs.servicename }}/output
+          bash +x ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/.gitcode/workflows/scripts/version_generate_repoInfo.sh ${{ inputs.servicename }}
+
+          mkdir -p ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/artifacts
+          cp -r ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/output/*.run ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/artifacts/
+          cp -r ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/output/*.json ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/artifacts/
+          cp -r ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/output/*.sha256sum ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/artifacts/
+
+          cp -r ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/${{ inputs.servicename }}/output/*.whl ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/artifacts/
+          cp -r ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/${{ inputs.servicename }}/output/*.json ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/artifacts/
+          cp -r ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/${{ inputs.servicename }}/output/*.sha256sum ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/artifacts/
+
+          ARTIFACTS_DIR="${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/artifacts"
+          mkdir -p ${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/artifacts_all
+          apt update && apt install -y zip
+          cd "${ARTIFACTS_DIR}" && zip -r "${ATOMGIT_WORKSPACE}/${{ inputs.servicename }}/artifacts_all/artifacts_$(uname -m).zip" .
+
+      - name: Upload artifact
+        uses: upload-artifact
+        with:
+          name: ${{ atomgit.repository }}-${{ inputs.runs_on_arch }}
+          path: |
+            ${{ inputs.servicename }}/artifacts_all/
+          overwrite: true
+
+      - name: 上传制品
+        uses: obs-upload
+        with:
+          endpoint: "obs.cn-north-4.myhuaweicloud.com"
+          bucket: "mindcluster"
+          access-key: "${{ secrets.NIGHTLY_OBS_AK }}"
+          secret-key: "${{ secrets.NIGHTLY_OBS_SK }}"
+          artifact-path: "${{ inputs.servicename }}/artifacts/"
+          object-prefix: "${{ inputs.obs_prefix }}/"
+          if-no-files-found: error
