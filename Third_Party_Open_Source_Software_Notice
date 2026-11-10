@@ -25,6 +25,19 @@ License: Apache License 2.0
 
 ---
 
+Software: vLLM v0.23.0 (adapted Qwen3-VL and Qwen3.5 model code)
+Source: https://github.com/vllm-project/vllm/tree/v0.23.0
+Files: MultimodalSDK/source/mm/patcher/vllm/flashvid/patch_qwen3_vl.py,
+       MultimodalSDK/source/mm/patcher/vllm/flashvid/patch_qwen3_5.py
+Copyright contributors to the vLLM project.
+Copyright 2025 The vLLM team.
+Copyright 2025 The Qwen Team.
+Copyright 2025 The HuggingFace Inc. team.
+Modifications Copyright (c) 2026 Huawei Technologies Co.,Ltd.
+License: Apache License 2.0
+
+---
+
 Copyright (c) 2016-2024, PyTorch Team. All rights reserved.
 (PyTorch)
 License: BSD 3-Clause License
