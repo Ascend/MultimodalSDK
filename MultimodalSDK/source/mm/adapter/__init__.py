@@ -16,7 +16,21 @@
 # See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
 
-from .qwen2_vl_preprocessor import MultimodalQwen2VLImageProcessor
-from .internvl2_preprocessor import InternVL2PreProcessor
+from importlib.metadata import PackageNotFoundError, version
 
-__all__ = ['MultimodalQwen2VLImageProcessor', 'InternVL2PreProcessor']
+AVAILABLE = False
+__all__ = []
+
+try:
+    _transformers_major = int(version("transformers").split(".")[0])
+except (PackageNotFoundError, ValueError):
+    _transformers_major = -1
+
+# Legacy SDK adapters use Transformers 4.x APIs. FlashVid uses vLLM's
+# processors and must also load when the newer image uses Transformers 5.x.
+if 0 <= _transformers_major < 5:
+    from .qwen2_vl_preprocessor import MultimodalQwen2VLImageProcessor
+    from .internvl2_preprocessor import InternVL2PreProcessor
+
+    AVAILABLE = True
+    __all__ = ['MultimodalQwen2VLImageProcessor', 'InternVL2PreProcessor']

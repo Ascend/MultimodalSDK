@@ -29,7 +29,7 @@ from .acc import (
     load_audio,
 )
 from .comm import LogLevel, register_log_conf
-from .adapter import MultimodalQwen2VLImageProcessor, InternVL2PreProcessor
+from . import adapter
 from .core import BaseFrameSelector, KFrameSelector, KRangFrameSelector
 from .core import EmbeddingBackend, OpenAIEmbeddingBackend, KtsSegmenter, VideoSegment, SegmentResult
 
@@ -46,8 +46,6 @@ __all__ = [
     'video_decode',
     'video_info',
     'normalize',
-    'MultimodalQwen2VLImageProcessor',
-    'InternVL2PreProcessor',
     'load_audio',
     'BaseFrameSelector',
     'KFrameSelector',
@@ -58,4 +56,10 @@ __all__ = [
     'VideoSegment',
     'SegmentResult',
 ]
+if adapter.AVAILABLE:
+    from .adapter import MultimodalQwen2VLImageProcessor, InternVL2PreProcessor
+
+    __all__ += ['MultimodalQwen2VLImageProcessor', 'InternVL2PreProcessor']
+del adapter
+
 register_log_conf(LogLevel.INFO, None)
