@@ -71,8 +71,8 @@ jobs:
         with:
           endpoint: "obs.cn-north-4.myhuaweicloud.com"
           bucket: "mindcluster"
-          access-key: "${{ secrets.NIGHTLY_OBS_AK }}"
-          secret-key: "${{ secrets.NIGHTLY_OBS_SK }}"
+          access-key: "${{ secrets.MINDCLUSTER_OBS_AK }}"
+          secret-key: "${{ secrets.MINDCLUSTER_OBS_SK }}"
           artifact-path: "artifacts_passed/"
           object-prefix: "${{ steps.set_prefix.outputs.snapshot_prefix }}"
           if-no-files-found: error
@@ -82,8 +82,8 @@ jobs:
         with:
           endpoint: "obs.cn-north-4.myhuaweicloud.com"
           bucket: "mindcluster"
-          access-key: "${{ secrets.NIGHTLY_OBS_AK }}"
-          secret-key: "${{ secrets.NIGHTLY_OBS_SK }}"
+          access-key: "${{ secrets.MINDCLUSTER_OBS_AK }}"
+          secret-key: "${{ secrets.MINDCLUSTER_OBS_SK }}"
           artifact-path: "artifacts_passed/"
           object-prefix: "actions_version_snapshot/latest/${{ inputs.servicename }}/"
           if-no-files-found: error

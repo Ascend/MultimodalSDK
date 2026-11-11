@@ -112,8 +112,8 @@ jobs:
         with:
           endpoint: "obs.cn-north-4.myhuaweicloud.com"
           bucket: "mindcluster"
-          access-key: "${{ secrets.NIGHTLY_OBS_AK }}"
-          secret-key: "${{ secrets.NIGHTLY_OBS_SK }}"
+          access-key: "${{ secrets.MINDCLUSTER_OBS_AK }}"
+          secret-key: "${{ secrets.MINDCLUSTER_OBS_SK }}"
           artifact-path: "${{ inputs.servicename }}/artifacts/"
           object-prefix: "${{ inputs.obs_prefix }}/"
           if-no-files-found: error
