@@ -97,24 +97,27 @@ The video decoding interface of Multimodal SDK supports two ways to set paramete
 
 <img src="../figures/user_guide_video_flow.svg" alt="Video processing process" width="1200"/>
 
-1. Pass the set of frame IDs to decode. The size of the returned list is the size of the input frame ID set.
+1. Use the file MultimodalSDK/AccSDK/test/data/videos/video_1min_30fps.mp4 in the code repository for testing.
+
+    ```bash
+     git clone https://gitcode.com/Ascend/MultimodalSDK.git
+     cd MultimodalSDK && git lfs pull
+    ```
+
+2. Pass the set of frame IDs to decode. The size of the returned list is the size of the input frame ID set. You can use the following code:
 
     ```python
     from mm import video_decode
     import os
 
-    norm_file_path = "/home/test/xxx.mp4"  # Path of the video file to decode
+    norm_file_path = "/path/to/video_1min_30fps.mp4"  # Path of the video file to decode
     os.chmod(norm_file_path, 0o640)  # Modify the permissions
-    frame_indices = {0, 48, 96, 145, 193, 241, 290, 338, 386, 435, 483, 531}
+    frame_indices = {0, 48, 96, 145, 193, 241}
     mm_images = video_decode(norm_file_path, "cpu", frame_indices)
     print(f"mm_images count: {len(mm_images)}")
     ```
 
-    ```text
-    mm_images count: 12
-    ```
-
-2. Pass an empty set of frame IDs to decode and the expected total number of frames to obtain after decoding. The size of the returned list is the size of the input expected total number of frames.
+3. Pass an empty set of frame IDs to decode and the expected total number of frames to obtain after decoding. The size of the returned list is the size of the input expected total number of frames.
 
     ```python
     from mm import video_decode
@@ -126,15 +129,12 @@ The video decoding interface of Multimodal SDK supports two ways to set paramete
     print(f"mm_images count: {len(mm_images)}")
     ```
 
-    ```text
-    mm_images count: 10
-    ```
-
 ## Audio Processing
 
-The following example demonstrates how to load a single audio file and how to load audio in batches (replace the paths with those of actual wav files, and ensure that the permissions on the files are not higher than 640):
+The following example demonstrates how to load a single audio file and how to load audio in batches:
 
 <img src="../figures/user_guide_audio_flow.svg" alt="Audio processing process" width="1200"/>
+You can copy the files in MultimodalSDK\AccSDK\test\data\audios of the code repository for testing. Do not copy the empty file audio_empty.wav, and ensure that the permissions on the files are not higher than 640 after copying.
 
 ```python
 from mm import load_audio

@@ -12,32 +12,32 @@
 - 示例文件权限不应高于 640。图片当前支持 jpg/jpeg，视频当前支持 mp4，音频当前支持 wav。
 - 建议在 Jupyter 中运行文中样例，可直观查看处理结果。以下脚本一键完成"启动容器 → 安装依赖 → 启动 Jupyter"（镜像与设备挂载与[快速入门](../02_quickstart/quickstart.md)一致，设备编号按实际 NPU 调整）：
 
-    ```bash
-    # 1. 启动容器（若已存在先删除：docker stop multimodal_container && docker rm multimodal_container）
-    docker run \
-        --name multimodal_container \
-        --device /dev/davinci0 \
-        --device /dev/davinci_manager \
-        --device /dev/devmm_svm \
-        --device /dev/hisi_hdc \
-        -v /usr/local/dcmi:/usr/local/dcmi \
-        -v /usr/local/bin/npu-smi:/usr/local/bin/npu-smi \
-        -v /usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64 \
-        -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
-        -v /etc/ascend_install.info:/etc/ascend_install.info \
-        -p 8888:8888 \
-        -itd multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64 bash
+  ```bash
+  # 1. 启动容器（若已存在先删除：docker stop multimodal_container && docker rm multimodal_container）
+  docker run \
+      --name multimodal_container \
+      --device /dev/davinci0 \
+      --device /dev/davinci_manager \
+      --device /dev/devmm_svm \
+      --device /dev/hisi_hdc \
+      -v /usr/local/dcmi:/usr/local/dcmi \
+      -v /usr/local/bin/npu-smi:/usr/local/bin/npu-smi \
+      -v /usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64 \
+      -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
+      -v /etc/ascend_install.info:/etc/ascend_install.info \
+      -p 8888:8888 \
+      -itd multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64 bash
 
-    # 2. 进入容器，安装依赖并启动 Jupyter
-    docker exec -it multimodal_container bash -c '
-    pip3 install --no-cache-dir jupyterlab matplotlib
-    export MULTIMODAL_SDK_HOME="/usr/local/multimodal"
-    source ${MULTIMODAL_SDK_HOME}/script/set_env.sh
-    jupyter lab --no-browser --port=8888 --ip=0.0.0.0 --allow-root
-    '
-    ```
+  # 2. 进入容器，安装依赖并启动 Jupyter
+  docker exec -it multimodal_container bash -c '
+  pip3 install --no-cache-dir jupyterlab matplotlib
+  export MULTIMODAL_SDK_HOME="/usr/local/multimodal"
+  source ${MULTIMODAL_SDK_HOME}/script/set_env.sh
+  jupyter lab --no-browser --port=8888 --ip=0.0.0.0 --allow-root
+  '
+  ```
 
-    启动后终端会打印访问地址（含 token），形如 `http://127.0.0.1:8888/lab?token=xxxx`。在宿主机浏览器中打开该地址（容器已通过 `-p 8888:8888` 映射端口，本机直接访问 `http://127.0.0.1:8888/lab?token=xxxx` 即可），新建 Notebook，将文中样例代码复制进去执行。
+  启动后终端会打印访问地址（含 token），形如 `http://127.0.0.1:8888/lab?token=xxxx`。在宿主机浏览器中打开该地址（容器已通过 `-p 8888:8888` 映射端口，本机直接访问 `http://127.0.0.1:8888/lab?token=xxxx` 即可），新建 Notebook，将文中样例代码复制进去执行。
 
 ## 图片处理
 
@@ -97,44 +97,44 @@ plt.show()
 
 <img src="../figures/user_guide_video_flow.svg" alt="视频处理流程" width="1200"/>
 
-1. 传入目标解码的帧 ID 集合，得到的返回值列表大小为传入的帧 ID 集合大小。
+1. 使用代码路径下的MultimodalSDK/AccSDK/test/data/videos/video_1min_30fps.mp4进行测试
 
-    ```python
-    from mm import video_decode
-    import os
+   ```bash
+    git clone https://gitcode.com/Ascend/MultimodalSDK.git
+    cd MultimodalSDK && git lfs pull
+   ```
 
-    norm_file_path = "/home/test/xxx.mp4"  # 要解码的视频文件地址
-    os.chmod(norm_file_path, 0o640)  # 修改权限
-    frame_indices = {0, 48, 96, 145, 193, 241, 290, 338, 386, 435, 483, 531}
-    mm_images = video_decode(norm_file_path, "cpu", frame_indices)
-    print(f"mm_images count: {len(mm_images)}")
-    ```
+2. 传入目标解码的帧 ID 集合，得到的返回值列表大小为传入的帧 ID 集合大小。可以使用
 
-    ```text
-    mm_images count: 12
-    ```
+   ```python
+   from mm import video_decode
+   import os
 
-2. 传入目标解码的帧 ID 集合为空，传入期望解码后获取的总帧数，得到的返回值列表大小为传入的期望解码后获取的总帧数大小。
+   norm_file_path = "/path/to/video_1min_30fps.mp4"  # 要解码的视频文件地址
+   os.chmod(norm_file_path, 0o640)  # 修改权限
+   frame_indices = {0, 48, 96, 145, 193, 241}
+   mm_images = video_decode(norm_file_path, "cpu", frame_indices)
+   print(f"mm_images count: {len(mm_images)}")
+   ```
 
-    ```python
-    from mm import video_decode
-    import os
+3. 传入目标解码的帧 ID 集合为空，传入期望解码后获取的总帧数，得到的返回值列表大小为传入的期望解码后获取的总帧数大小。
 
-    norm_file_path = "/home/test/xxx.mp4"  # 要解码的视频文件地址
-    os.chmod(norm_file_path, 0o640)  # 修改权限
-    mm_images = video_decode(norm_file_path, "cpu", set(), 10)
-    print(f"mm_images count: {len(mm_images)}")
-    ```
+   ```python
+   from mm import video_decode
+   import os
 
-    ```text
-    mm_images count: 10
-    ```
+   norm_file_path = "/home/test/xxx.mp4"  # 要解码的视频文件地址
+   os.chmod(norm_file_path, 0o640)  # 修改权限
+   mm_images = video_decode(norm_file_path, "cpu", set(), 10)
+   print(f"mm_images count: {len(mm_images)}")
+   ```
 
 ## 音频处理
 
-以下示例演示单音频文件加载与批量加载（请将路径替换为实际 wav 文件，并确保文件权限不高于 640）：
+以下示例演示单音频文件加载与批量加载：
 
 <img src="../figures/user_guide_audio_flow.svg" alt="音频处理流程" width="1200"/>
+可以拷贝代码仓路径MultimodalSDK\AccSDK\test\data\audios文件夹下的文件进行测试，请不要拷贝空文件audio_empty.wav，拷贝后确保文件权限不高于 640。
 
 ```python
 from mm import load_audio
@@ -164,8 +164,8 @@ print(f"directory batch count: {len(batch_from_directory)}")
 
 ## 下一步
 
-| 目标 | 文档 |
-| -- | -- |
-| 查看完整 API 参数和约束 | [功能函数参考](../05_api/function_reference.md) |
-| 排查常见错误码 | [附录 > 错误码](../06_references/appendix.md#错误码) |
-| vLLM 推理框架集成 | [patcher](../05_api/patcher.md) |
+| 目标                    | 文档                                                   |
+| ----------------------- | ------------------------------------------------------ |
+| 查看完整 API 参数和约束 | [功能函数参考](../05_api/function_reference.md)         |
+| 排查常见错误码          | [附录 &gt; 错误码](../06_references/appendix.md#错误码) |
+| vLLM 推理框架集成       | [patcher](../05_api/patcher.md)                         |
