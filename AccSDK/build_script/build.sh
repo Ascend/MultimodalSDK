@@ -26,8 +26,27 @@ rm -rf ../build/*
 # 构建信息环境变量（可以提前 export 也可脚本内赋值）
 SCRIPT_DIR_ACC_SDK=$(cd "$(dirname "$0")"; pwd)
 ACC_SDK_ROOT_DIR=$(cd "${SCRIPT_DIR_ACC_SDK}/.."; pwd)
+
+# 先记录调用者环境中的 Python：Ascend 的 set_env.sh 可能会改写 PATH，
+# 使 cmake 的 FindPython3 找到缺少开发头文件的系统 Python。
+ACC_PYTHON3_EXECUTABLE="${PYTHON3_EXECUTABLE:-}"
+if [ -z "${ACC_PYTHON3_EXECUTABLE}" ]; then
+  ACC_PYTHON3_EXECUTABLE="$(command -v python3 || true)"
+fi
+
 source /usr/local/Ascend/ascend-toolkit/set_env.sh
 rm -rf "${ACC_SDK_ROOT_DIR}/build/*"
+
+if [ -n "${ACC_PYTHON3_EXECUTABLE}" ]; then
+  ACC_PYTHON3_INCLUDE_DIR="$("${ACC_PYTHON3_EXECUTABLE}" -c 'import sysconfig; print(sysconfig.get_path("include"))' 2>/dev/null || true)"
+  if [ -z "${ACC_PYTHON3_INCLUDE_DIR}" ] || [ ! -f "${ACC_PYTHON3_INCLUDE_DIR}/Python.h" ]; then
+    echo "[ERROR] ${ACC_PYTHON3_EXECUTABLE} 缺少 Python 开发头文件（Python.h），请安装对应的 python3-devel 或通过 PYTHON3_EXECUTABLE 指定带开发头文件的解释器" >&2
+    exit 1
+  fi
+  echo "[INFO] Using Python: ${ACC_PYTHON3_EXECUTABLE} (include: ${ACC_PYTHON3_INCLUDE_DIR})"
+else
+  echo "[WARN] No python3 found in PATH, cmake will search for Python3 by itself" >&2
+fi
 
 ACC_SDK_DIR="$SCRIPT_DIR_ACC_SDK"
 ACC_BUILD_SCRIPT=$(basename "$0")
@@ -57,6 +76,12 @@ BUILD_IMAGE="${IMAGE:-ON}"
 BUILD_VIDEO="${VIDEO:-ON}"
 BUILD_AUDIO="${AUDIO:-ON}"
 
+# 显式指定 Python，避免 FindPython3 回退到缺少开发头文件的系统 Python
+CMAKE_PYTHON_ARGS=()
+if [ -n "${ACC_PYTHON3_EXECUTABLE}" ]; then
+  CMAKE_PYTHON_ARGS=("-DPython3_EXECUTABLE=${ACC_PYTHON3_EXECUTABLE}")
+fi
+
 # 打印开始构建信息
 print_build_start
 
@@ -74,13 +99,15 @@ if [[ x"$1" == x"test" ]]; then
     -DIMAGE="${BUILD_IMAGE}" \
     -DVIDEO="${BUILD_VIDEO}" \
     -DAUDIO="${BUILD_AUDIO}" \
+    "${CMAKE_PYTHON_ARGS[@]}" \
     -DBUILD_TESTS=ON
 else
   echo ">>> Running cmake in Release mode"
   cmake -S "${ACC_SDK_ROOT_DIR}" -B"${ACC_SDK_ROOT_DIR}/build" \
     -DIMAGE="${BUILD_IMAGE}" \
     -DVIDEO="${BUILD_VIDEO}" \
-    -DAUDIO="${BUILD_AUDIO}"
+    -DAUDIO="${BUILD_AUDIO}" \
+    "${CMAKE_PYTHON_ARGS[@]}"
 fi
 
 # 编译并安装

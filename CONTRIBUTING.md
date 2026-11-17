@@ -69,7 +69,7 @@
       bash build_script/build_merge.sh
       ```
 
-      构建成功后会在 `output` 目录下生成 `Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run`，可安装此包进行功能验证。
+      构建成功后会在 `output` 目录下生成 `Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run`，在`MultimodalSDK/output/`下生成whl包，选择其中一个进行功能验证。
 
    b. 在提交代码前，请补充测试用例并确保所有测试通过
 

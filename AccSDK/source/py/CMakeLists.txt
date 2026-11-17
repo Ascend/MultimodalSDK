@@ -23,7 +23,8 @@ if(AUDIO)
             ${PROJECT_SOURCE_DIR}/source/py/module/PyAudio.cpp
     )
 endif()
-find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter Development)
+# 只构建 Python 扩展模块，用 Development.Module 即可，无需 Embed（不依赖 libpython 共享库）
+find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter Development.Module)
 
 find_package(SWIG REQUIRED)
 include(UseSWIG)
