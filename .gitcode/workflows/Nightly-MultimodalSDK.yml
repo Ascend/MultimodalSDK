@@ -1,9 +1,9 @@
-name: Nightly-CI-Component-pipeline_multimodalsdk
+name: Nightly-CI-Component-pipeline_MultimodalSDK
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 7 * * *'
+    - cron: '30 23 * * *'
 
 env:
   NIGHTLY_IMAGE: "swr.cn-north-4.myhuaweicloud.com/atlas-ci/test-mindsdk-multimodal-nightly"
