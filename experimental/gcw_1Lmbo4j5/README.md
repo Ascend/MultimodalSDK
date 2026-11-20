@@ -124,7 +124,7 @@ MM_SCC_RATE=1.0 MM_PREPROCESSOR=true vllm serve /workspace/shared_assets/models/
 
 已发现并建议提交 1 个文档问题：图片处理可视化示例直接依赖 `matplotlib`，但安装部署文档的依赖清单未列出该依赖。在干净环境执行示例会出现 `ModuleNotFoundError: No module named 'matplotlib'`。
 
-Issue：`【MeetUp】图片处理可视化示例未声明 matplotlib 依赖`，提交后请将链接替换为：`<Issue URL>`。
+Issue：[\#80 图片处理可视化示例未声明 matplotlib 依赖](https://gitcode.com/Ascend/MultimodalSDK/issues/80)。
 
 ## 7 总结
 
