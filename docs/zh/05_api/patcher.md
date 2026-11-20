@@ -81,9 +81,12 @@ MM_SCC_EPSILON=0.05 \
 MM_SCC_MAX_TOKENS_PER_ITEM=8192 \
 MM_PREPROCESSOR=true \
 MM_MEDIA_IO=true \
+# allowed-local-media-path是允许上传图片、视频的路径
 vllm serve /models/Qwen3-VL-8B-Instruct \
     --host 0.0.0.0 \
-    --port 9000
+    --port 9000 \
+    --tensor-parallel-size 4 \
+    --allowed-local-media-path /workspace
 ```
 
 ### 确认 patch 生效
@@ -119,7 +122,7 @@ vllm serve /models/Qwen3-VL-8B-Instruct \
 
 ### 图片请求示例
 
-通过 OpenAI 兼容接口发送带图片的请求，`image_url` 使用 `file://` 协议指向服务端本地 jpg / jpeg 文件：
+通过 OpenAI 兼容接口发送带图片的请求，`image_url` 使用 `file://` 协议指向服务端本地 jpg / jpeg 文件，可以拷贝代码仓AccSDK/test/image/assets/dog_1920_1080.jpg测试。
 
 ```bash
 curl http://localhost:9000/v1/chat/completions \
@@ -140,7 +143,7 @@ curl http://localhost:9000/v1/chat/completions \
 
 ### 视频请求示例
 
-视频请求使用 `video_url` 类型，同样以 `file://` 协议指向服务端本地 mp4 文件：
+视频请求使用 `video_url` 类型，同样以 `file://` 协议指向服务端本地 mp4 文件，可以拷贝代码仓AccSDK/test/data/videos/video_1min_30fps.mp4进行测试。
 
 ```bash
 curl http://localhost:9000/v1/chat/completions \

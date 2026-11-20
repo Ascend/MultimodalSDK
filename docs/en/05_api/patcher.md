@@ -75,6 +75,7 @@ This section describes only the models supported by each version and the acceler
 After you set the environment variables, **use the native `vllm serve` command directly**. No additional SDK-side parameters are required. For example, to run Qwen3-VL-8B-Instruct with SCC and preprocessing acceleration enabled:
 
 ```bash
+# allowed-local-media-path specifies the directories from which images and videos may be uploaded
 MM_SCC_RATE=0.5 \
 MM_SCC_TAU=0.95 \
 MM_SCC_EPSILON=0.05 \
@@ -83,7 +84,9 @@ MM_PREPROCESSOR=true \
 MM_MEDIA_IO=true \
 vllm serve /models/Qwen3-VL-8B-Instruct \
     --host 0.0.0.0 \
-    --port 9000
+    --port 9000 \
+    --tensor-parallel-size 4 \
+    --allowed-local-media-path /workspace
 ```
 
 ### Confirming That the Patch Takes Effect
@@ -119,7 +122,7 @@ Additional notes:
 
 ### Image Request Example
 
-Send a request with an image through the OpenAI-compatible API. The `image_url` field uses the `file://` protocol to point to a local jpg or jpeg file on the server:
+Send a request with an image through the OpenAI-compatible API. The `image_url` field uses the `file://` protocol to point to a local jpg or jpeg file on the server. You can copy `AccSDK/test/image/assets/dog_1920_1080.jpg` from the code repository for testing.
 
 ```bash
 curl http://localhost:9000/v1/chat/completions \
@@ -140,7 +143,7 @@ curl http://localhost:9000/v1/chat/completions \
 
 ### Video Request Example
 
-Video requests use the `video_url` type, and also use the `file://` protocol to point to a local mp4 file on the server:
+Video requests use the `video_url` type, and also use the `file://` protocol to point to a local mp4 file on the server. You can copy `AccSDK/test/data/videos/video_1min_30fps.mp4` from the code repository for testing.
 
 ```bash
 curl http://localhost:9000/v1/chat/completions \
