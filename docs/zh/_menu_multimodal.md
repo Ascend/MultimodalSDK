@@ -1,4 +1,4 @@
-# Multimodal  SDK用户指南
+# Multimodal SDK用户指南
 
 - [简介](./01_introduction/_menu_introduction.md)
   - [软件概述](./01_introduction/01_introduction.md)

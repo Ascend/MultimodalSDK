@@ -2,10 +2,10 @@
 
 ## 关键特性
 
-- SCC 视觉 Token 压缩：按语义相似度聚合视觉 embedding 并同步调整 image/video placeholder 数量，在尽量保持模型效果的前提下减少视觉 token 数量、提升多模态推理吞吐。
-- 图片、视频解码与预处理加速：SDK 提供高性能的图片、视频解码与预处理，降低多模态推理的预处理时延。
+- SCC视觉 Token 压缩：按语义相似度聚合视觉 embedding 并同步调整 image/video placeholder 数量，在尽量保持模型效果的前提下减少视觉 Token 数量、提升多模态推理吞吐。
+- 图片、视频解码与预处理加速：SDK提供高性能的图片、视频解码与预处理，降低多模态推理的预处理时延。
 - 关键帧筛选：基于文本-图像相似度筛选与查询最相关的离散关键帧，支持在连续场景区间内自适应重采样，提升视频问答、目标出现时间定位的上下文召回。
-- 自动寻优与多尺度重采样：提供基于 Video RAG 的视频理解与问答参考设计，覆盖帧提取、音频提取、ASR、OCR、目标检测、语义检索、重排序与 Prompt 组装，提升长视频问答的上下文召回与生成效果。
+- 自动寻优与多尺度重采样：提供基于Video RAG的视频理解与问答参考设计，覆盖帧提取、音频提取、ASR、OCR、目标检测、语义检索、重排序与 Prompt 组装，提升长视频问答的上下文召回与生成效果。
 
 ## 版本配套说明
 
@@ -30,7 +30,7 @@
 >
 > 本节表格中“/”表示不可配套，“Y”表示可配套。
 
-**表 1**  Multimodal SDK与CANN版本兼容
+**表 1** Multimodal SDK与CANN版本兼容
 
 <table style="table-layout: fixed; width: 345px"><colgroup>
 <col style="width: 156px">
@@ -71,7 +71,7 @@
 </tbody>
 </table>
 
-**表 2**  Multimodal SDK与Ascend HDK版本兼容
+**表 2** Multimodal SDK与Ascend HDK版本兼容
 
 <table style="table-layout: fixed; width: 345px"><colgroup>
 <col style="width: 156px">
@@ -121,7 +121,7 @@
 
 | 特性名称 | 特性描述 | 配套产品型号 |
 | -- | -- | -- |
-| 基于 vllm-ascend 和 Qwen 模型的 Token 压缩 | 将 SCC（Semantic Connected Components，语义连通分量）视觉 token 压缩能力从参考设计合入主代码，vllm-ascend 中的 Qwen 系列 VL 模型可直接使用。该特性按语义相似度聚合视觉 embedding，并同步调整 image/video placeholder 数量，在尽量保持模型效果的前提下减少视觉 token 数量、提升多模态推理吞吐；压缩开关与参数通过环境变量配置，对现有业务代码零侵入。 | Atlas 800I A2 推理服务器 |
+| 基于 vLLM-Ascend 和 Qwen 模型的 Token 压缩 | 将 SCC（Semantic Connected Components，语义连通分量）视觉 Token 压缩能力从参考设计合入主代码，vLLM-Ascend 中的 Qwen 系列 VL 模型可直接使用。该特性按语义相似度聚合视觉 embedding，并同步调整 image/video placeholder 数量，在尽量保持模型效果的前提下减少视觉 Token 数量、提升多模态推理吞吐；压缩开关与参数通过环境变量配置，对现有业务代码零侵入。 | Atlas 800I A2 推理服务器 |
 
 ### 业务接口变更
 
@@ -153,11 +153,11 @@
 
 无
 
-## 26.2.0 版本配套文档
+## 26.2.0版本配套文档
 
 | 文档名称 | 内容简介 | 更新说明 |
 | -- | -- | -- |
-| [《Multimodal SDK 26.2.0 用户指南》](./04_user_guide/user_guide.md) | 主要包括 Multimodal SDK 图片处理、视频处理和音频处理典型场景的基础预处理接口使用样例与操作指导。 | 变更详见[《Multimodal SDK 26.2.0 用户指南》](./04_user_guide/user_guide.md)。 |
+| 《[Multimodal SDK 26.2.0 用户指南](./04_user_guide/user_guide.md)》 | 主要包括 Multimodal SDK 图片处理、视频处理和音频处理典型场景的基础预处理接口使用样例与操作指导。 | 变更详见《[Multimodal SDK 26.2.0 用户指南](./04_user_guide/user_guide.md)》。 |
 
 ## 病毒扫描结果
 

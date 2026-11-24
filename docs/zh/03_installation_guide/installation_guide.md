@@ -6,7 +6,7 @@
 
 Multimodal SDK 支持[离线安装](#离线安装)（`run` 包 / `Wheel` 包）、[源码安装](#源码安装)、[镜像安装](#镜像安装)三种方式。`run` 包：自解压安装脚本，含完整依赖；`Wheel` 包：Python 二进制分发包；镜像安装：基于容器化镜像部署。
 
-若采用离线安装或源码安装，请首先[安装相关依赖](#安装依赖说明)，若采用镜像安装请跳过该步骤。
+若采用离线安装或源码安装，请参见[安装依赖说明](#安装依赖说明)安装相关依赖，若采用镜像安装请跳过该步骤。
 
 **注意事项**
 
@@ -96,7 +96,7 @@ source /usr/local/Ascend/ascend-toolkit/set_env.sh   # 默认路径，请根据�
    mkdir -p /home/work/Mind_SDK
    ```
 
-6. 进入 Multimodal SDK 软件包所在路径，参考以下命令安装 Multimodal SDK（安装路径约束请参见[附录 > 安装命令参数表](#table-install-params)）。
+6. 进入 Multimodal SDK 软件包所在路径，参考以下命令安装 Multimodal SDK（安装路径约束请参见[安装命令参数表](#table-install-params)）。
 
    **指定安装路径**（以 `/home/work/Mind_SDK` 为例）：
 
@@ -110,7 +110,7 @@ source /usr/local/Ascend/ascend-toolkit/set_env.sh   # 默认路径，请根据�
    ./${MMSDK_PACKAGE} --install
    ```
 
-   常用可选参数：`--quiet`（静默模式，需与 `--install` 配合）、`--version`（查询版本）。完整参数说明见[安装命令参数表](#table-install-params)。
+   常用可选参数：`--quiet`（静默模式，需与`--install`或`--upgrade`配合）、`--version`（查询版本）。完整参数说明见[安装命令参数表](#table-install-params)。
 
 <a id="安装验证"></a>
 
@@ -164,7 +164,7 @@ EOF
 
 若输出以下结果，说明 SDK 已就绪：
 
-```text
+```output
 resize output shape: (500, 500, 3)
 ```
 
@@ -393,5 +393,5 @@ pip3 show multimodalsdk 2>/dev/null && echo "multimodalsdk 仍存在" || echo "m
 | `libcore.so` / `libascendcl.so` 找不到 | `Wheel` 安装：确认使用配套版本 whl 并 source CANN；`.run` 安装：确认已 source `set_env.sh` |
 | `npu-smi info` 无输出        | 检查 NPU 驱动/固件是否安装成功，必要时重启后重试                                 |
 | CANN 环境变量未生效              | 确认已 source CANN 的 `set_env.sh`，路径以实际安装为准                    |
-| torch / transformers 版本冲突 | 对照[表](#其他依赖)固定版本安装                           |
+| torch / transformers 版本冲突 | 对照[其他依赖](#其他依赖)固定版本安装                           |
 | 更多问题                      | [FAQ > 安装与环境](../06_references/faq.md#安装与环境) |
