@@ -1,6 +1,6 @@
 # 快速入门
 
-Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resize/crop、视频帧解码与音频加载等。本文将帮助你通过 Docker 启动环境并跑通第一个 Python 示例。
+Multimodal SDK提供多模态预处理加速能力，包括图像解码、resize/crop、视频帧解码与音频加载等。本文将帮助你通过Docker启动环境并跑通第一个Python示例。
 
 如需在宿主机原生安装，请参见[安装部署](../03_installation_guide/installation_guide.md)。
 
@@ -9,33 +9,33 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
 开始之前，请确认：
 
 - **硬件**：Atlas 800I A2 推理服务器，请参见[支持的硬件和操作系统](../01_introduction/01_introduction.md#支持的硬件和操作系统)。
-- **Docker**：已安装 Docker，且当前用户可运行容器。
+- **Docker**：已安装Docker，且当前用户可运行容器。
 - **测试图片**：镜像内已提供 `/data/test.jpg`，无需额外挂载测试图片目录。
 
-## 步骤 1：拉取镜像
+## 步骤1：拉取镜像
 
 1. **选择匹配版本**
    - 访问昇腾社区[镜像仓](https://www.hiascend.com/developer/ascendhub/detail/e0081aa3c4dd441dbd6a379bee8cc4c9)
    - 根据当前硬件型号（Atlas 800I A2 推理服务器）选择对应的镜像版本
-   - 注意当前仅支持 aarch64 CPU 架构
+   - 注意当前仅支持aarch64 CPU架构
 
 2. **环境预检查**
-   - 使用命令验证 NPU 驱动状态
+   - 使用命令验证NPU驱动状态
 
    ```bash
    npu-smi info
    ```
 
-   - 检查驱动版本与镜像 CANN 版本匹配性（参考《[固件与驱动](https://www.hiascend.com/hardware/firmware-drivers/community)》）
+   - 检查驱动版本与镜像CANN版本匹配性（参考《[固件与驱动](https://www.hiascend.com/hardware/firmware-drivers/community)》）
 
 3. **镜像拉取示例**
 
-   镜像 Tag 格式为 `{version}-{cann}-{torch_npu}-910b-{os}-{python}-aarch64`，各变量含义如下：
+   镜像Tag格式为 `{version}-{cann}-{torch_npu}-910b-{os}-{python}-aarch64`，各变量含义如下：
 
    | 变量            | 含义                | 示例值                               |
    | --------------- | ------------------- | ------------------------------------ |
    | `{version}`   | Multimodal SDK 版本 | `26.2.0`                           |
-   | `{cann}`      | cann 版本           | `cann9.2.0`                            |
+   | `{cann}`      | CANN 版本           | `cann9.2.0`                            |
    | `{torch_npu}` | torch_npu 版本      | `torch_npu2.10.0.post4`                     |
    | `{os}`        | 基础操作系统        | `ubuntu22.04` / `openeuler24.03` |
    | `{python}`    | Python 版本         | `py3.12`                           |
@@ -47,7 +47,7 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
        multimodalsdk:${TAG}
    ```
 
-   以 26.2.0 版本、Ubuntu 22.04、Python 3.12 为例：
+   以26.2.0版本、Ubuntu 22.04、Python 3.12为例：
 
    ```bash
    docker pull swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64
@@ -55,11 +55,11 @@ Multimodal SDK 提供多模态预处理加速能力，包括图像解码、resiz
        multimodalsdk:26.2.0-cann9.2.0-torch_npu2.10.0.post4-910b-ubuntu22.04-py3.12-aarch64
    ```
 
-## 步骤 2：启动容器
+## 步骤2：启动容器
 
 > [!NOTE]
 >
-> - `--device /dev/davinci0` 中的设备编号需按宿主机实际 NPU 编号调整（如 `davinci1`）。
+> - `--device /dev/davinci0` 中的设备编号需按宿主机实际NPU编号调整（如 `davinci1`）。
 
 启动容器前，先检查是否已存在同名容器：
 
@@ -99,18 +99,18 @@ docker ps -a | grep multimodal_container
 docker exec -it multimodal_container bash
 ```
 
-## 步骤 3：加载环境
+## 步骤3：加载环境
 
 > [!NOTE]
 >
-> 使用 `MULTIMODAL_SDK_HOME` 环境变量表示 Multimodal SDK 安装路径，默认值为 `/usr/local/multimodal`。
+> 使用 `MULTIMODAL_SDK_HOME` 环境变量表示Multimodal SDK安装路径，默认值为 `/usr/local/multimodal`。
 
 ```bash
 export MULTIMODAL_SDK_HOME="/usr/local/multimodal"
 source ${MULTIMODAL_SDK_HOME}/script/set_env.sh
 ```
 
-## 步骤 4：运行验证脚本
+## 步骤4：运行验证脚本
 
 如果镜像内未预置图片 `/data/test.jpg`，下载测试图片到容器内，下载命令如下：
 
@@ -139,11 +139,11 @@ EOF
 
 若输出以下结果，说明验证成功：
 
-```text
+```output
 resize output shape: (500, 500, 3)
 ```
 
-## 步骤 5：清理环境
+## 步骤5：清理环境
 
 完成验证后，退出容器，建议清理容器环境，释放资源。
 
@@ -153,7 +153,7 @@ docker stop multimodal_container
 docker rm multimodal_container
 ```
 
-## 步骤 6：下一步
+## 步骤6：下一步
 
 | 目标 | 文档 |
 | -- | -- |

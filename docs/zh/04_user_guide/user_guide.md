@@ -1,16 +1,16 @@
 # 样例和指导
 
-本文通过图片、视频和音频三个典型场景，说明 Multimodal SDK 的基础预处理接口使用方式。整体流程如下：
+本文通过图片、视频和音频三个典型场景，说明Multimodal SDK的基础预处理接口使用方式。整体流程如下：
 
 <img src="../figures/user_guide_overview_flow.svg" alt="样例和指导整体流程" width="1200"/>
 
 ## 使用前准备
 
-- 本文档适用于 Multimodal SDK 最新发布版本，建议使用 Python 3.10 或 3.12。
+- 本文档适用于Multimodal SDK最新发布版本，建议使用Python 3.10或3.12。
 - 请先完成[快速入门](../02_quickstart/quickstart.md)或[安装部署](../03_installation_guide/installation_guide.md)，确认 `import mm` 成功。
 - 图片示例需要安装 `matplotlib`，仅用于展示处理结果：`pip3 install matplotlib`。
-- 示例文件权限不应高于 640。图片当前支持 jpg/jpeg，视频当前支持 mp4，音频当前支持 wav。
-- 建议在 Jupyter 中运行文中样例，可直观查看处理结果。以下脚本一键完成"启动容器 → 安装依赖 → 启动 Jupyter"（镜像与设备挂载与[快速入门](../02_quickstart/quickstart.md)一致，设备编号按实际 NPU 调整）：
+- 示例文件权限不应高于640。图片当前支持 jpg/jpeg，视频当前支持 mp4，音频当前支持 wav。
+- 建议在Jupyter中运行文中样例，可直观查看处理结果。以下脚本一键完成“启动容器 → 安装依赖 → 启动 Jupyter”（镜像与设备挂载与[快速入门](../02_quickstart/quickstart.md)一致，设备编号按实际 NPU 调整）：
 
   ```bash
   # 1. 启动容器（若已存在先删除：docker stop multimodal_container && docker rm multimodal_container）
@@ -37,11 +37,11 @@
   '
   ```
 
-  启动后终端会打印访问地址（含 token），形如 `http://127.0.0.1:8888/lab?token=xxxx`。在宿主机浏览器中打开该地址（容器已通过 `-p 8888:8888` 映射端口，本机直接访问 `http://127.0.0.1:8888/lab?token=xxxx` 即可），新建 Notebook，将文中样例代码复制进去执行。
+  启动后终端会打印访问地址（含token），形如 `http://127.0.0.1:8888/lab?token=xxxx`。在宿主机浏览器中打开该地址（容器已通过 `-p 8888:8888` 映射端口，本机直接访问 `http://127.0.0.1:8888/lab?token=xxxx` 即可），新建 Notebook，将文中样例代码复制进去执行。
 
 ## 图片处理
 
-以下是一个简单的参考样例，通过多模态 SDK 的 Image 类读取图像，并进行缩放、裁剪，最后转化为通用的 NumPy 数组展示上述操作的效果。
+以下是一个简单的参考样例，通过多模态SDK的Image类读取图像，并进行缩放、裁剪，最后转化为通用的 NumPy 数组展示上述操作的效果。
 
 <img src="../figures/user_guide_image_flow.svg" alt="图片处理流程" width="1200"/>
 
@@ -90,10 +90,10 @@ plt.show()
 
 ## 视频处理
 
-多模态 SDK 的视频解码接口支持两种参数设置方式，用户可按需选择。`frame_indices` 的类型为 `set`，表示期望解码的视频帧 ID 集合；`sample_num` 表示当 `frame_indices` 为空时均匀采样的目标帧数。若 `frame_indices` 非空，接口优先按指定帧 ID 解码，`sample_num` 不再生效。
+多模态SDK的视频解码接口支持两种参数设置方式，用户可按需选择。`frame_indices` 的类型为 `set`，表示期望解码的视频帧 ID 集合；`sample_num` 表示当 `frame_indices` 为空时均匀采样的目标帧数。若 `frame_indices` 非空，接口优先按指定帧 ID 解码，`sample_num` 不再生效。
 
-- 如果传入了**期望解码的视频帧 ID**集合且其内容合法，SDK 会根据这些帧 ID 进行解码，返回的 image 对象列表长度与帧 ID 集合大小一致。
-- 如果帧 ID 集合为空，则可以通过**期望解码后获取的总帧数**参数进行设置，此时接口会从视频中均匀采样指定数量的帧，最终返回的 image 对象列表长度等于设定的帧数。
+- 如果传入了**期望解码的视频帧 ID**集合且其内容合法，SDK 会根据这些帧ID进行解码，返回的 image 对象列表长度与帧 ID 集合大小一致。
+- 如果帧ID集合为空，则可以通过**期望解码后获取的总帧数**参数进行设置，此时接口会从视频中均匀采样指定数量的帧，最终返回的 image 对象列表长度等于设定的帧数。
 
 <img src="../figures/user_guide_video_flow.svg" alt="视频处理流程" width="1200"/>
 
@@ -104,7 +104,7 @@ plt.show()
     cd MultimodalSDK && git lfs pull
    ```
 
-2. 传入目标解码的帧 ID 集合，得到的返回值列表大小为传入的帧 ID 集合大小。可以使用
+2. 传入目标解码的帧ID集合，得到的返回值列表大小为传入的帧ID集合大小。可以使用
 
    ```python
    from mm import video_decode
@@ -117,7 +117,7 @@ plt.show()
    print(f"mm_images count: {len(mm_images)}")
    ```
 
-3. 传入目标解码的帧 ID 集合为空，传入期望解码后获取的总帧数，得到的返回值列表大小为传入的期望解码后获取的总帧数大小。
+3. 传入目标解码的帧ID集合为空，传入期望解码后获取的总帧数，得到的返回值列表大小为传入的期望解码后获取的总帧数大小。
 
    ```python
    from mm import video_decode
@@ -159,7 +159,7 @@ print(f"directory batch count: {len(batch_from_directory)}")
 
 返回值说明：
 
-- 输入单个音频文件时，返回 `(waveform, sr)`，其中 `waveform` 为音频 Tensor，`sr` 为采样率。
+- 输入单个音频文件时，返回 `(waveform, sr)`，其中 `waveform` 为音频Tensor，`sr` 为采样率。
 - 输入音频文件列表或目录时，返回 `(waveform, sr)` 元组列表。
 
 ## 下一步

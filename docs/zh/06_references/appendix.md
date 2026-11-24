@@ -2,13 +2,13 @@
 
 ## 软件中包含的公网地址
 
-Multimodal SDK 安装包中的网址在安装结束后会被清除，本手册中列出的公开网址和邮箱地址，SDK 本身均不会访问，不会造成风险。
+Multimodal SDK安装包中的网址在安装结束后会被清除，本手册中列出的公开网址和邮箱地址，SDK本身均不会访问，因此不会造成风险。
 
-更多公网地址请参见 [Multimodal SDK公网地址.xlsx](../resource/Multimodal%20SDK公网地址.xlsx)（随 Multimodal SDK 发布文档包提供）。
+更多公网地址请参见 [Multimodal SDK公网地址.xlsx](../resource/Multimodal%20SDK公网地址.xlsx)（随Multimodal SDK发布文档包提供）。
 
 ## 软件通信矩阵
 
-目前 Multimodal SDK 开发套件包不会主动打开或者依赖任意端口，因此不涉及通信矩阵。
+目前Multimodal SDK开发套件包不会主动打开或者依赖任意端口，因此不涉及通信矩阵。
 
 ## 错误码
 
@@ -58,4 +58,4 @@ Multimodal SDK 安装包中的网址在安装结束后会被清除，本手册�
 | HF_HUB_OFFLINE | 在离线模式下运行 Hugging Face 库。 |
 
 > [!NOTE]
-> 使用本软件提供的 patcher 运行 vllm 推理或其他开源库时，还会使用到其他开源库相关环境变量，本文不做声明，请用户自行确保环境变量真实有效。
+> 使用本软件提供的patcher运行VLLM推理或其他开源库时，还会使用到其他开源库相关环境变量，本文不做声明，请用户自行确保环境变量真实有效。

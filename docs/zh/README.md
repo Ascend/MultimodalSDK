@@ -4,7 +4,7 @@
   <span style="font-size: 4.5rem; font-weight: 300; letter-spacing: 0.02em;">Multimodal SDK</span>
 </div>
 
-Multimodal SDK通过提供一系列高性能的昇腾设备亲和性接口，加速大模型推理预处理流程。本docs仓提供Multimodal SDK的相关指导文档。
+Multimodal SDK通过提供一系列高性能的昇腾设备亲和性接口，加速大模型推理预处理流程。本docs文件夹提供Multimodal SDK的相关指导文档。
 
 ## 文档介绍
 

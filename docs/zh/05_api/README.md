@@ -106,4 +106,4 @@ resize 操作中使用的插值算法
 
 | 属性名 | 说明 |
 | -- | -- |
-| Interpolation.BICUBIC | 双立方插值算法。 |
+| Interpolation.BICUBIC | 双三次插值算法。 |

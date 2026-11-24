@@ -1,10 +1,10 @@
 # 前置知识
 
-本文档介绍使用 Multimodal SDK 所需的背景知识、专业名词解释及必备基础。
+本文档介绍使用Multimodal SDK所需的背景知识、专业名词解释及必备基础。
 
 ## 专业名词说明
 
-### SDK 与框架
+### SDK与框架
 
 | 名词 | 说明 |
 |------|------|
@@ -32,7 +32,7 @@
 | TensorFormat | Tensor 数据排布格式，支持 ND（通用 N 维数组）、NHWC（Batch-Height-Width-Channel）、NCHW（Batch-Channel-Height-Width） |
 | ImageFormat | 图像格式枚举，支持 RGB、BGR、RGB_PLANAR、BGR_PLANAR |
 | DeviceMode | 设备运行模式，当前仅支持 CPU 模式 |
-| Interpolation | 插值算法枚举，resize 操作中使用，当前仅支持 BICUBIC（双立方插值） |
+| Interpolation | 插值算法枚举，resize 操作中使用，当前仅支持 BICUBIC（双三次插值） |
 
 ### 图像与音视频处理
 
@@ -54,7 +54,7 @@
 | Pillow (PIL) | Python 图像处理库，Multimodal SDK 支持与 PIL Image 相互转换 |
 | PyTorch | 深度学习框架，Multimodal SDK 支持与 torch.Tensor 相互转换 |
 | NumPy | Python 科学计算库，Multimodal SDK 支持与 numpy.ndarray 相互转换 |
-| transformers | HuggingFace 的预训练模型库 |
+| transformers | Hugging Face的预训练模型库 |
 
 ## 必备知识
 
@@ -62,16 +62,16 @@
 
 #### 多模态数据处理
 
-Multimodal SDK 主要处理以下模态数据：
+Multimodal SDK主要处理以下模态数据：
 
-- **图像**：支持 jpg/jpeg 格式，宽高范围 [10, 8192]
-- **视频**：支持 mp4 格式，分辨率范围 [480, 4096]
-- **音频**：支持 wav 格式，采样率范围 [1, 64000]
+- **图像**：支持jpg/jpeg格式，宽高范围 [10, 8192]
+- **视频**：支持mp4格式，分辨率范围 [480, 4096]
+- **音频**：支持wav格式，采样率范围 [1, 64000]
 
 #### 数据流向
 
-SDK 的典型数据流向：
+SDK的典型数据流向：
 
 1. **输入**：文件路径 → 解码 → 原始数据
-2. **处理**：resize、crop、normalize 等预处理操作
-3. **输出**：Tensor 对象，可转换为 NumPy 数组或 PyTorch 张量
+2. **处理**：resize、crop、normalize等预处理操作
+3. **输出**：Tensor对象，可转换为NumPy数组或PyTorch张量

@@ -13,16 +13,16 @@
 
 <span style="font-size:14px;">
 
-🔹 **[2026.09.30]**：🚀 [Multimodal SDK 26.2.0 Release 版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.2.0)<br>
-🔹 **[2026.07.31]**：🚀 [Multimodal SDK 26.1.0 Release 版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.1.0)<br>
-🔹 **[2026.04.25]**：🚀 [Multimodal SDK 26.0.0 Release 版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.0.0)<br>
-🔹 **[2025.12.30]**：🚀 Multimodal SDK 开源发布<br>
+🔹 **[2026-09-30]**：🚀 [Multimodal SDK 26.2.0 Release版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.2.0)<br>
+🔹 **[2026-07-31]**：🚀 [Multimodal SDK 26.1.0 Release版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.1.0)<br>
+🔹 **[2026-04-25]**：🚀 [Multimodal SDK 26.0.0 Release版本发布](https://gitcode.com/Ascend/MultimodalSDK/releases/v26.0.0)<br>
+🔹 **[2025-12-30]**：🚀 Multimodal SDK开源发布<br>
 
 </span>
 
 ## ℹ️ 简介
 
-Multimodal SDK 是面向昇腾设备优化的多模态大模型推理预处理加速套件。它提供图像、视频和音频处理常用接口，覆盖图像/视频加载与解码、resize、crop、音频加载等预处理流程，并支持多种开源数据结构与加速库数据结构的相互转换，帮助开发者快速接入和迁移多模态推理应用。
+Multimodal SDK是面向昇腾设备优化的多模态大模型推理预处理加速套件。它提供图像、视频和音频处理常用接口，覆盖图像/视频加载与解码、resize、crop、音频加载等预处理流程，并支持多种开源数据结构与加速库数据结构的相互转换，帮助开发者快速接入和迁移多模态推理应用。
 
 <img src="./docs/zh/figures/mmsdk_arch.svg" width="1200"/>
 
@@ -30,26 +30,26 @@ Multimodal SDK 是面向昇腾设备优化的多模态大模型推理预处理�
 
 | 功能 | 描述 | 接口 |
 | --- | --- | --- |
-| [图像处理](./docs/zh/04_user_guide/user_guide.md#图片处理) | 支持图像读取、resize、crop 及 NumPy 数据转换，适用于多模态模型图片预处理场景 | [链接](./docs/zh/05_api/function_reference.md) |
-| [视频处理](./docs/zh/04_user_guide/user_guide.md#视频处理) | 支持按指定帧 ID 解码或按目标帧数均匀采样，返回可继续处理的 Image 对象列表 | [链接](./docs/zh/05_api/function_reference.md) |
-| [音频处理](./docs/zh/04_user_guide/user_guide.md#音频处理) | 支持单文件、文件列表和目录批量音频加载，并可指定重采样率 | [链接](./docs/zh/05_api/function_reference.md) |
-| [推理框架补丁](./docs/zh/05_api/patcher.md) | 提供 vLLM 框架补丁，便于在现有推理流程中集成加速能力 | [链接](./docs/zh/05_api/patcher.md) |
+| [图片处理](./docs/zh/04_user_guide/user_guide.md#图片处理) | 支持图像读取、resize、crop 及 NumPy 数据转换，适用于多模态模型图片预处理场景 | [功能函数参考](./docs/zh/05_api/function_reference.md) |
+| [视频处理](./docs/zh/04_user_guide/user_guide.md#视频处理) | 支持按指定帧 ID 解码或按目标帧数均匀采样，返回可继续处理的 Image 对象列表 | [功能函数参考](./docs/zh/05_api/function_reference.md) |
+| [音频处理](./docs/zh/04_user_guide/user_guide.md#音频处理) | 支持单文件、文件列表和目录批量音频加载，并可指定重采样率 | [功能函数参考](./docs/zh/05_api/function_reference.md) |
+| [推理框架补丁](./docs/zh/05_api/patcher.md) | 提供 vLLM 框架补丁，便于在现有推理流程中集成加速能力 | [推理框架补丁](./docs/zh/05_api/patcher.md) |
 
 ## 🚀 快速入门
 
-Multimodal SDK 提供 Docker 快速体验流程，帮助用户完成环境启动、变量加载和首个 Python 示例验证，详情可参考《[快速入门](./docs/zh/02_quickstart/quickstart.md)》。
+Multimodal SDK提供 Docker 快速体验流程，帮助用户完成环境启动、变量加载和首个 Python 示例验证，详情可参考《[快速入门](./docs/zh/02_quickstart/quickstart.md)》。
 
 如果需要修改源码并重新编译，请直接参考《[贡献指南](./CONTRIBUTING.md)》。
 
 ## 📦 安装指南
 
-Multimodal SDK 支持离线安装、镜像安装、源码安装三种方式，详情可查看《[安装指南](./docs/zh/03_installation_guide/installation_guide.md)》。
+Multimodal SDK支持离线安装、镜像安装、源码安装三种方式，详情可查看《[安装指南](./docs/zh/03_installation_guide/installation_guide.md)》。
 
 ## 📘 使用指南
 
-Multimodal SDK 以图片、视频和音频三个典型场景提供基础预处理接口使用样例与操作指导，具体操作请参考《[样例和指导](./docs/zh/04_user_guide/user_guide.md)》。
+Multimodal SDK以图片、视频和音频三个典型场景提供基础预处理接口使用样例与操作指导，具体操作请参考《[样例和指导](./docs/zh/04_user_guide/user_guide.md)》。
 
-API 说明请参考：
+API说明请参考：
 
 | 文档 | 说明 |
 | --- | --- |
@@ -63,7 +63,7 @@ API 说明请参考：
 
 ## 🔀 版本维护策略
 
-| 版本 | 维护策略 | 当前状态 | 发布日期 | 后续状态 | EOL 日期 |
+| 版本 | 维护策略 | 当前状态 | 发布日期 | 后续状态 | EOL（End of Life）日期 |
 | --- | --- | --- | --- | --- | --- |
 | master | 长期支持 | 开发 | 在研分支，不发布 | 持续开发 | - |
 | v26.2.0 | 常规分支 | 维护 | 2026-09-30 | 预计2027-03-31起进入无维护状态 | 2027-03-31 |

@@ -1,6 +1,6 @@
 # patcher
 
-> 简介：本节描述 Multimodal SDK 在 vLLM 中提供的特性开关。通过设置以下环境变量，可以在**不修改 vLLM 源码**的前提下开启 SCC 视觉 token 压缩、预处理加速等能力。
+> 简介：本文档描述 Multimodal SDK 在 vLLM 中提供的特性开关。通过设置以下环境变量，可以在**不修改 vLLM 源码**的前提下开启 SCC（Semantic Connected Components）视觉 token 压缩、预处理加速等能力。
 
 ---
 
@@ -27,7 +27,7 @@
 | `MM_PREPROCESSOR` | bool | `true` / `false` | `false` | 开启 SDK 的图像/视频预处理加速（走 `mm.core.processor.resize_and_normalize`）。 |
 | `MM_MEDIA_IO` | bool | `true` / `false` | `false` | 开启 SDK 的视频/图像解码加速。 |
 
-任意一个变量设为非法值时，Multimodal SDK 会在 vLLM 日志中打印 warning 并回退到默认值，不会让 vLLM 启动失败。
+任意一个变量设为非法值时，Multimodal SDK 会在 vLLM 日志中打印warning并回退到默认值，不会让vLLM启动失败。
 
 ### 关闭 SDK 加速
 
@@ -117,7 +117,7 @@ vllm serve /models/Qwen3-VL-8B-Instruct \
 补充说明：
 
 - 使用 `file://` 需在启动 vLLM 时指定 `--allowed-local-media-path`，将媒体文件所在目录加入白名单，否则 vLLM 会拒绝访问本地文件。例如媒体文件放在 `/data` 下：`--allowed-local-media-path /data`。
-- 媒体文件权限不应高于 640。
+- 媒体文件权限不应高于640。
 - patch 层会校验文件存在性，文件不存在时直接报错，不会回退到原生解码。
 
 ### 图片请求示例
