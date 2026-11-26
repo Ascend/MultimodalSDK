@@ -417,7 +417,7 @@ class VideoRetrievalService:
         ):
             asr_total = extraction_result.asr_docs_total
             iter_seq = [select_related_asr_docs(asr_total, det_time) for _, det_time in detection_result.det_docs]
-            rel_asr_docs_idx = list(unique_everseen(filter(bool, iter_seq)))
+            rel_asr_docs_idx = list(unique_everseen(filter(lambda idx: idx is not None, iter_seq)))
             msg = f"VideoRetrieval gathered {len(rel_asr_docs_idx)} unique docs for frames."
             logger.debug(msg)
 
