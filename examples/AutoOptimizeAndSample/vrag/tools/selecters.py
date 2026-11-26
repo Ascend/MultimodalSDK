@@ -31,6 +31,9 @@ _T = TypeVar("_T")
 def sample_k_uniformly(timestamps: List[Timestamp], start: Timestamp, end: Timestamp, k: int) -> List[int]:
     indices = _select_indices_in_range(timestamps, start, end)
 
+    if k <= 0:
+        return indices
+
     if len(indices) <= k:
         return indices
 
