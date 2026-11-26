@@ -11,8 +11,8 @@ all_test:
   - "MultimodalSDK/source/mm/acc/wrapper/util.py"
   - "MultimodalSDK/source/mm/acc/wrapper/data_type.py"
   - "MultimodalSDK/source/mm/acc/wrapper/__init__.py"
-  - "test/presmoke/mm_acc/tools.py"
-  - "test/presmoke/mm_acc/common.py"
+  - "test/presmoke/mm_test/tools.py"
+  - "test/presmoke/mm_test/common.py"
 
 # List of directories where changes to .py files will run ONLY that specific test file
 # Use for presmoke test directories - modifying a test file there only runs that file
